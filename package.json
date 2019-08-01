@@ -1,0 +1,19 @@
+{
+  "name": "@ecorreia/flatlist-react",
+  "version": "0.0.0",
+  "description": "A helpful utility component to handle lists in react like a champ",
+  "main": "src",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "flatlist-react"
+  },
+  "keywords": [
+    "react",
+    "flatlist"
+  ],
+  "author": "Elson T. Correia",
+  "license": "MIT"
+}

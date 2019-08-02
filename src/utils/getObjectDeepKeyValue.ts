@@ -1,4 +1,4 @@
-import {isObject, isString} from './isType';
+import {isObject, isString, isNil} from './isType';
 
 interface StringObjectInterface {
 	[t: string]: any;
@@ -10,8 +10,8 @@ const getObjectDeepKeyValue = (dotSeparatedKeys: string, object: StringObjectInt
 		let value = object;
 
 		for (const key of keys) {
-			if (!value[key]) {
-				throw new Error(`getObjectDeepKeyValue: Could not get value of "${key}".`);
+			if (value[key] === undefined) {
+				throw new Error(`getObjectDeepKeyValue: "${key}" is undefined.`);
 			} else {
 				value = value[key];
 			}

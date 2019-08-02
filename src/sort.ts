@@ -16,17 +16,20 @@ const defaultSortOptions: SortOptionsInterface = {
 const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptions): T[] => {
 	const listCopy = JSON.parse(JSON.stringify(list));
 
-	listCopy.sort((itemA: any, itemB: any) => {
-		if (isNumber(itemA) && isNumber(itemB)) {
-			return options.descending ? (itemB - itemA) : (itemA - itemB);
+	if (!isObject(options) || Object.keys(options).length === 0) {
+		options = defaultSortOptions;
+	}
+
+	options = {...defaultSortOptions, ...options};
+
+	listCopy.sort((first: any, second: any) => {
+		if (options.onKey) {
+			first = isObject(first) ? getObjectDeepKeyValue(options.onKey, first) : first;
+			second = isObject(second) ? getObjectDeepKeyValue(options.onKey, second) : second;
 		}
 
-		let first = itemA;
-		let second = itemB;
-
-		if (options.onKey) {
-			first = isObject(itemA) ? getObjectDeepKeyValue(options.onKey, itemA) : itemA;
-			second = isObject(itemB) ? getObjectDeepKeyValue(options.onKey, itemB)  : itemB;
+		if (isNumber(first) && isNumber(second)) {
+			return options!.descending ? (second - first) : (first - second);
 		}
 
 		return first > second ? (options.descending ? -1 : 1) :

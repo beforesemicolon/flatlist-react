@@ -8,7 +8,9 @@
     "trailing-comma": [false],
     "indent": [true, "tabs", 4],
     "no-console": [false],
-    "quotemark": [true, "single"]
+    "quotemark": [true, "single"],
+    "object-literal-sort-keys": [false],
+    "interface-name": [true, "never-prefix"]
   },
   "rulesDirectory": []
 }

@@ -170,7 +170,7 @@ class FlatList extends Component<Props, {}> {
                             key={separatorKey}
                             className={`${separator.props.className} ___list-separator`}
                         />
-                        );
+                    );
                 }
 
                 if (sort || sortGroupBy) {
@@ -225,23 +225,78 @@ class FlatList extends Component<Props, {}> {
 }
 
 FlatList.propTypes = {
+    /**
+     * activate display grid on the items container
+     */
     displayGrid: bool,
+    /**
+     * activate display block on items and items container
+     */
     displayRow: bool,
+    /**
+     * a string representing a key on the object or a function takes the item and its index that returns
+     * true or false whether to include the item or not
+     */
     filterBy: oneOfType([func, string]),
+    /**
+     * the spacing in between columns and rows. Similar to CSS grid-gap
+     */
     gridGap: string,
+    /**
+     * the size of the groups to be created
+     */
     groupOf: number,
+    /**
+     * a component or a function that returns a component to be rendered in between groups
+     */
     groupSeparator: oneOfType([node, func, element]),
+    /**
+     * a list of anything to be displayed
+     */
     list: array.isRequired,
+    /**
+     * the minimum column width when display grid is activated
+     */
     minColumnWidth: string,
+    /**
+     * the function that it is called for every item on the list and returns a component
+     */
     renderItem: func.isRequired,
+    /**
+     * the function that gets called when the list is empty or was filtered to the point it became empty
+     */
     renderWhenEmpty: func,
+    /**
+     * the spacing in between rows when display row is activated
+     */
     rowGap: string,
+    /**
+     * the spacing in between separator and items when display row is activated
+     */
     separatorGap: string,
+    /**
+     * a flag to indicate whether the separator should be on the bottom or not
+     */
     showGroupSeparatorAtTheBottom: bool,
+    /**
+     * a flag to indicate that the list should be sorted (uses default sort configuration)
+     */
     sort: bool,
+    /**
+     * a string representing a key in the item that should be used to sort the list
+     */
     sortBy: string,
+    /**
+     * a flag to indicate that sort should be done in descending order
+     */
     sortDesc: bool,
+    /**
+     * a string representing a key in the item that should be used to sort the list groups
+     */
     sortGroupBy: string,
+    /**
+     * a flag to indicate that sort should be done in descending order inside each group
+     */
     sortGroupDesc: bool
 };
 

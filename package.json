@@ -2,13 +2,13 @@
   "name": "flatlist-react",
   "version": "0.0.0",
   "description": "A helpful utility component to handle lists in react like a champ",
-  "main": "./dist/index.js",
+  "main": "./lib/index.js",
   "scripts": {
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "tsc": "tsc",
     "build": "rm -rf ./lib && npm run lint && tsc",
     "build:local": "npm run lint && npm run tsc",
-    "local": "nodemon --watch ./src -e ts --exec npm run build:local",
+    "local": "nodemon --watch ./src -e ts,tsx --exec npm run build:local",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

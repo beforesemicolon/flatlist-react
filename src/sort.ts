@@ -32,6 +32,11 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
 			return options!.descending ? (second - first) : (first - second);
 		}
 
+		if (options.ignoreCasing) {
+			first = first.toUpperCase();
+			second = second.toUpperCase();
+		}
+
 		return first > second ? (options.descending ? -1 : 1) :
 			first < second ? (options.descending ? 1 : -1) :
 				0;

@@ -5,10 +5,13 @@ import filterList from './filter';
 interface Props {
 	list: any[];
 	renderItem: (item: any, idx: number) => any;
+	renderWhenEmpty?: null | (() => any);
 	filterBy?: string | ((item: any, idx: number) => boolean);
 }
 
-const FlatList: FunctionComponent<Props> = ({list, renderItem, filterBy}) => {
+const defaultBlank = (<p>List is empty...</p>);
+
+const FlatList: FunctionComponent<Props> = ({list, renderItem, filterBy, renderWhenEmpty}) => {
 
 	if (filterBy) {
 		list = filterList(list, filterBy);
@@ -17,7 +20,9 @@ const FlatList: FunctionComponent<Props> = ({list, renderItem, filterBy}) => {
 	return (
 		<Fragment>
 			{
-				list.map((item, idx) => renderItem(item, idx))
+				list.length > 0 ?
+					list.map((item, idx) => renderItem(item, idx)) :
+					renderWhenEmpty ? renderWhenEmpty() || defaultBlank : defaultBlank
 			}
 		</Fragment>
 	);
@@ -26,11 +31,13 @@ const FlatList: FunctionComponent<Props> = ({list, renderItem, filterBy}) => {
 FlatList.propTypes = {
 	list: array.isRequired,
 	renderItem: func.isRequired,
+	renderWhenEmpty: func,
 	filterBy: oneOfType([func, string])
 };
 
 FlatList.defaultProps = {
-	filterBy: ''
+	filterBy: '',
+	renderWhenEmpty: null
 };
 
 export default FlatList;

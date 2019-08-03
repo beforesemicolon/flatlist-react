@@ -162,13 +162,44 @@ return (
         <FlatList 
             list={this.props.people} 
             renderItem={this.renderPerson}
-            filterBy="this.filterOutPeopleBelowTwenty"
+            filterBy={this.filterOutPeopleBelowTwenty}
             />
     </ul>
 )
 ```
 
 ##### Searching
+There is no prop for searching yet but we can take advantage of the `filterBy` to narrow our list when users type in a 
+search field like so:
+
+```
+state = {
+    searchTerm: ''
+}
+
+matchSearchTerm = (person, index) => {
+    return `${person.firstName} ${person.lastName}`.search(this.state.searchTerm) >= 0;;
+}
+
+handleSearchInput = (event) => {
+    this.setState({searchTerm: event.target.value});
+}
+
+...
+
+return (
+    <>
+        <input value={this.state.searchTerm} onChange={this.handleSearchInput}/>
+        <ul>
+            <FlatList 
+                list={this.props.people} 
+                renderItem={this.renderPerson}
+                filterBy={this.matchSearchTerm}
+                />
+        </ul>
+    </>
+)
+```
 
 #### Sorting Items
 

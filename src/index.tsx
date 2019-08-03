@@ -19,6 +19,7 @@ interface Props {
 	sortGroupBy?: string;
 	sortDesc?: boolean;
 	sortGroupDesc?: boolean;
+	showGroupSeparatorAtTheBottom?: boolean;
 	sort?: boolean;
 	groupSeparator?: null | any;
 	dontSortOnGroup?: boolean;
@@ -35,7 +36,7 @@ const defaultBlank = (<p>List is empty...</p>);
 const FlatList: FunctionComponent<Props> = (
 	{
 		list, renderItem, filterBy, groupBy, renderWhenEmpty, sortBy, sortDesc, sort, sortGroupBy, sortGroupDesc,
-		ignoreCaseOnWhenSorting, groupSeparator, groupOf
+		ignoreCaseOnWhenSorting, groupSeparator, groupOf, showGroupSeparatorAtTheBottom
 	}) => {
 	const blank = renderWhenEmpty ? renderWhenEmpty() || defaultBlank : defaultBlank;
 
@@ -80,7 +81,11 @@ const FlatList: FunctionComponent<Props> = (
 								});
 							}
 
-							return groupedList.concat(separator, ...group.map(renderItem));
+							if (showGroupSeparatorAtTheBottom) {
+								return groupedList.concat(...group.map(renderItem), separator);
+							}
+
+							return groupedList.concat(separator, ...group.map(renderItem, ));
 						}), []) :
 						blank
 				}
@@ -109,6 +114,7 @@ FlatList.propTypes = {
 	sort: bool,
 	dontSortOnGroup: bool,
 	sortGroupBy: string,
+	showGroupSeparatorAtTheBottom: bool,
 	groupOf: number,
 	filterBy: oneOfType([func, string]),
 	groupSeparator: oneOfType([node, func, element])
@@ -120,6 +126,7 @@ FlatList.defaultProps = {
 	filterBy: '',
 	sortDesc: false,
 	sortGroupDesc: false,
+	showGroupSeparatorAtTheBottom: false,
 	groupOf: 0,
 	sort: false,
 	ignoreCaseOnWhenSorting: false,

@@ -8,9 +8,9 @@ export interface SortOptionsInterface {
 }
 
 const defaultSortOptions: SortOptionsInterface = {
-    onKey: '',
     descending: false,
-    ignoreCasing: false
+    ignoreCasing: false,
+    onKey: ''
 };
 
 const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptions): T[] => {

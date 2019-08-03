@@ -3,19 +3,19 @@ interface StringObjectInterface {
 }
 
 const typesMap: StringObjectInterface = {
-    boolean: 'BOOLEAN',
-    number: 'NUMBER',
-    string: 'STRING',
-    undefined: 'UNDEFINED',
-    symbol: 'SYMBOL',
-    null: 'NULL',
-    set: 'SET',
-    weak_set: 'WEAK_SET',
-    map: 'MAP',
-    weak_map: 'WEAK_MAP',
     array: 'ARRAY',
-    object: 'OBJECT',
+    boolean: 'BOOLEAN',
     function: 'FUNCTION',
+    map: 'MAP',
+    null: 'NULL',
+    number: 'NUMBER',
+    object: 'OBJECT',
+    set: 'SET',
+    string: 'STRING',
+    symbol: 'SYMBOL',
+    undefined: 'UNDEFINED',
+    weak_map: 'WEAK_MAP',
+    weak_set: 'WEAK_SET',
 };
 
 export const types: StringObjectInterface = Object.values(typesMap)

@@ -160,9 +160,9 @@ class FlatList extends Component<Props, {}> {
 
         if (sort || sortBy) {
             renderList = sortList(renderList, {
-                onKey: sortBy,
                 descending: sortDesc,
-                ignoreCasing: ignoreCaseOnWhenSorting
+                ignoreCasing: ignoreCaseOnWhenSorting,
+                onKey: sortBy
             });
         }
 
@@ -173,9 +173,9 @@ class FlatList extends Component<Props, {}> {
                     {
                         renderList.length > 0 ?
                             groupList(renderList, {
-                                on: isFunction(groupBy) ? groupBy as any : null,
                                 by: isString(groupBy) ? groupBy as string : '',
-                                every: groupOf || 0
+                                every: groupOf || 0,
+                                on: isFunction(groupBy) ? groupBy as any : null
                             }).reduce(((groupedList, group, idx) => {
                                 const separatorKey = `${idx}-${group.length}`;
                                 let separator = (<hr key={separatorKey} className='___list-separator'/>);
@@ -191,9 +191,9 @@ class FlatList extends Component<Props, {}> {
 
                                 if (sort || sortGroupBy) {
                                     group = sortList(group, {
-                                        onKey: sortGroupBy,
                                         descending: sortGroupDesc,
-                                        ignoreCasing: ignoreCaseOnWhenSorting
+                                        ignoreCasing: ignoreCaseOnWhenSorting,
+                                        onKey: sortGroupBy
                                     });
                                 }
 
@@ -223,45 +223,44 @@ class FlatList extends Component<Props, {}> {
 }
 
 FlatList.propTypes = {
+    displayGrid: bool,
+    displayRow: bool,
+    filterBy: oneOfType([func, string]),
+    gridGap: string,
+    groupOf: number,
+    groupSeparator: oneOfType([node, func, element]),
     list: array.isRequired,
+    minColumnWidth: string,
     renderItem: func.isRequired,
     renderWhenEmpty: func,
-    sortBy: string,
-    sortDesc: bool,
-    sortGroupDesc: bool,
-    sort: bool,
-    dontSortOnGroup: bool,
-    displayRow: bool,
-    displayGrid: bool,
-    gridGap: string,
-    minColumnWidth: string,
     rowGap: string,
     separatorGap: string,
-    sortGroupBy: string,
     showGroupSeparatorAtTheBottom: bool,
-    groupOf: number,
-    filterBy: oneOfType([func, string]),
-    groupSeparator: oneOfType([node, func, element])
+    sort: bool,
+    sortBy: string,
+    sortDesc: bool,
+    sortGroupBy: string,
+    sortGroupDesc: bool
 };
 
 FlatList.defaultProps = {
-    sortBy: '',
-    sortGroupBy: '',
-    filterBy: '',
-    sortDesc: false,
-    displayRow: false,
     displayGrid: false,
+    displayRow: false,
+    filterBy: '',
     gridGap: '20px',
-    minColumnWidth: '200px',
-    separatorGap: '10px',
-    rowGap: '20px',
-    sortGroupDesc: false,
-    showGroupSeparatorAtTheBottom: false,
     groupOf: 0,
-    sort: false,
+    groupSeparator: null,
     ignoreCaseOnWhenSorting: false,
+    minColumnWidth: '200px',
     renderWhenEmpty: null,
-    groupSeparator: null
+    rowGap: '20px',
+    separatorGap: '10px',
+    showGroupSeparatorAtTheBottom: false,
+    sort: false,
+    sortBy: '',
+    sortDesc: false,
+    sortGroupBy: '',
+    sortGroupDesc: false,
 };
 
 export default FlatList;

@@ -9,8 +9,8 @@ export interface GroupOptionsInterface {
 
 const defaultGroupOptions: GroupOptionsInterface = {
     by: '',
-    on: null,
-    every: 0
+    every: 0,
+    on: null
 };
 
 const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {

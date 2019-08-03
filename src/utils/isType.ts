@@ -29,10 +29,10 @@ export const isFunction = (x: any): boolean => {
 };
 
 export default {
+    isArray,
+    isFunction,
+    isNil,
     isNumber,
     isObject,
     isString,
-    isArray,
-    isNil,
-    isFunction
 };

@@ -23,15 +23,15 @@ We will use the following object as an example for this documentation. This will
 
 ```
 people = [
-    {firstName: 'Elson', lastName: 'Correia', age: 28},
-    {firstName: 'John', lastName: 'Doe', age: 18},
-    {firstName: 'Jane', lastName: 'Doe', age: 34},
-    {firstName: 'Maria', lastName: 'Carvalho', age: 22},
-    {firstName: 'Kelly', lastName: 'Correia', age: 23},
-    {firstName: 'Don', lastName: 'Quichote', age: 39},
-    {firstName: 'Marcus', lastName: 'Correia', age: 2},
-    {firstName: 'Bruno', lastName: 'Gonzales', age: 25},
-    {firstName: 'Alonzo', lastName: 'Correia', age: 44}
+    {firstName: 'Elson', lastName: 'Correia', info: {age: 24}},
+    {firstName: 'John', lastName: 'Doe', info: {age: 18}},
+    {firstName: 'Jane', lastName: 'Doe', info: {age: 34}},
+    {firstName: 'Maria', lastName: 'Carvalho', info: {age: 22}},
+    {firstName: 'Kelly', lastName: 'Correia', info:{age: 23}},
+    {firstName: 'Don', lastName: 'Quichote', info: {age: 39}},
+    {firstName: 'Marcus', lastName: 'Correia', info: {age: 0}},
+    {firstName: 'Bruno', lastName: 'Gonzales', info: {age: 25}},
+    {firstName: 'Alonzo', lastName: 'Correia', info: {age: 44}}
   ]
 ```
 
@@ -45,7 +45,7 @@ import FlatList from 'flatlist-react';
 renderPerson = (person, idx) => {
   return (
       <li key={`${person.firstName}-${idx}`}>
-        <b>{person.firstName} {person.lastName}</b> (<span>{person.age}</span>)
+        <b>{person.firstName} {person.lastName}</b> (<span>{person.info.age}</span>)
       </li>
   );
 }
@@ -117,7 +117,56 @@ keyword you could check that and say `"Nothing matched your search"` or if the u
 one saying `"Nothing matched your filtering criteria"`. We will see those examples when we reach filtering session on
 this documentation.
 
+### Dot Notation for string
+The FlatList component takes some props like `filterBy`, `sortBy` and `groupBy` which can be strings and you can use
+dot notation to deep match a key in an object. for example, I can pass `info.age` to group or sort our list of people by
+age. If i had an array of children in info i could say `info.children.0.age` where `0`(zero) is the index of the array.
+
+This is to make it easy to reach deep into your objects without having to change them to work with filtering, sorting or
+grouping. All these props also take functions for power, read more below.
+
 #### Filtering/Searching Items
+To filter the list you can use the `filterBy` prop which narrows down your list to be more specific.
+
+##### filterBy prop
+`filterBy` can be a string or a function. The function must return true or false where false means the item will be 
+not displayed. The function is called with two arguments, the item and its index. If you pass a string, you can use 
+`dot notation`. 
+
+```
+...
+
+return (
+    <ul>
+        <FlatList 
+            list={this.props.people} 
+            renderItem={this.renderPerson}
+            filterBy="info.age"
+            />
+    </ul>
+)
+```
+The above filter will only remove `Marcus Correia` from the view since his age is zero and `filterBy` will check for
+`truthy`, `falsy` values in that key. 
+
+For more power we can use a function to filter people below 20 years old like this.
+
+```
+filterOutPeopleBelowTwenty = (person, index) => {
+    return person.info.age >= 20;
+}
+...
+
+return (
+    <ul>
+        <FlatList 
+            list={this.props.people} 
+            renderItem={this.renderPerson}
+            filterBy="this.filterOutPeopleBelowTwenty"
+            />
+    </ul>
+)
+```
 
 ##### Searching
 

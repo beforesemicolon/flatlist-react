@@ -245,6 +245,11 @@ FlatList.propTypes = {
      */
     gridGap: string,
     /**
+     * a string representing a key on the object or a function takes the item and its index that returns
+     * true or false whether to include the item or not
+     */
+    groupBy: oneOfType([func, string]),
+    /**
      * the size of the groups to be created
      */
     groupOf: number,
@@ -307,6 +312,7 @@ FlatList.defaultProps = {
     displayRow: false,
     filterBy: '',
     gridGap: '20px',
+    groupBy: '',
     groupOf: 0,
     groupSeparator: null,
     ignoreCaseOnWhenSorting: false,

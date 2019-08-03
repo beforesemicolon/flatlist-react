@@ -21,6 +21,9 @@ interface Props {
     sortGroupDesc?: boolean;
     showGroupSeparatorAtTheBottom?: boolean;
     sort?: boolean;
+    displayRow?: boolean;
+    rowGap?: string;
+    separatorGap?: string;
     displayGrid?: boolean;
     gridGap?: string;
     minColumnWidth?: string;
@@ -54,13 +57,17 @@ class FlatList extends Component<Props, {}> {
             if (this.props.displayGrid) {
                 this.styleParentGrid();
             }
+
+            if (this.props.displayRow) {
+                this.styleParentRow();
+            }
         } else {
             console.warn(
                 'FlatList: it was not possible to get containers ref. Styling will not be possible');
         }
     }
 
-    public styleParentGrid = () => {
+    public styleParentGrid() {
         if (this.props.displayGrid) {
             const {gridGap, minColumnWidth} = this.props;
             this.parentComponent.style.display = 'grid';
@@ -88,9 +95,37 @@ class FlatList extends Component<Props, {}> {
         }
     }
 
+    public styleParentRow() {
+        if (this.props.displayRow) {
+            const {rowGap, separatorGap, showGroupSeparatorAtTheBottom} = this.props;
+            this.parentComponent.style.display = 'block';
+            [].forEach.call(this.parentComponent.children, (item: HTMLElement) => {
+                item.style.display = 'block';
+
+                if (item.classList.contains('___list-separator')) {
+                    const separatorGapDef = separatorGap || '10px';
+                    if (showGroupSeparatorAtTheBottom) {
+                        item.style.margin = `${separatorGapDef} 0 0`;
+                    } else {
+                        item.style.margin = `0 0 ${separatorGapDef}`;
+                    }
+                } else {
+                    const nextEl = item.nextElementSibling;
+
+                    if (!showGroupSeparatorAtTheBottom || !nextEl || !nextEl.classList.contains('___list-separator')) {
+                        item.style.margin = `0 0 ${rowGap || '20px'}`;
+                    }
+                }
+            });
+        } else {
+            // none
+        }
+    }
+
     public componentDidUpdate(prevProps: Readonly<Props>) {
         if (this.parentComponent) {
-            const {displayGrid, gridGap, minColumnWidth} = this.props;
+            const {displayGrid, gridGap, minColumnWidth, displayRow, rowGap, separatorGap} = this.props;
+
             if (
                 prevProps.displayGrid !== displayGrid ||
                 prevProps.gridGap !== gridGap ||
@@ -98,9 +133,14 @@ class FlatList extends Component<Props, {}> {
             ) {
                 this.styleParentGrid();
             }
-            // else if () {
-            //     this.styleParentRows();
-            // }
+
+            if (
+                prevProps.displayRow !== displayRow ||
+                prevProps.rowGap !== rowGap ||
+                prevProps.separatorGap !== separatorGap
+            ) {
+                this.styleParentRow();
+            }
         }
     }
 
@@ -191,7 +231,12 @@ FlatList.propTypes = {
     sortGroupDesc: bool,
     sort: bool,
     dontSortOnGroup: bool,
+    displayRow: bool,
     displayGrid: bool,
+    gridGap: string,
+    minColumnWidth: string,
+    rowGap: string,
+    separatorGap: string,
     sortGroupBy: string,
     showGroupSeparatorAtTheBottom: bool,
     groupOf: number,
@@ -204,9 +249,12 @@ FlatList.defaultProps = {
     sortGroupBy: '',
     filterBy: '',
     sortDesc: false,
+    displayRow: false,
     displayGrid: false,
     gridGap: '20px',
     minColumnWidth: '200px',
+    separatorGap: '10px',
+    rowGap: '20px',
     sortGroupDesc: false,
     showGroupSeparatorAtTheBottom: false,
     groupOf: 0,

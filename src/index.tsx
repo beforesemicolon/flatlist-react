@@ -67,6 +67,28 @@ class FlatList extends Component<Props, {}> {
         }
     }
 
+    public componentDidUpdate(prevProps: Readonly<Props>) {
+        if (this.parentComponent) {
+            const {displayGrid, gridGap, minColumnWidth, displayRow, rowGap, separatorGap} = this.props;
+
+            if (
+                prevProps.displayGrid !== displayGrid ||
+                prevProps.gridGap !== gridGap ||
+                prevProps.minColumnWidth !== minColumnWidth
+            ) {
+                this.styleParentGrid();
+            }
+
+            if (
+                prevProps.displayRow !== displayRow ||
+                prevProps.rowGap !== rowGap ||
+                prevProps.separatorGap !== separatorGap
+            ) {
+                this.styleParentRow();
+            }
+        }
+    }
+
     public styleParentGrid() {
         if (this.props.displayGrid) {
             const {gridGap, minColumnWidth} = this.props;
@@ -104,11 +126,8 @@ class FlatList extends Component<Props, {}> {
 
                 if (item.classList.contains('___list-separator')) {
                     const separatorGapDef = separatorGap || '10px';
-                    if (showGroupSeparatorAtTheBottom) {
-                        item.style.margin = `${separatorGapDef} 0 0`;
-                    } else {
-                        item.style.margin = `0 0 ${separatorGapDef}`;
-                    }
+                    item.style.margin = showGroupSeparatorAtTheBottom ?
+                        `${separatorGapDef} 0 0` : `0 0 ${separatorGapDef}`;
                 } else {
                     const nextEl = item.nextElementSibling;
 
@@ -118,44 +137,71 @@ class FlatList extends Component<Props, {}> {
                 }
             });
         } else {
-            // none
+            this.parentComponent.style.removeProperty('display');
+            [].forEach.call(this.parentComponent.children, (item: HTMLElement) => {
+                item.style.removeProperty('display');
+                item.style.removeProperty('margin');
+            });
         }
     }
 
-    public componentDidUpdate(prevProps: Readonly<Props>) {
-        if (this.parentComponent) {
-            const {displayGrid, gridGap, minColumnWidth, displayRow, rowGap, separatorGap} = this.props;
+    public renderGroupedList = (renderList: any[]) => {
+        const {
+            renderItem, groupBy, sort, sortGroupBy, sortGroupDesc,
+            ignoreCaseOnWhenSorting, groupSeparator, groupOf, showGroupSeparatorAtTheBottom
+        } = this.props;
 
-            if (
-                prevProps.displayGrid !== displayGrid ||
-                prevProps.gridGap !== gridGap ||
-                prevProps.minColumnWidth !== minColumnWidth
-            ) {
-                this.styleParentGrid();
-            }
+        return (
+            groupList(renderList, {
+                by: isString(groupBy) ? groupBy as string : '',
+                every: groupOf || 0,
+                on: isFunction(groupBy) ? groupBy as any : null
+            }).reduce(((groupedList, group, idx) => {
+                const separatorKey = `${idx}-${group.length}`;
+                let separator = (<hr key={separatorKey} className='___list-separator'/>);
 
-            if (
-                prevProps.displayRow !== displayRow ||
-                prevProps.rowGap !== rowGap ||
-                prevProps.separatorGap !== separatorGap
-            ) {
-                this.styleParentRow();
-            }
-        }
+                if (groupSeparator) {
+                    separator = isFunction(groupSeparator) ?
+                        groupSeparator(group, idx) : groupSeparator;
+
+                    separator = (
+                        <separator.type
+                            {...separator.props}
+                            key={separatorKey}
+                            className={`${separator.props.className} ___list-separator`}
+                        />
+                        );
+                }
+
+                if (sort || sortGroupBy) {
+                    group = sortList(group, {
+                        descending: sortGroupDesc,
+                        ignoreCasing: ignoreCaseOnWhenSorting,
+                        onKey: sortGroupBy
+                    });
+                }
+
+                if (showGroupSeparatorAtTheBottom) {
+                    return groupedList.concat(...group.map(renderItem), separator);
+                }
+
+                return groupedList.concat(separator, ...group.map(renderItem));
+            }), [])
+        );
     }
 
     public render() {
         const {
-            list, renderItem, filterBy, groupBy, renderWhenEmpty, sortBy, sortDesc, sort, sortGroupBy, sortGroupDesc,
-            ignoreCaseOnWhenSorting, groupSeparator, groupOf, showGroupSeparatorAtTheBottom
+            list, renderItem, filterBy, groupBy, renderWhenEmpty, sortBy,
+            sortDesc, sort, ignoreCaseOnWhenSorting, groupOf
         } = this.props;
 
-        let renderList = list;
+        let renderList = [];
 
         const blank = renderWhenEmpty ? renderWhenEmpty() || this.defaultBlank : this.defaultBlank;
 
         if (filterBy) {
-            renderList = filterList(renderList, filterBy);
+            renderList = filterList(list, filterBy);
         }
 
         if (sort || sortBy) {
@@ -166,56 +212,12 @@ class FlatList extends Component<Props, {}> {
             });
         }
 
-        if (groupBy || groupOf) {
-            return (
-                <Fragment>
-                    <span ref={this.childSpanRef}/>
-                    {
-                        renderList.length > 0 ?
-                            groupList(renderList, {
-                                by: isString(groupBy) ? groupBy as string : '',
-                                every: groupOf || 0,
-                                on: isFunction(groupBy) ? groupBy as any : null
-                            }).reduce(((groupedList, group, idx) => {
-                                const separatorKey = `${idx}-${group.length}`;
-                                let separator = (<hr key={separatorKey} className='___list-separator'/>);
-
-                                if (groupSeparator) {
-                                    separator = isFunction(groupSeparator) ?
-                                        groupSeparator(group, idx) : groupSeparator;
-
-                                    separator = (
-                                        <separator.type {...separator.props} key={separatorKey}
-                                                        className={`${separator.props.className} ___list-separator`}/>);
-                                }
-
-                                if (sort || sortGroupBy) {
-                                    group = sortList(group, {
-                                        descending: sortGroupDesc,
-                                        ignoreCasing: ignoreCaseOnWhenSorting,
-                                        onKey: sortGroupBy
-                                    });
-                                }
-
-                                if (showGroupSeparatorAtTheBottom) {
-                                    return groupedList.concat(...group.map(renderItem), separator);
-                                }
-
-                                return groupedList.concat(separator, ...group.map(renderItem));
-                            }), []) :
-                            blank
-                    }
-                </Fragment>
-            );
-        }
-
         return (
             <Fragment>
                 <span ref={this.childSpanRef}/>
-                {
-                    renderList.length > 0 ?
-                        renderList.map((item, idx) => renderItem(item, idx)) :
-                        blank
+                {/* tslint:disable-next-line:jsx-no-multiline-js */}
+                {renderList.length > 0 ?
+                    (groupBy || groupOf) ? this.renderGroupedList(renderList) : renderList.map(renderItem) : blank
                 }
             </Fragment>
         );

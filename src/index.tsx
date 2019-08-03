@@ -1,12 +1,19 @@
-import React, {Fragment} from 'react';
-// import {array} from 'prop-types';
+import React, {Fragment, FunctionComponent} from 'react';
+import {array, func, oneOfType, string} from 'prop-types';
+import filterList from './filter';
 
 interface Props {
 	list: any[];
 	renderItem: (item: any, idx: number) => any;
+	filterBy?: string | ((item: any, idx: number) => boolean);
 }
 
-const FlatList = ({list, renderItem}: Props) => {
+const FlatList: FunctionComponent<Props> = ({list, renderItem, filterBy}) => {
+
+	if (filterBy) {
+		list = filterList(list, filterBy);
+	}
+
 	return (
 		<Fragment>
 			{
@@ -14,6 +21,16 @@ const FlatList = ({list, renderItem}: Props) => {
 			}
 		</Fragment>
 	);
+};
+
+FlatList.propTypes = {
+	list: array.isRequired,
+	renderItem: func.isRequired,
+	filterBy: oneOfType([func, string])
+};
+
+FlatList.defaultProps = {
+	filterBy: ''
 };
 
 export default FlatList;

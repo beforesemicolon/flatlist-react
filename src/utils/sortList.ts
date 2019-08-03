@@ -1,5 +1,5 @@
-import getObjectDeepKeyValue from './utils/getObjectDeepKeyValue';
-import {isNumber, isObject} from './utils/isType';
+import getObjectDeepKeyValue from './getObjectDeepKeyValue';
+import {isNumber, isObject} from './isType';
 
 export interface SortOptionsInterface {
 	onKey?: string;

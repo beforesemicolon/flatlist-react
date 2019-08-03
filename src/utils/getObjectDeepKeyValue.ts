@@ -1,4 +1,4 @@
-import {isObject, isString, isNil} from './isType';
+import {isObject, isString} from './isType';
 
 interface StringObjectInterface {
 	[t: string]: any;

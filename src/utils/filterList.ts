@@ -1,5 +1,5 @@
-import getObjectDeepKeyValue from './utils/getObjectDeepKeyValue';
-import {isObject, isFunction, isString} from './utils/isType';
+import getObjectDeepKeyValue from './getObjectDeepKeyValue';
+import {isObject, isFunction, isString} from './isType';
 
 const filterList = <T>(list: T[], by: ((item: T, idx: number) => boolean) | string = ''): T[] => {
 	const listCopy = JSON.parse(JSON.stringify(list));

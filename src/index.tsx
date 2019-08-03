@@ -1,8 +1,8 @@
 import React, {Fragment, FunctionComponent} from 'react';
 import {array, func, oneOfType, string, bool, node, element, number} from 'prop-types';
-import filterList from './filter';
-import sortList from './sort';
-import groupList from './group';
+import filterList from './utils/filterList';
+import sortList from './utils/sortList';
+import groupList from './utils/groupList';
 import {isString, isFunction} from './utils/isType';
 
 declare global {

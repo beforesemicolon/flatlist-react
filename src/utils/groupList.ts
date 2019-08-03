@@ -1,5 +1,5 @@
-import {isNumber, isObject, isFunction, isString} from './utils/isType';
-import getObjectDeepKeyValue from './utils/getObjectDeepKeyValue';
+import {isNumber, isObject, isFunction, isString} from './isType';
+import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 
 export interface GroupOptionsInterface {
 	by?: string;

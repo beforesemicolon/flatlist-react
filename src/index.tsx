@@ -52,7 +52,7 @@ class FlatList extends Component<Props, {}> {
         const {current}: any = this.childSpanRef;
         if (current) {
             this.parentComponent = current.parentNode;
-            current.remove();
+            current.remove(); // remove the span from the dom
 
             if (this.props.displayGrid) {
                 this.styleParentGrid();
@@ -196,7 +196,7 @@ class FlatList extends Component<Props, {}> {
             sortDesc, sort, ignoreCaseOnWhenSorting, groupOf
         } = this.props;
 
-        let renderList = [];
+        let renderList = list;
 
         const blank = renderWhenEmpty ? renderWhenEmpty() || this.defaultBlank : this.defaultBlank;
 
@@ -214,6 +214,8 @@ class FlatList extends Component<Props, {}> {
 
         return (
             <Fragment>
+                {/* following span is only used here to get the parent of this items since they are wrapped */}
+                {/* in fragment which is not rendered on the dom  */}
                 <span ref={this.childSpanRef}/>
                 {/* tslint:disable-next-line:jsx-no-multiline-js */}
                 {renderList.length > 0 ?

@@ -1,49 +1,49 @@
 interface StringObjectInterface {
-	[t: string]: string;
+    [t: string]: string;
 }
 
 const typesMap: StringObjectInterface = {
-	boolean: 'BOOLEAN',
-	number: 'NUMBER',
-	string: 'STRING',
-	undefined: 'UNDEFINED',
-	symbol: 'SYMBOL',
-	null: 'NULL',
-	set: 'SET',
-	weak_set: 'WEAK_SET',
-	map: 'MAP',
-	weak_map: 'WEAK_MAP',
-	array: 'ARRAY',
-	object: 'OBJECT',
-	function: 'FUNCTION',
+    boolean: 'BOOLEAN',
+    number: 'NUMBER',
+    string: 'STRING',
+    undefined: 'UNDEFINED',
+    symbol: 'SYMBOL',
+    null: 'NULL',
+    set: 'SET',
+    weak_set: 'WEAK_SET',
+    map: 'MAP',
+    weak_map: 'WEAK_MAP',
+    array: 'ARRAY',
+    object: 'OBJECT',
+    function: 'FUNCTION',
 };
 
 export const types: StringObjectInterface = Object.values(typesMap)
-	.reduce((obj: StringObjectInterface, type: string): StringObjectInterface => {
-		obj[type] = type;
-		return obj;
-	}, {});
+    .reduce((obj: StringObjectInterface, type: string): StringObjectInterface => {
+        obj[type] = type;
+        return obj;
+    }, {});
 
 const getType = (x: any): string => {
-	const type: string = typeof x;
+    const type: string = typeof x;
 
-	switch (type) {
-		case 'number':
-		case 'string':
-		case 'boolean':
-		case 'undefined':
-		case 'symbol':
-		case 'function':
-			return typesMap[type];
-		default:
-			return x === null ? typesMap.null :
-				(x instanceof Set) ? typesMap.set :
-					(x instanceof WeakSet) ? typesMap.weak_set :
-						(x instanceof Map) ? typesMap.map :
-							(x instanceof WeakMap) ? typesMap.weak_map :
-								Array.isArray(x) ? typesMap.array :
-									typesMap.object; // otherwise it is an object
-	}
+    switch (type) {
+        case 'number':
+        case 'string':
+        case 'boolean':
+        case 'undefined':
+        case 'symbol':
+        case 'function':
+            return typesMap[type];
+        default:
+            return x === null ? typesMap.null :
+                (x instanceof Set) ? typesMap.set :
+                    (x instanceof WeakSet) ? typesMap.weak_set :
+                        (x instanceof Map) ? typesMap.map :
+                            (x instanceof WeakMap) ? typesMap.weak_map :
+                                Array.isArray(x) ? typesMap.array :
+                                    typesMap.object; // otherwise it is an object
+    }
 };
 
 export default getType;

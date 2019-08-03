@@ -62,6 +62,8 @@ return (
 `list` should be an array of **strings**, **numbers**, **arrays** or **objects**. 
 Other things like **Set**, **WeakSets**, **Map**, **WeakMaps** and others are not yet supported.
 
+The list can be empty as long as it is an empty array.
+
 ##### renderItem prop
 `renderItem` prop takes a function that should return a component. The function will be called for every item on the
 list with the item as the first argument and index of the item as second argument. Use this function to do everything
@@ -81,7 +83,41 @@ In the example above, <li/> will show up directly under <ul/> in the DOM.
 
 ##### Render When List is Empty
 
-#### Filtering Items (Searching)
+You are required to pass an array to the `list` prop, it does not mean the array needs to contain anything. Because
+when doing so nothing will be displayed, there is another prop called `renderWhenEmpty` that you can use to tell the
+component what to display when no item is displaying. This is ideal for blanks, telling the user their filtering matched
+no item.
+
+##### renderWhenEmpty prop
+`renderWhenEmpty` can be a component or a function that returns a component. The function is 
+not called with any argument.
+
+```
+...
+
+renderBlank = () => {
+    return <p>Nothing to display yet...</p>;
+}
+
+...
+
+return (
+    <ul>
+        <FlatList 
+            list={this.props.people} 
+            renderItem={this.renderPerson}
+            renderWhenEmpty={this.renderBlank}
+            />
+    </ul>
+)
+```
+In the above example `renderWhenEmpty` is taking a function that simply returns a `<p/>` saying `"Nothing to display yet..."`.
+Function here can be useful in cases you have different blank message to show, for example, if user typed a search
+keyword you could check that and say `"Nothing matched your search"` or if the user applied a filter you can show another
+one saying `"Nothing matched your filtering criteria"`. We will see those examples when we reach filtering session on
+this documentation.
+
+#### Filtering/Searching Items
 
 ##### Searching
 

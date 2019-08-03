@@ -1,0 +1,5 @@
+/src
+.idea
+.DS_Store
+tslint.json
+tsconfig.json

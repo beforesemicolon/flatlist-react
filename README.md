@@ -1,5 +1,39 @@
 # FlatList React
 
+A helpful utility component to handle lists in react like a champ. It handles filtering, sorting,
+grouping, searching, styling and more.
+
+## Table of Content
+- [Installing](https://github.com/ECorreia45/flatlist-react/tree/documentation#installing)
+- [Documentation (How to use it)](https://github.com/ECorreia45/flatlist-react/tree/documentation#documentation-how-to-use-it)
+    * [Rendering list](https://github.com/ECorreia45/flatlist-react/tree/documentation#rendering-list)
+        * [list prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#list-prop)
+        * [renderItem prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#renderitem-prop)
+        * [renderWhenEmpty prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#render-when-list-is-empty)
+    * [Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string)
+    * [Filtering/Searching Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#filteringsearching-items)
+        * [filterBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop)
+        * [searching](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching)
+    * [Sorting Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#sorting-items)
+        * [sort prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sort-prop)
+        * [sortBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortby-prop)
+        * [sortDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortdesc-prop)
+        * [sortGroupDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupdesc-prop)
+        * [ignoreCaseOnWhenSorting prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#ignorecaseonwhensorting-prop)
+    * [Grouping Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#grouping-items)
+        * [groupBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupby-prop)
+        * [groupOf prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupof-prop)
+        * [Custom Group Separator](https://github.com/ECorreia45/flatlist-react/tree/documentation#custom-group-separator)
+        * [groupSeparator prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupseparator-prop)
+        * [showGroupSeparatorAtTheBottom prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#showgroupseparatoratthebottom-prop)
+    * [Styling (Grid and Row)](https://github.com/ECorreia45/flatlist-react/tree/documentation#styling-grid-and-row)
+        * [displayGrid prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#displaygrid-prop)
+        * [gridGap prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#gridgap-prop)
+        * [minColumnWidth prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#mincolumnwidth-prop)
+        * [displayRow prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#displaygrid-row)
+        * [rowGap prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#rowgap-prop)
+- [Author](https://github.com/ECorreia45/flatlist-react/tree/documentation#author)
+
 ## Installing
 
 This is a react utility component and that means it will only work on your react project/environment. 
@@ -117,7 +151,7 @@ keyword you could check that and say `"Nothing matched your search"` or if the u
 one saying `"Nothing matched your filtering criteria"`. We will see those examples when we reach filtering session on
 this documentation.
 
-### Dot Notation for string
+#### Dot Notation for string
 The FlatList component takes some props like `filterBy`, `sortBy` and `groupBy` which can be strings and you can use
 dot notation to deep match a key in an object. for example, I can pass `info.age` to group or sort our list of people by
 age. If i had an array of children in info i could say `info.children.0.age` where `0`(zero) is the index of the array.
@@ -367,7 +401,7 @@ and you have to specify the unit, for example: `35px 10px`, `1vw`, `5% 20px`'
 `minColumnWidth` prop takes a string and allows you to control the column minimum width when adapting to resizing. You
 must specify the unit, for example: `300px`, `20%`, `15vw`.
 
-##### displayGrid prop
+##### displayRow prop
 `displayRow` will make the items and items container full width adding `20px` between items. You can override these 
 as you want as well.
 

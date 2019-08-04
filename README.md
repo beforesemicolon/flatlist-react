@@ -210,12 +210,43 @@ By default, everything is sorted ascending.
 `sort` prop simple tells FlatList to sort items and this works great for list that contains **string** or **numbers**.
 It has no effect on list of **arrays** or **objects**.
 
+Below example will sort the numbers from 0(zero) to 7(seven):
+
+```
+...
+
+return (
+    <ul>
+        <FlatList 
+            list={[3, 7, -1, 2, 0]} 
+            renderItem={(number) => <li>{number}</li>}
+            sort
+            />
+    </ul>
+)
+```
+
 ##### sortBy prop
 `sortBy` should be a string representing the key of the **object** or **array** and can use `dot notation`. This is 
 great when the lists that are not made of **string** or **numbers**.
 
 ##### sortDesc prop
 `sortDesc` will affect the whole list and changes sorting from ascending to descending.
+
+```
+...
+
+return (
+    <ul>
+        <FlatList 
+            list={this.props.people} 
+            renderItem={this.renderPerson}
+            sortBy="info.age"
+            sortDesc
+            />
+    </ul>
+)
+```
 
 ##### sortGroupDesc prop
 `sortGroupDesc` is similar to `sortDesc` but will only affect groups. This should be used along with grouping props.

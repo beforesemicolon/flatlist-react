@@ -4,6 +4,7 @@ A helpful utility component to handle lists in react like a champ. It handles fi
 grouping, searching, styling and more.
 
 ## Table of Content
+- [Table of Content](https://github.com/ECorreia45/flatlist-react/tree/documentation#table-of-content)
 - [Installing](https://github.com/ECorreia45/flatlist-react/tree/documentation#installing)
 - [Documentation (How to use it)](https://github.com/ECorreia45/flatlist-react/tree/documentation#documentation-how-to-use-it)
     * [Rendering list](https://github.com/ECorreia45/flatlist-react/tree/documentation#rendering-list)

@@ -256,8 +256,97 @@ return (
 when you don't care about exact match on casing and can be used with searching.
 
 #### Grouping Items
+Grouping is a powerful feature and by default FlatList will add a `<hr/>` in between groups but you can override this
+as well by using `groupSeparator` props. You can control list grouping with props `groupBy` and `groupOf`.
+
+##### groupBy prop
+`groupBy` can either be a string using `dot notation` or a function for more control. The function will be called with
+two arguments, the item and its index on the list and should return a string to identify the group.
+
+
+The example below will group everybody with same last name.
+
+```
+...
+
+return (
+    <ul>
+        <FlatList 
+            list={this.props.people} 
+            renderItem={this.renderPerson}
+            groupBy="lastName"
+            />
+    </ul>
+)
+```
+The example below will create two groups, one for those under 30(thirty) and another for those over 30(thirty)
+```
+...
+
+return (
+    <ul>
+        <FlatList 
+            list={this.props.people} 
+            renderItem={this.renderPerson}
+            groupBy={(item, index) => item.info.age > 30 ? 'over' : 'under' }
+            />
+    </ul>
+)
+```
+
+##### groupOf prop
+`groupOf` prop is a simple one and it takes a number. This is great when you want to make groups of certain count of
+items.
+The example below will create three groups containing three members each.
+```
+...
+
+return (
+    <ul>
+        <FlatList 
+            list={this.props.people} 
+            renderItem={this.renderPerson}
+            groupOf={3}
+            />
+    </ul>
+)
+```
+
+All the group examples so far render separated by a `<hr/>` in the DOM and it should be nice to provide a label so we
+know whats going on and for that we should look into our custom group separator on the next session.
 
 ##### Custom Group Separator
+To create your own group separator you should use `groupSeparator` prop and If you don't want any separator at all you
+can simply pass `null` like this `groupSeparator={null}`.
+
+##### groupSeparator prop
+`groupSeparator` should be a element or a function that returns an element. When you use a function, the function is
+called with the group array and the index of the group. 
+
+##### showGroupSeparatorAtTheBottom prop
+By default, group separators show up at the top of each group on the DOM. To change that use `showGroupSeparatorAtTheBottom`
+flag to make it appear on the bottom of the groups.
+
+The example below will create two groups, one for those under 30(thirty) and another for those over 30(thirty) in
+descending order and it will also render the label to identify each group.
+```
+...
+
+return (
+    <ul>
+        <FlatList 
+            list={this.props.people} 
+            renderItem={this.renderPerson}
+            groupBy={(item, index) => item.info.age > 30 ? 'over' : 'under' }
+            sortDesc
+            sortGroupDesc
+            groupSeparator={(group, index) => {
+                return (<h3>{group[0].info.age > 30 ? 'Over 30 years old' : 'Under 30 years old'}</h3>)
+            }}
+            />
+    </ul>
+)
+```
 
 #### Styling (Grid and Row)
 

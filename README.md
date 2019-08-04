@@ -202,6 +202,27 @@ return (
 ```
 
 #### Sorting Items
+There are two ways to sort the list. You can sort the entire list by using props `sort` and `sortBy` or sort the groups
+by using prop `sortGroupBy`. You also can control the direction of the sort by using props `sortDesc` and `sortGroupDesc`.
+By default, everything is sorted ascending.
+
+##### sort prop
+`sort` prop simple tells FlatList to sort items and this works great for list that contains **string** or **numbers**.
+It has no effect on list of **arrays** or **objects**.
+
+##### sortBy prop
+`sortBy` should be a string representing the key of the **object** or **array** and can use `dot notation`. This is 
+great when the lists that are not made of **string** or **numbers**.
+
+##### sortDesc prop
+`sortDesc` will affect the whole list and changes sorting from ascending to descending.
+
+##### sortGroupDesc prop
+`sortGroupDesc` is similar to `sortDesc` but will only affect groups. This should be used along with grouping props.
+
+##### ignoreCaseOnWhenSorting prop
+`ignoreCaseOnWhenSorting` is another sorting control that simply forces FlatList to ignore casing. This is great for 
+when you don't care about exact match on casing and can be used with searching.
 
 #### Grouping Items
 

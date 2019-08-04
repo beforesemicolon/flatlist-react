@@ -210,7 +210,7 @@ By default, everything is sorted ascending.
 `sort` prop simple tells FlatList to sort items and this works great for list that contains **string** or **numbers**.
 It has no effect on list of **arrays** or **objects**.
 
-Below example will sort the numbers from 0(zero) to 7(seven):
+Below example will sort the numbers from -1(negative one) to 7(seven):
 
 ```
 ...
@@ -219,7 +219,7 @@ return (
     <ul>
         <FlatList 
             list={[3, 7, -1, 2, 0]} 
-            renderItem={(number) => <li>{number}</li>}
+            renderItem={(number, index) => <li><b>{index + 1}</b> - {number}</li>}
             sort
             />
     </ul>

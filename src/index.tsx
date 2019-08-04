@@ -23,7 +23,6 @@ interface Props {
     sort?: boolean;
     displayRow?: boolean;
     rowGap?: string;
-    separatorGap?: string;
     displayGrid?: boolean;
     gridGap?: string;
     minColumnWidth?: string;
@@ -69,7 +68,7 @@ class FlatList extends Component<Props, {}> {
 
     public componentDidUpdate(prevProps: Readonly<Props>) {
         if (this.parentComponent) {
-            const {displayGrid, gridGap, minColumnWidth, displayRow, rowGap, separatorGap} = this.props;
+            const {displayGrid, gridGap, minColumnWidth, displayRow, rowGap} = this.props;
 
             if (
                 prevProps.displayGrid !== displayGrid ||
@@ -81,8 +80,7 @@ class FlatList extends Component<Props, {}> {
 
             if (
                 prevProps.displayRow !== displayRow ||
-                prevProps.rowGap !== rowGap ||
-                prevProps.separatorGap !== separatorGap
+                prevProps.rowGap !== rowGap
             ) {
                 this.styleParentRow();
             }
@@ -119,21 +117,14 @@ class FlatList extends Component<Props, {}> {
 
     public styleParentRow() {
         if (this.props.displayRow) {
-            const {rowGap, separatorGap, showGroupSeparatorAtTheBottom} = this.props;
+            const {rowGap, showGroupSeparatorAtTheBottom} = this.props;
             this.parentComponent.style.display = 'block';
             [].forEach.call(this.parentComponent.children, (item: HTMLElement) => {
                 item.style.display = 'block';
+                const nextEl = item.nextElementSibling;
 
-                if (item.classList.contains('___list-separator')) {
-                    const separatorGapDef = separatorGap || '10px';
-                    item.style.margin = showGroupSeparatorAtTheBottom ?
-                        `${separatorGapDef} 0 0` : `0 0 ${separatorGapDef}`;
-                } else {
-                    const nextEl = item.nextElementSibling;
-
-                    if (!showGroupSeparatorAtTheBottom || !nextEl || !nextEl.classList.contains('___list-separator')) {
-                        item.style.margin = `0 0 ${rowGap || '20px'}`;
-                    }
+                if (!showGroupSeparatorAtTheBottom || !nextEl || !nextEl.classList.contains('___list-separator')) {
+                    item.style.margin = `0 0 ${rowGap || '20px'}`;
                 }
             });
         } else {
@@ -278,10 +269,6 @@ FlatList.propTypes = {
      */
     rowGap: string,
     /**
-     * the spacing in between separator and items when display row is activated
-     */
-    separatorGap: string,
-    /**
      * a flag to indicate whether the separator should be on the bottom or not
      */
     showGroupSeparatorAtTheBottom: bool,
@@ -319,7 +306,6 @@ FlatList.defaultProps = {
     minColumnWidth: '200px',
     renderWhenEmpty: null,
     rowGap: '20px',
-    separatorGap: '10px',
     showGroupSeparatorAtTheBottom: false,
     sort: false,
     sortBy: '',

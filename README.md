@@ -349,6 +349,37 @@ return (
 ```
 
 #### Styling (Grid and Row)
+The component also lets you style how the list is display and you have 2(two) options, display everything in a 
+grid layout or rows like a table. By default no styling is applied and once you choose to go with these, some of your
+style may get overwritten.
+
+##### displayGrid prop
+`displayGrid` will turn your items container into a grid container and your items in grid items. By default every item
+will be spaced `20px` from each other with column width of `200px`. You can override these as you want as well. The 
+container will become responsive and adapt with browser resizing adjusting every item on the list.
+
+##### gridGap prop
+`gridGap` prop takes a string and allows you to determine how far apart the items stay from each other. This is the same as 
+[CSS grid-gap](https://developer.mozilla.org/en-US/docs/Web/CSS/gap)
+and you have to specify the unit, for example: `35px 10px`, `1vw`, `5% 20px`'
+
+##### minColumnWidth prop
+`minColumnWidth` prop takes a string and allows you to control the column minimum width when adapting to resizing. You
+must specify the unit, for example: `300px`, `20%`, `15vw`.
+
+##### displayGrid prop
+`displayRow` will make the items and items container full width adding `20px` between items. You can override these 
+as you want as well.
+
+##### rowGap prop
+`rowGap` prop takes a string and allows you to control the spacing between items. The spacing is added to the bottom of
+every item. You must specify the unit, for example: `30px`, `1vh`.
+
+### Note
+
+```
+Styling will only affect position and size of the items, you can choose to style your items however you like.
+```
 
 ## Author
 

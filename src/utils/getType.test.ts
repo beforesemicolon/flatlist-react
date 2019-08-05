@@ -2,8 +2,8 @@
 import getType, {types} from './getType';
 
 describe('Util: getType()', () => {
-    // changing this testingData may change the test results
     const data: { [t: string]: any[] } = {};
+    let totalDataToTest = 0;
 
     beforeAll(() => {
         data.arrays = [[], new Array(), [1, 2, 3], Array.from('test'), {a: []}.a, Array(3)];
@@ -24,9 +24,12 @@ describe('Util: getType()', () => {
             Object.create(null).prototype];
         data.weakMaps = [new WeakMap()];
         data.weakSets = [new WeakSet()];
+
+        totalDataToTest = Object.keys(data).reduce((acc, dataKey) => acc + data[dataKey].length, 0);
     });
 
     it('Should be of type ARRAY only those inside data.arrays', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'arrays') {
@@ -39,6 +42,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type BOOLEAN only those inside data.booleans', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'booleans') {
@@ -51,6 +55,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type FUNCTION only those inside data.functions', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'functions') {
@@ -63,6 +68,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type MAP only those inside data.maps', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'maps') {
@@ -75,6 +81,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type NULL only those inside data.nulls', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'nulls') {
@@ -87,6 +94,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type NUMBER only those inside data.numbers', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'numbers') {
@@ -99,6 +107,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type OBJECT only those inside data.objects', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'objects') {
@@ -111,6 +120,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type SET only those inside data.sets', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'sets') {
@@ -123,6 +133,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type STRING only those inside data.strings', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'strings') {
@@ -135,6 +146,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type SYMBOL only those inside data.symbols', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'symbols') {
@@ -147,6 +159,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type UNDEFINED only those inside data.undefineds', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'undefineds') {
@@ -159,6 +172,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type WEAK_MAP only those inside data.weakMaps', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'weakMaps') {
@@ -171,6 +185,7 @@ describe('Util: getType()', () => {
     });
 
     it('Should be of type WEAK_SET only those inside data.weakSets', () => {
+        expect.assertions(totalDataToTest);
         Object.keys(data).forEach((dataTypeGroup: string) => {
             data[dataTypeGroup].forEach((x: any) => {
                 if (dataTypeGroup === 'weakSets') {

@@ -29,7 +29,7 @@ interface Props {
     groupSeparator?: null | any;
     dontSortOnGroup?: boolean;
     ignoreCaseOnWhenSorting?: boolean;
-    renderItem: (item: any, idx: number) => any;
+    renderItem: (item: any, idx: number | string) => any;
     renderWhenEmpty?: null | (() => any);
     filterBy?: string | ((item: any, idx: number) => boolean);
     groupBy?: string | ((item: any, idx: number) => boolean);
@@ -147,7 +147,7 @@ class FlatList extends Component<Props, {}> {
                 by: isString(groupBy) ? groupBy as string : '',
                 every: groupOf || 0,
                 on: isFunction(groupBy) ? groupBy as any : null
-            }).reduce(((groupedList, group, idx) => {
+            }).reduce(((groupedList, group, idx: number) => {
                 const separatorKey = `${idx}-${group.length}`;
                 let separator = (<hr key={separatorKey} className='___list-separator'/>);
 
@@ -172,11 +172,13 @@ class FlatList extends Component<Props, {}> {
                     });
                 }
 
+                const groupedItems = group.map((item: any, i: number) => renderItem(item, `${idx}-${i}`));
+
                 if (showGroupSeparatorAtTheBottom) {
-                    return groupedList.concat(...group.map(renderItem), separator);
+                    return groupedList.concat(...groupedItems, separator);
                 }
 
-                return groupedList.concat(separator, ...group.map(renderItem));
+                return groupedList.concat(separator, ...groupedItems);
             }), [])
         );
     }

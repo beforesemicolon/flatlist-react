@@ -33,7 +33,7 @@ grouping, searching, styling and more.
         * [minColumnWidth prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#mincolumnwidth-prop)
         * [displayRow prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#displaygrid-row)
         * [rowGap prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#rowgap-prop)
-- [Author](https://github.com/ECorreia45/flatlist-react/tree/documentation#author)
+- [Author](https://github.com/ECorreia45/flatlist-react/tree/main#author)
 
 ## Installing
 
@@ -56,7 +56,7 @@ The component has two required props, `list` and `renderItem`.
 
 We will use the following object as an example for this documentation. This will be the list we will pass to it.
 
-```
+```js
 people = [
     {firstName: 'Elson', lastName: 'Correia', info: {age: 24}},
     {firstName: 'John', lastName: 'Doe', info: {age: 18}},
@@ -72,7 +72,7 @@ people = [
 
 Now inside your component file, we create a function `renderPerson` that will be passed to `renderItem`:
 
-```
+```js
 import FlatList from 'flatlist-react';
 
 ...
@@ -127,7 +127,7 @@ no item.
 `renderWhenEmpty` can be a component or a function that returns a component. The function is 
 not called with any argument.
 
-```
+```js
 ...
 
 renderBlank = () => {
@@ -168,7 +168,7 @@ To filter the list you can use the `filterBy` prop which narrows down your list 
 not displayed. The function is called with two arguments, the item and its index. If you pass a string, you can use 
 `dot notation`. 
 
-```
+```js
 ...
 
 return (
@@ -186,7 +186,7 @@ The above filter will only remove `Marcus Correia` from the view since his age i
 
 For more power we can use a function to filter people below 20 years old like this.
 
-```
+```js
 filterOutPeopleBelowTwenty = (person, index) => {
     return person.info.age >= 20;
 }
@@ -207,7 +207,7 @@ return (
 There is no prop for searching yet but we can take advantage of the `filterBy` to narrow our list when users type in a 
 search field like so:
 
-```
+```js
 state = {
     searchTerm: ''
 }
@@ -247,7 +247,7 @@ It has no effect on list of **arrays** or **objects**.
 
 Below example will sort the numbers from -1(negative one) to 7(seven):
 
-```
+```js
 ...
 
 return (
@@ -268,7 +268,7 @@ great when the lists that are not made of **string** or **numbers**.
 ##### sortDesc prop
 `sortDesc` will affect the whole list and changes sorting from ascending to descending.
 
-```
+```js
 ...
 
 return (
@@ -301,7 +301,7 @@ two arguments, the item and its index on the list and should return a string to 
 
 The example below will group everybody with same last name.
 
-```
+```js
 ...
 
 return (
@@ -315,7 +315,7 @@ return (
 )
 ```
 The example below will create two groups, one for those under 30(thirty) and another for those over 30(thirty)
-```
+```js
 ...
 
 return (
@@ -333,7 +333,7 @@ return (
 `groupOf` prop is a simple one and it takes a number. This is great when you want to make groups of certain count of
 items.
 The example below will create three groups containing three members each.
-```
+```js
 ...
 
 return (
@@ -364,7 +364,7 @@ flag to make it appear on the bottom of the groups.
 
 The example below will create two groups, one for those under 30(thirty) and another for those over 30(thirty) in
 descending order and it will also render the label to identify each group.
-```
+```js
 ...
 
 return (

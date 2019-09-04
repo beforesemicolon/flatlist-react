@@ -1,6 +1,6 @@
 {
   "name": "flatlist-react",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A helpful utility component to handle lists in react like a champ",
   "main": "./lib/index.js",
   "scripts": {

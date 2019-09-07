@@ -142,44 +142,46 @@ class FlatList extends Component<Props, {}> {
             ignoreCaseOnWhenSorting, groupSeparator, groupOf, showGroupSeparatorAtTheBottom
         } = this.props;
 
-        return (
-            groupList(renderList, {
-                by: isString(groupBy) ? groupBy as string : '',
-                every: groupOf || 0,
-                on: isFunction(groupBy) ? groupBy as any : null
-            }).reduce(((groupedList, group, idx: number) => {
-                const separatorKey = `${idx}-${group.length}`;
-                let separator = (<hr key={separatorKey} className='___list-separator'/>);
+        const {list: groupsList, groupLabels} = groupList(renderList, {
+            by: isString(groupBy) ? groupBy as string : '',
+            every: groupOf || 0,
+            on: isFunction(groupBy) ? groupBy as any : null
+        });
 
-                if (groupSeparator) {
-                    separator = isFunction(groupSeparator) ?
-                        groupSeparator(group, idx) : groupSeparator;
+        return (groupsList
+                .reduce(((groupedList, group, idx: number) => {
+                    const separatorKey = `${idx}-${group.length}`;
+                    let separator = (<hr key={separatorKey} className='___list-separator'/>);
 
-                    separator = (
-                        <separator.type
-                            {...separator.props}
-                            key={separatorKey}
-                            className={`${separator.props.className} ___list-separator`}
-                        />
-                    );
-                }
+                    if (groupSeparator) {
+                        separator = isFunction(groupSeparator) ?
+                            groupSeparator(group, idx, groupLabels[idx]) : groupSeparator;
 
-                if (sort || sortGroupBy) {
-                    group = sortList(group, {
-                        descending: sortGroupDesc,
-                        ignoreCasing: ignoreCaseOnWhenSorting,
-                        onKey: sortGroupBy
-                    });
-                }
+                        separator = (
+                            <separator.type
+                                {...separator.props}
+                                key={separatorKey}
+                                className={`${separator.props.className} ___list-separator`}
+                            />
+                        );
+                    }
 
-                const groupedItems = group.map((item: any, i: number) => renderItem(item, `${idx}-${i}`));
+                    if (sort || sortGroupBy) {
+                        group = sortList(group, {
+                            descending: sortGroupDesc,
+                            ignoreCasing: ignoreCaseOnWhenSorting,
+                            onKey: sortGroupBy
+                        });
+                    }
 
-                if (showGroupSeparatorAtTheBottom) {
-                    return groupedList.concat(...groupedItems, separator);
-                }
+                    const groupedItems = group.map((item: any, i: number) => renderItem(item, `${idx}-${i}`));
 
-                return groupedList.concat(separator, ...groupedItems);
-            }), [])
+                    if (showGroupSeparatorAtTheBottom) {
+                        return groupedList.concat(...groupedItems, separator);
+                    }
+
+                    return groupedList.concat(separator, ...groupedItems);
+                }), [])
         );
     }
 

@@ -19,6 +19,7 @@ grouping, searching, styling and more.
         * [sort prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sort-prop)
         * [sortBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortby-prop)
         * [sortDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortdesc-prop)
+        * [sortGroupBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupdesc-prop)
         * [sortGroupDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupdesc-prop)
         * [ignoreCaseOnWhenSorting prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#ignorecaseonwhensorting-prop)
     * [Grouping Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#grouping-items)
@@ -33,13 +34,13 @@ grouping, searching, styling and more.
         * [minColumnWidth prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#mincolumnwidth-prop)
         * [displayRow prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#displaygrid-row)
         * [rowGap prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#rowgap-prop)
-- [Author](https://github.com/ECorreia45/flatlist-react/tree/main#author)
+- [Author](https://github.com/ECorreia45/flatlist-react/tree/documentation#author)
 
 ## Installing
 
 This is a react utility component and that means it will only work on your react project/environment. 
 
-In your React project run following command:
+In your React project run the following command:
 
 ```npm install flatlist-react```
 
@@ -154,7 +155,8 @@ this documentation.
 
 #### Dot Notation for string
 The FlatList component takes some props like `filterBy`, `sortBy` and `groupBy` which can be strings and you can use
-dot notation to deep match a key in an object. for example, I can pass `info.age` to group or sort our list of people by
+[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string)
+to deep match a key in an object. for example, I can pass `info.age` to group or sort our list of people by
 age. If i had an array of children in info i could say `info.children.0.age` where `0`(zero) is the index of the array.
 
 This is to make it easy to reach deep into your objects without having to change them to work with filtering, sorting or
@@ -166,7 +168,7 @@ To filter the list you can use the `filterBy` prop which narrows down your list 
 ##### filterBy prop
 `filterBy` can be a string or a function. The function must return true or false where false means the item will be 
 not displayed. The function is called with two arguments, the item and its index. If you pass a string, you can use 
-`dot notation`. 
+[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string). 
 
 ```js
 ...
@@ -262,8 +264,9 @@ return (
 ```
 
 ##### sortBy prop
-`sortBy` should be a string representing the key of the **object** or **array** and can use `dot notation`. This is 
-great when the lists that are not made of **string** or **numbers**.
+`sortBy` should be a string representing the key of the **object** or **array** and can use 
+[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string). 
+This is great when the lists that are not made of **string** or **numbers**.
 
 ##### sortDesc prop
 `sortDesc` will affect the whole list and changes sorting from ascending to descending.
@@ -283,6 +286,10 @@ return (
 )
 ```
 
+##### sortGroupBy prop
+`sortGroupBy` is the equivalent of `sortBy` but for groups. It helps you use a different sorting criteria withing the
+group.
+
 ##### sortGroupDesc prop
 `sortGroupDesc` is similar to `sortDesc` but will only affect groups. This should be used along with grouping props.
 
@@ -295,7 +302,9 @@ Grouping is a powerful feature and by default FlatList will add a `<hr/>` in bet
 as well by using `groupSeparator` props. You can control list grouping with props `groupBy` and `groupOf`.
 
 ##### groupBy prop
-`groupBy` can either be a string using `dot notation` or a function for more control. The function will be called with
+`groupBy` can either be a string using 
+[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string) 
+or a function for more control. The function will be called with
 two arguments, the item and its index on the list and should return a string to identify the group.
 
 
@@ -363,7 +372,8 @@ By default, group separators show up at the top of each group on the DOM. To cha
 flag to make it appear on the bottom of the groups.
 
 The example below will create two groups, one for those under 30(thirty) and another for those over 30(thirty) in
-descending order and it will also render the label to identify each group.
+descending order and it will also render the label to identify each group by using the third paramater passed to 
+`groupSeparator` callback.
 ```js
 ...
 
@@ -372,12 +382,10 @@ return (
         <FlatList 
             list={this.props.people} 
             renderItem={this.renderPerson}
-            groupBy={(item, index) => item.info.age > 30 ? 'over' : 'under' }
+            groupBy={(person, index) => person.info.age > 30 ? 'Over' : 'Under' }
             sortDesc
             sortGroupDesc
-            groupSeparator={(group, index) => {
-                return (<h3>{group[0].info.age > 30 ? 'Over 30 years old' : 'Under 30 years old'}</h3>)
-            }}
+            groupSeparator={(group, index, groupLabel) => (<h3>{groupLabel}</h3>)}
             />
     </ul>
 )

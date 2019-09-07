@@ -13,23 +13,25 @@ const defaultGroupOptions: GroupOptionsInterface = {
     on: null
 };
 
-const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {
+interface GroupedItemsObjectInterface<T> {
+    [s: string]: T[];
+}
 
-    if (!isObject(options) || Object.keys(options).length === 0) {
+const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {
+        const groupLabels: Set<string> = new Set([]);
+
+        if (!isObject(options) || Object.keys(options).length === 0) {
         options = defaultGroupOptions;
     }
 
-    options = {...defaultGroupOptions, ...options};
+        options = {...defaultGroupOptions, ...options};
 
-    interface GroupedItemsObjectInterface {
-        [s: string]: T[];
-    }
-
-    if (options.by && isString(options.by)) {
-        const groupedList: GroupedItemsObjectInterface = list
-            .reduce((prevList: GroupedItemsObjectInterface, item: T): GroupedItemsObjectInterface => {
+        if (options.by && isString(options.by)) {
+        const groupedList: GroupedItemsObjectInterface<T> = list
+            .reduce((prevList: GroupedItemsObjectInterface<T>, item: T): GroupedItemsObjectInterface<T> => {
                 // @ts-ignore
                 const groupLabel: string = getObjectDeepKeyValue(options.by, item);
+                groupLabels.add(groupLabel);
 
                 if (!prevList[groupLabel]) {
                     prevList[groupLabel] = [];
@@ -40,14 +42,18 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
                 return prevList;
             }, {});
 
-        return Object.values(groupedList);
+        return {
+            groupLabels: Array.from(groupLabels),
+            list: Object.values(groupedList)
+        };
     }
 
-    if (options.on && isFunction(options.on)) {
-        const groupedList: GroupedItemsObjectInterface = list
-            .reduce((prevList: GroupedItemsObjectInterface, item: T, idx: number): GroupedItemsObjectInterface => {
+        if (options.on && isFunction(options.on)) {
+        const groupedList: GroupedItemsObjectInterface<T> = list
+            .reduce((prevList: GroupedItemsObjectInterface<T>, item: T, idx: number) => {
                 // @ts-ignore
                 const groupLabel: string = options.on(item, idx);
+                groupLabels.add(groupLabel);
 
                 if (!prevList[groupLabel]) {
                     prevList[groupLabel] = [];
@@ -58,29 +64,38 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
                 return prevList;
             }, {});
 
-        return Object.values(groupedList);
+        return {
+            groupLabels: Array.from(groupLabels),
+            list: Object.values(groupedList)
+        };
     }
 
     // @ts-ignore
-    if (isNumber(options.every) && (options.every > 0)) {
-        return list.reduce((groupedList: any[], item: T, idx: number) => {
-            groupedList[groupedList.length - 1].push(item);
+        if (isNumber(options.every) && (options.every > 0)) {
+        return {
+            groupLabels: Array.from(groupLabels),
+            list: list.reduce((groupedList: any[], item: T, idx: number) => {
+                groupedList[groupedList.length - 1].push(item);
 
-            const itemNumber: number = idx + 1;
-            // @ts-ignore
-            if (isNumber(options.every) && (options.every > 0) &&
-                itemNumber < list.length && // make sure separator is not added at the end
+                const itemNumber: number = idx + 1;
                 // @ts-ignore
-                (itemNumber % options.every) === 0
-            ) {
-                groupedList.push([]);
-            }
+                if (isNumber(options.every) && (options.every > 0) &&
+                    itemNumber < list.length && // make sure separator is not added at the end
+                    // @ts-ignore
+                    (itemNumber % options.every) === 0
+                ) {
+                    groupedList.push([]);
+                }
 
-            return groupedList;
-        }, [[]]);
+                return groupedList;
+            }, [[]])
+        };
     }
 
-    return list;
+        return {
+        groupLabels: Array.from(groupLabels),
+        list
+    };
 };
 
 export default groupList;

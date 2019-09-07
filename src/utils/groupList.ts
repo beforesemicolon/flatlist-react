@@ -13,7 +13,8 @@ const defaultGroupOptions: GroupOptionsInterface = {
     on: null
 };
 
-const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {
+const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions):
+        {list: T[], groupLabels: string[]} => {
 
     if (!isObject(options) || Object.keys(options).length === 0) {
         options = defaultGroupOptions;
@@ -30,6 +31,7 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
             .reduce((prevList: GroupedItemsObjectInterface, item: T): GroupedItemsObjectInterface => {
                 // @ts-ignore
                 const groupLabel: string = getObjectDeepKeyValue(options.by, item);
+                groupLabels.add(groupLabel);
 
                 if (!prevList[groupLabel]) {
                     prevList[groupLabel] = [];
@@ -40,7 +42,10 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
                 return prevList;
             }, {});
 
-        return Object.values(groupedList);
+        return {
+            groupLabels: Array.from(groupLabels),
+            list: Object.values(groupedList)
+        };
     }
 
     if (options.on && isFunction(options.on)) {
@@ -48,6 +53,7 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
             .reduce((prevList: GroupedItemsObjectInterface, item: T, idx: number): GroupedItemsObjectInterface => {
                 // @ts-ignore
                 const groupLabel: string = options.on(item, idx);
+                groupLabels.add(groupLabel);
 
                 if (!prevList[groupLabel]) {
                     prevList[groupLabel] = [];
@@ -58,29 +64,38 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
                 return prevList;
             }, {});
 
-        return Object.values(groupedList);
+        return {
+            groupLabels: Array.from(groupLabels),
+            list: Object.values(groupedList)
+        };
     }
 
     // @ts-ignore
     if (isNumber(options.every) && (options.every > 0)) {
-        return list.reduce((groupedList: any[], item: T, idx: number) => {
-            groupedList[groupedList.length - 1].push(item);
+        return {
+            groupLabels: Array.from(groupLabels),
+            list: list.reduce((groupedList: any[], item: T, idx: number) => {
+                groupedList[groupedList.length - 1].push(item);
 
-            const itemNumber: number = idx + 1;
-            // @ts-ignore
-            if (isNumber(options.every) && (options.every > 0) &&
-                itemNumber < list.length && // make sure separator is not added at the end
+                const itemNumber: number = idx + 1;
                 // @ts-ignore
-                (itemNumber % options.every) === 0
-            ) {
-                groupedList.push([]);
-            }
+                if (isNumber(options.every) && (options.every > 0) &&
+                    itemNumber < list.length && // make sure separator is not added at the end
+                    // @ts-ignore
+                    (itemNumber % options.every) === 0
+                ) {
+                    groupedList.push([]);
+                }
 
-            return groupedList;
-        }, [[]]);
+                return groupedList;
+            }, [[]])
+        };
     }
 
-    return list;
+    return {
+        groupLabels: Array.from(groupLabels),
+        list
+    };
 };
 
 export default groupList;

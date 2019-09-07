@@ -13,23 +13,22 @@ const defaultGroupOptions: GroupOptionsInterface = {
     on: null
 };
 
-const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions):
-        {list: T[], groupLabels: string[]} => {
-    const groupLabels: Set<string> = new Set([]);
+interface GroupedItemsObjectInterface<T> {
+    [s: string]: T[];
+}
 
-    if (!isObject(options) || Object.keys(options).length === 0) {
+const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {
+        const groupLabels: Set<string> = new Set([]);
+
+        if (!isObject(options) || Object.keys(options).length === 0) {
         options = defaultGroupOptions;
     }
 
-    options = {...defaultGroupOptions, ...options};
+        options = {...defaultGroupOptions, ...options};
 
-    interface GroupedItemsObjectInterface {
-        [s: string]: T[];
-    }
-
-    if (options.by && isString(options.by)) {
-        const groupedList: GroupedItemsObjectInterface = list
-            .reduce((prevList: GroupedItemsObjectInterface, item: T): GroupedItemsObjectInterface => {
+        if (options.by && isString(options.by)) {
+        const groupedList: GroupedItemsObjectInterface<T> = list
+            .reduce((prevList: GroupedItemsObjectInterface<T>, item: T): GroupedItemsObjectInterface<T> => {
                 // @ts-ignore
                 const groupLabel: string = getObjectDeepKeyValue(options.by, item);
                 groupLabels.add(groupLabel);
@@ -49,9 +48,9 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
         };
     }
 
-    if (options.on && isFunction(options.on)) {
-        const groupedList: GroupedItemsObjectInterface = list
-            .reduce((prevList: GroupedItemsObjectInterface, item: T, idx: number): GroupedItemsObjectInterface => {
+        if (options.on && isFunction(options.on)) {
+        const groupedList: GroupedItemsObjectInterface<T> = list
+            .reduce((prevList: GroupedItemsObjectInterface<T>, item: T, idx: number) => {
                 // @ts-ignore
                 const groupLabel: string = options.on(item, idx);
                 groupLabels.add(groupLabel);
@@ -72,7 +71,7 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
     }
 
     // @ts-ignore
-    if (isNumber(options.every) && (options.every > 0)) {
+        if (isNumber(options.every) && (options.every > 0)) {
         return {
             groupLabels: Array.from(groupLabels),
             list: list.reduce((groupedList: any[], item: T, idx: number) => {
@@ -93,7 +92,7 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
         };
     }
 
-    return {
+        return {
         groupLabels: Array.from(groupLabels),
         list
     };

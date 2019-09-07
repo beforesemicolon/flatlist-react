@@ -13,21 +13,20 @@ const defaultGroupOptions: GroupOptionsInterface = {
     on: null
 };
 
-const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {
+interface GroupedItemsObjectInterface<T> {
+    [s: string]: T[];
+}
 
+const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {
     if (!isObject(options) || Object.keys(options).length === 0) {
         options = defaultGroupOptions;
     }
 
     options = {...defaultGroupOptions, ...options};
 
-    interface GroupedItemsObjectInterface {
-        [s: string]: T[];
-    }
-
     if (options.by && isString(options.by)) {
-        const groupedList: GroupedItemsObjectInterface = list
-            .reduce((prevList: GroupedItemsObjectInterface, item: T): GroupedItemsObjectInterface => {
+        const groupedList: GroupedItemsObjectInterface<T> = list
+            .reduce((prevList: GroupedItemsObjectInterface<T>, item: T): GroupedItemsObjectInterface<T> => {
                 // @ts-ignore
                 const groupLabel: string = getObjectDeepKeyValue(options.by, item);
 
@@ -44,8 +43,8 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
     }
 
     if (options.on && isFunction(options.on)) {
-        const groupedList: GroupedItemsObjectInterface = list
-            .reduce((prevList: GroupedItemsObjectInterface, item: T, idx: number): GroupedItemsObjectInterface => {
+        const groupedList: GroupedItemsObjectInterface<T> = list
+            .reduce((prevList: GroupedItemsObjectInterface<T>, item: T, idx: number) => {
                 // @ts-ignore
                 const groupLabel: string = options.on(item, idx);
 

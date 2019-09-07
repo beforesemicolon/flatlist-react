@@ -62,7 +62,7 @@ class FlatList extends PureComponent<Props, {}> {
             }
         } else {
             console.warn(
-                'FlatList: it was not possible to get containers ref. Styling will not be possible');
+                'FlatList: it was not possible to get container\'s ref. Styling will not be possible');
         }
     }
 

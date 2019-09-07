@@ -1,4 +1,4 @@
-import React, {Fragment, Component, createRef} from 'react';
+import React, {Fragment, PureComponent, createRef} from 'react';
 import {array, func, oneOfType, string, bool, node, element, number} from 'prop-types';
 import filterList from './utils/filterList';
 import sortList from './utils/sortList';
@@ -36,7 +36,7 @@ interface Props {
     groupOf?: number;
 }
 
-class FlatList extends Component<Props, {}> {
+class FlatList extends PureComponent<Props, {}> {
     public static propTypes = {};
 
     public static defaultProps = {};

@@ -62,7 +62,7 @@ class FlatList extends Component<Props, {}> {
             }
         } else {
             console.warn(
-                'FlatList: it was not possible to get containers ref. Styling will not be possible');
+                'FlatList: it was not possible to get container\'s ref. Styling will not be possible');
         }
     }
 
@@ -159,7 +159,7 @@ class FlatList extends Component<Props, {}> {
                         <separator.type
                             {...separator.props}
                             key={separatorKey}
-                            className={`${separator.props.className} ___list-separator`}
+                            className={`___list-separator ${separator.props.className || ''}`}
                         />
                     );
                 }

@@ -3,14 +3,14 @@ import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 
 export interface GroupOptionsInterface {
     by?: string;
-    on?: ((item: any, idx: number) => string) | null;
+    on?: ((item: any, idx: number) => string) | undefined;
     every?: number;
 }
 
 const defaultGroupOptions: GroupOptionsInterface = {
     by: '',
     every: 0,
-    on: null
+    on: undefined
 };
 
 const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {
@@ -28,8 +28,7 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
     if (options.by && isString(options.by)) {
         const groupedList: GroupedItemsObjectInterface = list
             .reduce((prevList: GroupedItemsObjectInterface, item: T): GroupedItemsObjectInterface => {
-                // @ts-ignore
-                const groupLabel: string = getObjectDeepKeyValue(options.by, item);
+                const groupLabel = getObjectDeepKeyValue(options.by, item);
 
                 if (!prevList[groupLabel]) {
                     prevList[groupLabel] = [];
@@ -43,11 +42,11 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
         return Object.values(groupedList);
     }
 
-    if (options.on && isFunction(options.on)) {
+    if (options.on as (item: any, idx: number) => string && isFunction(options.on)) {
         const groupedList: GroupedItemsObjectInterface = list
             .reduce((prevList: GroupedItemsObjectInterface, item: T, idx: number): GroupedItemsObjectInterface => {
-                // @ts-ignore
-                const groupLabel: string = options.on(item, idx);
+                const on: GroupOptionsInterface['on'] = options.on as (item: any, idx: number) => string;
+                const groupLabel: string = on(item, idx);
 
                 if (!prevList[groupLabel]) {
                     prevList[groupLabel] = [];
@@ -61,17 +60,15 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
         return Object.values(groupedList);
     }
 
-    // @ts-ignore
-    if (isNumber(options.every) && (options.every > 0)) {
+    if (options.every && isNumber(options.every) && (options.every > 0)) {
         return list.reduce((groupedList: any[], item: T, idx: number) => {
             groupedList[groupedList.length - 1].push(item);
 
             const itemNumber: number = idx + 1;
-            // @ts-ignore
-            if (isNumber(options.every) && (options.every > 0) &&
+
+            if (
                 itemNumber < list.length && // make sure separator is not added at the end
-                // @ts-ignore
-                (itemNumber % options.every) === 0
+                (itemNumber % (options.every || 0)) === 0
             ) {
                 groupedList.push([]);
             }

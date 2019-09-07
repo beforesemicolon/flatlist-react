@@ -15,6 +15,7 @@ const defaultGroupOptions: GroupOptionsInterface = {
 
 const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions):
         {list: T[], groupLabels: string[]} => {
+    const groupLabels: Set<string> = new Set([]);
 
     if (!isObject(options) || Object.keys(options).length === 0) {
         options = defaultGroupOptions;

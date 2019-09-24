@@ -1,11 +1,11 @@
-import {isObject, isString} from './isType';
+import {isObject, isString, isArray} from './isType';
 
 export interface StringObjectInterface {
     [t: string]: any;
 }
 
 const getObjectDeepKeyValue = (dotSeparatedKeys: string = '', object: StringObjectInterface): any | never => {
-    if (isObject(object) && isString(dotSeparatedKeys)) {
+    if (isObject(object) || isArray(object) && isString(dotSeparatedKeys)) {
         const keys = dotSeparatedKeys.split('.');
         let value = object;
 

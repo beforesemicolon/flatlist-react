@@ -3,7 +3,7 @@ import {array, func, oneOfType, string, bool, node, element, number} from 'prop-
 import filterList from './utils/filterList';
 import sortList from './utils/sortList';
 import groupList from './utils/groupList';
-import {isString, isFunction} from './utils/isType';
+import {isString, isFunction, isArray} from './utils/isType';
 
 declare global {
     namespace JSX {
@@ -49,20 +49,21 @@ class FlatList extends PureComponent<Props, {}> {
 
     public componentDidMount(): void {
         const {current}: any = this.childSpanRef;
+
         if (current) {
             this.parentComponent = current.parentNode;
-            current.remove(); // remove the span from the dom
 
-            if (this.props.displayGrid) {
-                this.styleParentGrid();
-            }
+            if (this.parentComponent) {
+                const {displayGrid, displayRow} = this.props;
 
-            if (this.props.displayRow) {
-                this.styleParentRow();
+                if (displayGrid) {
+                    this.styleParentGrid();
+                } else if (displayRow) {
+                    this.styleParentRow();
+                }
             }
         } else {
-            console.warn(
-                'FlatList: it was not possible to get container\'s ref. Styling will not be possible');
+            console.warn('FlatList: it was not possible to get container\'s ref. Styling will not be possible');
         }
     }
 
@@ -85,6 +86,10 @@ class FlatList extends PureComponent<Props, {}> {
                 this.styleParentRow();
             }
         }
+    }
+
+    public componentWillUnmount(): void {
+        this.parentComponent = null;
     }
 
     public styleParentGrid() {
@@ -186,14 +191,22 @@ class FlatList extends PureComponent<Props, {}> {
     }
 
     public render() {
-        const {
-            list, renderItem, filterBy, groupBy, renderWhenEmpty, sortBy,
-            sortDesc, sort, ignoreCaseOnWhenSorting, groupOf
-        } = this.props;
+        const {list} =  this.props;
 
-        let renderList = list;
+        if (!list || !isArray(list)) {
+            throw Error('FlatList: No "list" prop specified or "list" is not an array');
+        }
 
+        const {renderWhenEmpty} =  this.props;
         const blank = renderWhenEmpty ? renderWhenEmpty() || this.defaultBlank : this.defaultBlank;
+
+        if (list.length === 0) {
+           return blank;
+        }
+
+        const {renderItem, filterBy, groupBy, sortBy, sortDesc, sort, ignoreCaseOnWhenSorting, groupOf} = this.props;
+
+        let renderList = [...list];
 
         if (filterBy) {
             renderList = filterList(list, filterBy);
@@ -211,11 +224,8 @@ class FlatList extends PureComponent<Props, {}> {
             <Fragment>
                 {/* following span is only used here to get the parent of this items since they are wrapped */}
                 {/* in fragment which is not rendered on the dom  */}
-                <span ref={this.childSpanRef}/>
-                {/* tslint:disable-next-line:jsx-no-multiline-js */}
-                {renderList.length > 0 ?
-                    (groupBy || groupOf) ? this.renderGroupedList(renderList) : renderList.map(renderItem) : blank
-                }
+                {(groupBy || groupOf) ? this.renderGroupedList(renderList) : renderList.map(renderItem)}
+                {!this.parentComponent && <span ref={this.childSpanRef} style={{display: 'none'}}/>}
             </Fragment>
         );
     }

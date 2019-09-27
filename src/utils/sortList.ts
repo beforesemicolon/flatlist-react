@@ -1,5 +1,5 @@
 import getObjectDeepKeyValue from './getObjectDeepKeyValue';
-import {isNumber, isObject} from './isType';
+import {isNumber, isObject, isArray} from './isType';
 
 export interface SortOptionsInterface {
     onKey?: string;
@@ -24,8 +24,8 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
 
     listCopy.sort((first: any, second: any) => {
         if (options.onKey) {
-            first = isObject(first) ? getObjectDeepKeyValue(options.onKey, first) : first;
-            second = isObject(second) ? getObjectDeepKeyValue(options.onKey, second) : second;
+            first = isObject(first) || isArray(first) ? getObjectDeepKeyValue(options.onKey, first) : first;
+            second = isObject(first) || isArray(first) ? getObjectDeepKeyValue(options.onKey, second) : second;
         }
 
         if (isNumber(first) && isNumber(second)) {

@@ -1,6 +1,6 @@
 import {isObject, isArray, isString} from './isType';
 
-interface StringObjectInterface {
+export interface StringObjectInterface {
     [t: string]: any;
 }
 

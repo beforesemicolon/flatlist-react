@@ -21,8 +21,8 @@ interface Props {
     sortDesc?: boolean;
     sortGroupDesc?: boolean;
     showGroupSeparatorAtTheBottom?: boolean;
-    limit: number;
-    limitGroup: number;
+    limit?: number;
+    limitGroup?: number;
     sort?: boolean;
     displayRow?: boolean;
     rowGap?: string;

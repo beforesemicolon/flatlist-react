@@ -2,7 +2,7 @@ import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 import {isObject, isFunction, isString} from './isType';
 
 const filterList = <T>(list: T[], by: ((item: T, idx: number) => boolean) | string = ''): T[] => {
-    const listCopy = JSON.parse(JSON.stringify(list));
+    const listCopy = [...list];
 
     return listCopy.filter((item: T, idx: number) => {
         if ((isString(by) && isObject(item))) {

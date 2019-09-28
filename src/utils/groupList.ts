@@ -25,6 +25,7 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
     const {by: groupBy, limit} = options;
 
     if (groupBy && (isFunction(groupBy) || isString(groupBy))) {
+
         const groupedList: GroupedItemsObjectInterface<T> = list
             .reduce((prevList: GroupedItemsObjectInterface<T>, item: T, idx: number) => {
                 const groupLabel = isFunction(groupBy) ?
@@ -46,7 +47,9 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
         groupLabels = Array.from(new Set(Object.keys(groupedList)));
 
         return {groupLabels, groupLists: Object.values(groupedList)};
+
     } else if (limit && isNumber(limit) && (limit > 0)) {
+
         const groupLists = list.reduce((groupedList: any[], item: T, idx: number) => {
             groupedList[groupedList.length - 1].push(item);
 

@@ -2,9 +2,9 @@ import React, {Fragment, PureComponent, createRef} from 'react';
 import {array, func, oneOfType, string, bool, node, element, number} from 'prop-types';
 import filterList from './utils/filterList';
 import sortList from './utils/sortList';
-import groupList from './utils/groupList';
+import groupList, {GroupOptionsInterface} from './utils/groupList';
 import limitList from './utils/limitList';
-import {isString, isFunction} from './utils/isType';
+import {isFunction} from './utils/isType';
 
 declare global {
     namespace JSX {
@@ -22,7 +22,6 @@ interface Props {
     sortGroupDesc?: boolean;
     showGroupSeparatorAtTheBottom?: boolean;
     limit?: number;
-    limitGroup?: number;
     sort?: boolean;
     displayRow?: boolean;
     rowGap?: string;
@@ -35,8 +34,8 @@ interface Props {
     renderItem: (item: any, idx: number | string) => any;
     renderWhenEmpty?: null | (() => any);
     filterBy?: string | ((item: any, idx: number) => boolean);
-    groupBy?: string | ((item: any, idx: number) => boolean);
-    groupOf?: number;
+    groupBy?: GroupOptionsInterface['by'];
+    groupOf?: GroupOptionsInterface['limit'];
 }
 
 export default class FlatList extends PureComponent<Props, {}> {
@@ -75,10 +74,6 @@ export default class FlatList extends PureComponent<Props, {}> {
          * the number representing the max number of items to display
          */
         limit: number,
-        /**
-         * the number representing the max number of items to display inside a group
-         */
-        limitGroup: number,
         /**
          * a list of anything to be displayed
          */
@@ -243,15 +238,15 @@ export default class FlatList extends PureComponent<Props, {}> {
     public renderGroupedList = (renderList: any[]) => {
         const {
             renderItem, groupBy, sort, sortGroupBy, sortGroupDesc,
-            ignoreCaseOnWhenSorting, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, limitGroup
+            ignoreCaseOnWhenSorting, groupSeparator, groupOf, showGroupSeparatorAtTheBottom
         } = this.props;
 
-        const {list: groupLists, groupLabels} = groupList(renderList, {
-            by: isString(groupBy) ? groupBy as string : '',
-            every: groupOf || 0,
-            max: limitGroup,
-            on: isFunction(groupBy) ? groupBy as any : null
-        });
+        const groupingOptions: GroupOptionsInterface = {
+            by: groupBy,
+            limit: groupOf
+        };
+
+        const {groupLists, groupLabels} = groupList(renderList, groupingOptions);
 
         return (groupLists
                 .reduce(((groupedList, group, idx: number) => {

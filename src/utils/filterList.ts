@@ -5,7 +5,7 @@ const filterList = <T>(list: T[], by: ((item: T, idx: number) => boolean) | stri
     const listCopy = [...list];
 
     return listCopy.filter((item: T, idx: number) => {
-        if ((isString(by) && (isObject(item) || isArray(item)))) {
+        if (isString(by) && (isObject(item) || isArray(item))) {
             return getObjectDeepKeyValue(by as string, item);
         }
 

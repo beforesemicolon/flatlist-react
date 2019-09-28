@@ -1,5 +1,5 @@
 import getObjectDeepKeyValue from './getObjectDeepKeyValue';
-import {isNumber, isObject, isArray} from './isType';
+import {isString, isObject, isArray} from './isType';
 
 export interface SortOptionsInterface {
     onKey?: string;
@@ -14,7 +14,7 @@ const defaultSortOptions: SortOptionsInterface = {
 };
 
 const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptions): T[] => {
-    const listCopy = JSON.parse(JSON.stringify(list));
+    const listCopy = [...list];
 
     if (!isObject(options) || Object.keys(options).length === 0) {
         options = defaultSortOptions;
@@ -24,17 +24,13 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
 
     listCopy.sort((first: any, second: any) => {
         if (options.onKey) {
-            first = isObject(first) || isArray(first) ? getObjectDeepKeyValue(options.onKey, first) : first;
-            second = isObject(first) || isArray(first) ? getObjectDeepKeyValue(options.onKey, second) : second;
-        }
-
-        if (isNumber(first) && isNumber(second)) {
-            return options!.descending ? (second - first) : (first - second);
+            first = (isObject(first) || isArray(first)) ? getObjectDeepKeyValue(options.onKey, first) : first;
+            second = (isObject(second) || isArray(second)) ? getObjectDeepKeyValue(options.onKey, second) : second;
         }
 
         if (options.ignoreCasing) {
-            first = first.toUpperCase();
-            second = second.toUpperCase();
+            first = isString(first) ? first.toUpperCase() : first;
+            second = isString(second) ? second.toUpperCase() : second;
         }
 
         return first > second ? (options.descending ? -1 : 1) :

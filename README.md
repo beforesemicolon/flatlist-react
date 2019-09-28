@@ -155,8 +155,9 @@ one saying `"Nothing matched your filtering criteria"`. We will see those exampl
 this documentation.
 
 ##### limit prop
-This prop will make sure tha the number of items to render is up to a number you indicate here. There is also 
-`limitGroup` if you want to limit the size of the groups
+This prop will make sure that the number of items to render is up to a number you indicate here. There is also 
+[groupOf](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupof-prop) 
+if you want to limit the size of the groups.
 
 #### Dot Notation for string
 The FlatList component takes some props like `filterBy`, `sortBy` and `groupBy` which can be strings and you can use

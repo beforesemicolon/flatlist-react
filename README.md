@@ -11,6 +11,7 @@ grouping, searching, styling and more.
         * [list prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#list-prop)
         * [renderItem prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#renderitem-prop)
         * [renderWhenEmpty prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#render-when-list-is-empty)
+        * [limit prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#limit-prop)
     * [Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string)
     * [Filtering/Searching Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#filteringsearching-items)
         * [filterBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop)
@@ -152,6 +153,11 @@ Function here can be useful in cases you have different blank message to show, f
 keyword you could check that and say `"Nothing matched your search"` or if the user applied a filter you can show another
 one saying `"Nothing matched your filtering criteria"`. We will see those examples when we reach filtering session on
 this documentation.
+
+##### limit prop
+This prop will make sure that the number of items to render is up to a number you indicate here. There is also 
+[groupOf](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupof-prop) 
+if you want to limit the size of the groups.
 
 #### Dot Notation for string
 The FlatList component takes some props like `filterBy`, `sortBy` and `groupBy` which can be strings and you can use

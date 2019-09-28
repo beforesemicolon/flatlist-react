@@ -2,17 +2,13 @@ import {isNumber, isObject, isFunction, isString} from './isType';
 import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 
 export interface GroupOptionsInterface {
-    by?: string;
-    on?: ((item: any, idx: number) => string) | undefined;
-    every?: number;
-    max?: number;
+    by?: string | ((item: any, idx: number) => string) ;
+    limit?: number;
 }
 
 const defaultGroupOptions: GroupOptionsInterface = {
     by: '',
-    every: 0,
-    max: 0,
-    on: undefined,
+    limit: 0
 };
 
 interface GroupedItemsObjectInterface<T> {
@@ -20,84 +16,61 @@ interface GroupedItemsObjectInterface<T> {
 }
 
 const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {
-    const groupLabels: Set<string> = new Set([]);
+    let groupLabels: string[] = [];
 
     if (!isObject(options) || Object.keys(options).length === 0) {
         options = defaultGroupOptions;
     }
 
-    options = {...defaultGroupOptions, ...options};
+    const {by: groupBy, limit} = options;
 
-    if (options.by && isString(options.by)) {
-        const groupedList: GroupedItemsObjectInterface<T> = list
-            .reduce((prevList: GroupedItemsObjectInterface<T>, item: T): GroupedItemsObjectInterface<T> => {
-                const groupLabel = getObjectDeepKeyValue(options.by, item);
-                groupLabels.add(groupLabel);
-
-                if (!prevList[groupLabel]) {
-                    prevList[groupLabel] = [];
-                }
-
-                if (!options.max || prevList[groupLabel].length < options.max) {
-                    prevList[groupLabel].push(item);
-                }
-
-                return prevList;
-            }, {});
-
-        return {
-            groupLabels: Array.from(groupLabels),
-            list: Object.values(groupedList)
-        };
-    }
-
-    if (options.on as (item: any, idx: number) => string && isFunction(options.on)) {
+    if (groupBy && (isFunction(groupBy) || isString(groupBy))) {
         const groupedList: GroupedItemsObjectInterface<T> = list
             .reduce((prevList: GroupedItemsObjectInterface<T>, item: T, idx: number) => {
-                const on: GroupOptionsInterface['on'] = options.on as (item: any, idx: number) => string;
-                const groupLabel: string = on(item, idx);
-                groupLabels.add(groupLabel);
+                const groupLabel = isFunction(groupBy) ?
+                    (groupBy as (item: any, idx: number) => string)(item, idx) :
+                    getObjectDeepKeyValue(groupBy as string, item);
 
                 if (!prevList[groupLabel]) {
                     prevList[groupLabel] = [];
                 }
 
-                if (!options.max || prevList[groupLabel].length < options.max) {
+                if (!limit || prevList[groupLabel].length < limit) {
                     prevList[groupLabel].push(item);
                 }
 
                 return prevList;
             }, {});
 
+        // using Set here so the order is preserved and prevent duplicates
+        groupLabels = Array.from(new Set(Object.keys(groupedList)));
+
         return {
-            groupLabels: Array.from(groupLabels),
+            groupLabels,
             list: Object.values(groupedList)
         };
-    }
+    } else if (limit && isNumber(limit) && (limit > 0)) {
+        const groupOfList = list.reduce((groupedList: any[], item: T, idx: number) => {
+            groupedList[groupedList.length - 1].push(item);
 
-    if (options.every && isNumber(options.every) && (options.every > 0)) {
-        return {
-            groupLabels: Array.from(groupLabels),
-            list: list.reduce((groupedList: any[], item: T, idx: number) => {
-                groupedList[groupedList.length - 1].push(item);
+            const itemNumber: number = idx + 1;
 
-                const itemNumber: number = idx + 1;
+            if (
+                itemNumber < list.length && // make sure separator is not added at the end
+                (itemNumber % (limit || 0)) === 0
+            ) {
+                groupedList.push([]);
+            }
 
-                if (
-                    itemNumber < list.length && // make sure separator is not added at the end
-                    (itemNumber % (options.every || 0)) === 0
-                ) {
-                    groupedList.push([]);
-                }
+            return groupedList;
+        }, [[]]);
 
-                return groupedList;
-            }, [[]])
-        };
+        return {groupLabels, list: groupOfList};
     }
 
     return {
-        groupLabels: Array.from(groupLabels),
-        list
+        groupLabels,
+        list: [list]
     };
 };
 

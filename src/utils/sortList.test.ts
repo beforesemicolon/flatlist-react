@@ -159,6 +159,7 @@ describe('Util sortList()', () => {
     });
 
     it('Should throw error for object or array arrays if key is no found', () => {
+        expect.assertions(4);
         const objectArray = [{name: 'Ta'}, {count: 1}];
         const arrayArray = [[{name: 'Ta'}], [{count: 1}]];
 
@@ -173,6 +174,7 @@ describe('Util sortList()', () => {
     });
 
     it('Should sort mixed array of numbers and strings', () => {
+        expect.assertions(3);
         const mixedArray = [1, '2', 'B', 'AA', 'z', -23, 9, '-a'];
 
         expect(sortList(mixedArray))

@@ -21,6 +21,7 @@ describe('Util: isType()', () => {
 
         data.arrays = [[], new Array(), [1, 2, 3], Array.from('test'), {a: []}.a, Array(3)];
         data.functions = [() => {
+            // tslint:disable-next-line:only-arrow-functions
         }, function() {
         }];
         data.nils = [null, '', ``, [], {}, undefined, 0];

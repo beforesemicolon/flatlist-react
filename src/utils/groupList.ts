@@ -2,7 +2,7 @@ import {isNumber, isObject, isFunction, isString} from './isType';
 import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 
 export interface GroupOptionsInterface {
-    by?: string | ((item: any, idx: number) => string) ;
+    by?: string | ((item: any, idx: number) => string | number) ;
     limit?: number;
 }
 

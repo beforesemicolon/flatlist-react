@@ -45,12 +45,9 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
         // using Set here so the order is preserved and prevent duplicates
         groupLabels = Array.from(new Set(Object.keys(groupedList)));
 
-        return {
-            groupLabels,
-            list: Object.values(groupedList)
-        };
+        return {groupLabels, groupLists: Object.values(groupedList)};
     } else if (limit && isNumber(limit) && (limit > 0)) {
-        const groupOfList = list.reduce((groupedList: any[], item: T, idx: number) => {
+        const groupLists = list.reduce((groupedList: any[], item: T, idx: number) => {
             groupedList[groupedList.length - 1].push(item);
 
             const itemNumber: number = idx + 1;
@@ -65,13 +62,10 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
             return groupedList;
         }, [[]]);
 
-        return {groupLabels, list: groupOfList};
+        return {groupLabels, groupLists};
     }
 
-    return {
-        groupLabels,
-        list: [list]
-    };
+    return {groupLabels, groupLists: [list]};
 };
 
 export default groupList;

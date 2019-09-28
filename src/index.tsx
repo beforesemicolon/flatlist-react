@@ -246,7 +246,7 @@ export default class FlatList extends PureComponent<Props, {}> {
             limit: groupOf
         };
 
-        const {list: groupLists, groupLabels} = groupList(renderList, groupingOptions);
+        const {groupLists, groupLabels} = groupList(renderList, groupingOptions);
 
         return (groupLists
                 .reduce(((groupedList, group, idx: number) => {

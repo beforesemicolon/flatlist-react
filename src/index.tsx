@@ -4,6 +4,7 @@ import filterList from './utils/filterList';
 import sortList from './utils/sortList';
 import groupList from './utils/groupList';
 import {isString, isFunction, isArray} from './utils/isType';
+import limitList from './utils/limitList';
 
 declare global {
     namespace JSX {
@@ -20,6 +21,8 @@ interface Props {
     sortDesc?: boolean;
     sortGroupDesc?: boolean;
     showGroupSeparatorAtTheBottom?: boolean;
+    limit?: number;
+    limitGroup?: number;
     sort?: boolean;
     displayRow?: boolean;
     rowGap?: string;
@@ -144,16 +147,17 @@ class FlatList extends PureComponent<Props, {}> {
     public renderGroupedList = (renderList: any[]) => {
         const {
             renderItem, groupBy, sort, sortGroupBy, sortGroupDesc,
-            ignoreCaseOnWhenSorting, groupSeparator, groupOf, showGroupSeparatorAtTheBottom
+            ignoreCaseOnWhenSorting, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, limitGroup
         } = this.props;
 
-        const {list: groupsList, groupLabels} = groupList(renderList, {
+        const {list: groupLists, groupLabels} = groupList(renderList, {
             by: isString(groupBy) ? groupBy as string : '',
             every: groupOf || 0,
+            max: limitGroup,
             on: isFunction(groupBy) ? groupBy as any : null
         });
 
-        return (groupsList
+        return (groupLists
                 .reduce(((groupedList, group, idx: number) => {
                     const separatorKey = `${idx}-${group.length}`;
                     let separator = (<hr key={separatorKey} className='___list-separator'/>);
@@ -204,9 +208,11 @@ class FlatList extends PureComponent<Props, {}> {
            return blank;
         }
 
-        const {renderItem, filterBy, groupBy, sortBy, sortDesc, sort, ignoreCaseOnWhenSorting, groupOf} = this.props;
+        const {
+            renderItem, filterBy, groupBy, sortBy, sortDesc, sort, ignoreCaseOnWhenSorting, groupOf, limit
+        } = this.props;
 
-        let renderList = [...list];
+        let renderList = limitList([...list], limit);
 
         if (filterBy) {
             renderList = filterList(list, filterBy);
@@ -262,6 +268,14 @@ FlatList.propTypes = {
      * a component or a function that returns a component to be rendered in between groups
      */
     groupSeparator: oneOfType([node, func, element]),
+    /**
+     * the number representing the max number of items to display
+     */
+    limit: number,
+    /**
+     * the number representing the max number of items to display inside a group
+     */
+    limitGroup: number,
     /**
      * a list of anything to be displayed
      */

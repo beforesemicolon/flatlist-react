@@ -5,12 +5,14 @@ export interface GroupOptionsInterface {
     by?: string;
     on?: ((item: any, idx: number) => string) | undefined;
     every?: number;
+    max?: number;
 }
 
 const defaultGroupOptions: GroupOptionsInterface = {
     by: '',
     every: 0,
-    on: undefined
+    max: 0,
+    on: undefined,
 };
 
 interface GroupedItemsObjectInterface<T> {
@@ -36,7 +38,9 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
                     prevList[groupLabel] = [];
                 }
 
-                prevList[groupLabel].push(item);
+                if (!options.max || prevList[groupLabel].length < options.max) {
+                    prevList[groupLabel].push(item);
+                }
 
                 return prevList;
             }, {});
@@ -58,7 +62,9 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
                     prevList[groupLabel] = [];
                 }
 
-                prevList[groupLabel].push(item);
+                if (!options.max || prevList[groupLabel].length < options.max) {
+                    prevList[groupLabel].push(item);
+                }
 
                 return prevList;
             }, {});

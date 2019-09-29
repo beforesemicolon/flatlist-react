@@ -4,12 +4,12 @@ import {isNumber, isObject} from './isType';
 export interface SortOptionsInterface {
     onKey?: string;
     descending?: boolean;
-    ignoreCasing?: boolean;
+    caseInsensitive?: boolean;
 }
 
 const defaultSortOptions: SortOptionsInterface = {
+    caseInsensitive: false,
     descending: false,
-    ignoreCasing: false,
     onKey: ''
 };
 
@@ -32,7 +32,7 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
             return options!.descending ? (second - first) : (first - second);
         }
 
-        if (options.ignoreCasing) {
+        if (options.caseInsensitive) {
             first = first.toUpperCase();
             second = second.toUpperCase();
         }

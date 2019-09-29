@@ -150,7 +150,6 @@ export default class FlatList extends PureComponent<Props, {}> {
         groupBy: '',
         groupOf: 0,
         groupSeparator: null,
-        sortCaseInsensitive: false,
         minColumnWidth: '200px',
         renderWhenEmpty: null,
         rowGap: '20px',
@@ -161,6 +160,7 @@ export default class FlatList extends PureComponent<Props, {}> {
         showGroupSeparatorAtTheBottom: false,
         sort: false,
         sortBy: '',
+        sortCaseInsensitive: false,
         sortDesc: false,
         sortGroupBy: '',
         sortGroupDesc: false,
@@ -287,8 +287,8 @@ export default class FlatList extends PureComponent<Props, {}> {
 
                     if (sort || sortGroupBy) {
                         group = sortList(group, {
+                            caseInsensitive: sortCaseInsensitive,
                             descending: sortGroupDesc,
-                            ignoreCasing: sortCaseInsensitive,
                             onKey: sortGroupBy
                         });
                     }
@@ -324,14 +324,14 @@ export default class FlatList extends PureComponent<Props, {}> {
                 by: searchBy,
                 caseInsensitive: searchCaseInsensitive,
                 everyWord: searchOnEveryWord,
-                term: searchTerm,
+                term: searchTerm
             });
         }
 
         if (sort || sortBy) {
             renderList = sortList(renderList, {
+                caseInsensitive: sortCaseInsensitive,
                 descending: sortDesc,
-                ignoreCasing: sortCaseInsensitive,
                 onKey: sortBy
             });
         }

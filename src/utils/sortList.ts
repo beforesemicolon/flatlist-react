@@ -1,20 +1,20 @@
 import getObjectDeepKeyValue from './getObjectDeepKeyValue';
-import {isNumber, isObject} from './isType';
+import {isString, isObject, isArray} from './isType';
 
 export interface SortOptionsInterface {
     onKey?: string;
     descending?: boolean;
-    ignoreCasing?: boolean;
+    caseInsensitive?: boolean;
 }
 
 const defaultSortOptions: SortOptionsInterface = {
+    caseInsensitive: false,
     descending: false,
-    ignoreCasing: false,
     onKey: ''
 };
 
 const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptions): T[] => {
-    const listCopy = JSON.parse(JSON.stringify(list));
+    const listCopy = [...list];
 
     if (!isObject(options) || Object.keys(options).length === 0) {
         options = defaultSortOptions;
@@ -24,17 +24,13 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
 
     listCopy.sort((first: any, second: any) => {
         if (options.onKey) {
-            first = isObject(first) ? getObjectDeepKeyValue(options.onKey, first) : first;
-            second = isObject(second) ? getObjectDeepKeyValue(options.onKey, second) : second;
+            first = (isObject(first) || isArray(first)) ? getObjectDeepKeyValue(options.onKey, first) : first;
+            second = (isObject(second) || isArray(second)) ? getObjectDeepKeyValue(options.onKey, second) : second;
         }
 
-        if (isNumber(first) && isNumber(second)) {
-            return options!.descending ? (second - first) : (first - second);
-        }
-
-        if (options.ignoreCasing) {
-            first = first.toUpperCase();
-            second = second.toUpperCase();
+        if (options.caseInsensitive) {
+            first = isString(first) ? first.toLowerCase() : first;
+            second = isString(second) ? second.toLowerCase() : second;
         }
 
         return first > second ? (options.descending ? -1 : 1) :

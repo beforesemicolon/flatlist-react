@@ -11,17 +11,23 @@ grouping, searching, styling and more.
         * [list prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#list-prop)
         * [renderItem prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#renderitem-prop)
         * [renderWhenEmpty prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#render-when-list-is-empty)
+        * [limit prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#limit-prop)
     * [Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string)
-    * [Filtering/Searching Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#filteringsearching-items)
+    * [Filtering Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#filteringsearching-items)
         * [filterBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop)
-        * [searching](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching)
+    * [Searching Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching-items)
+        * [searchTerm prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchterm-prop)
+        * [searchBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchby-prop)
+            * [Searching on multiple keys](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching-on-multiple-keys)
+        * [searchCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchcaseinsensitive-prop)
+        * [searchOnEveryWord prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchoneveryword-prop)
     * [Sorting Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#sorting-items)
         * [sort prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sort-prop)
         * [sortBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortby-prop)
         * [sortDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortdesc-prop)
         * [sortGroupBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupdesc-prop)
         * [sortGroupDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupdesc-prop)
-        * [ignoreCaseOnWhenSorting prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#ignorecaseonwhensorting-prop)
+        * [sortCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortcaseinsensitive-prop)
     * [Grouping Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#grouping-items)
         * [groupBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupby-prop)
         * [groupOf prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupof-prop)
@@ -153,6 +159,11 @@ keyword you could check that and say `"Nothing matched your search"` or if the u
 one saying `"Nothing matched your filtering criteria"`. We will see those examples when we reach filtering session on
 this documentation.
 
+##### limit prop
+This prop will make sure that the number of items to render is up to a number you indicate here. There is also 
+[groupOf](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupof-prop) 
+if you want to limit the size of the groups.
+
 #### Dot Notation for string
 The FlatList component takes some props like `filterBy`, `sortBy` and `groupBy` which can be strings and you can use
 [Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string)
@@ -162,7 +173,7 @@ age. If i had an array of children in info i could say `info.children.0.age` whe
 This is to make it easy to reach deep into your objects without having to change them to work with filtering, sorting or
 grouping. All these props also take functions for power, read more below.
 
-#### Filtering/Searching Items
+#### Filtering Items
 To filter the list you can use the `filterBy` prop which narrows down your list to be more specific.
 
 ##### filterBy prop
@@ -186,11 +197,11 @@ return (
 The above filter will only remove `Marcus Correia` from the view since his age is zero and `filterBy` will check for
 `truthy`, `falsy` values in that key. 
 
-For more power we can use a function to filter people below 20 years old like this.
+For more power we can use a function to include only people above 20 years old and lastName is Correia like this.
 
 ```js
-filterOutPeopleBelowTwenty = (person, index) => {
-    return person.info.age >= 20;
+handleFilter = (person, index) => {
+    return person.info.age >= 20 && person.lastName === 'Correia';
 }
 ...
 
@@ -199,23 +210,37 @@ return (
         <FlatList 
             list={this.props.people} 
             renderItem={this.renderPerson}
-            filterBy={this.filterOutPeopleBelowTwenty}
+            filterBy={this.handleFilter}
             />
     </ul>
 )
 ```
 
-##### Searching
-There is no prop for searching yet but we can take advantage of the `filterBy` to narrow our list when users type in a 
-search field like so:
+#### Searching Items
+FlatList allows you to search the list with full control on your search using the props `searchTerm`, `searchBy`,
+`searchCaseInsensitive` and `searchOnEveryWord`.
+
+##### searchTerm prop
+The `searchTerm` prop is your way of telling FlatList that you want it to handle the search. This prop by itself does
+not do anything. To initialize the search functionality you need to also provide the `searchBy` prop.
+
+### Note
+
+```
+SearchTerm must be at least 3 characters long to trigger a search. If searchOnEveryWord prop is specified, same rule
+applies to every word. Each word should be at least 3 characters long to be considered.
+```
+
+##### searchBy prop
+The `searchBy` can be either a string or a function. Similar to 
+[`filterBy`](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop) the function must return 
+true or false where false means the item will not be displayed. The function is called with two arguments, 
+the item and its index. If you pass a string know that it should represent the key you want to search on. You can use
+[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string) here.
 
 ```js
 state = {
     searchTerm: ''
-}
-
-matchSearchTerm = (person, index) => {
-    return `${person.firstName} ${person.lastName}`.search(this.state.searchTerm) >= 0;;
 }
 
 handleSearchInput = (event) => {
@@ -229,14 +254,34 @@ return (
         <input value={this.state.searchTerm} onChange={this.handleSearchInput}/>
         <ul>
             <FlatList 
-                list={this.props.people} 
+                list={this.props.people}
                 renderItem={this.renderPerson}
-                filterBy={this.matchSearchTerm}
+                searchTerm={this.state.searchTerm}
+                searchBy="firstName"
                 />
         </ul>
     </>
 )
 ```
+###### Searching on multiple keys
+For now if you want to search on multiple keys you need to use `searchBy` as function. The function is called with the 
+item, the term (if `searchOnEveryWord` is off) or the word (if `searchOnEveryWord` is on). To have case insensitive 
+functionality you need to `toLowerCase()` each key value. You can have a function like this to pass it to:
+
+```js
+matchSearchTerm = (person, term, idx) => {
+    return person.firstName.toLowerCase().search(term) >= 0 || person.lastName.toLowerCase().search(term) >= 0;
+}
+```
+
+##### searchOnEveryWord prop
+This prop will allow you to look into every word type to find a match. By default the whole `searchTerm` is used to find
+a match. For example `person in blue` will not match `people in blue` but with the `searchOnEveryWord` prop it will
+because it will try to find `person` and not find then try `blue` which will match.
+
+##### searchCaseInsensitive prop
+This prop will make sure that no matter the casing of the `searchTerm` it will try to find a match. So words like 
+`people` and `People` will match each other.
 
 #### Sorting Items
 There are two ways to sort the list. You can sort the entire list by using props `sort` and `sortBy` or sort the groups
@@ -293,8 +338,8 @@ group.
 ##### sortGroupDesc prop
 `sortGroupDesc` is similar to `sortDesc` but will only affect groups. This should be used along with grouping props.
 
-##### ignoreCaseOnWhenSorting prop
-`ignoreCaseOnWhenSorting` is another sorting control that simply forces FlatList to ignore casing. This is great for 
+##### sortCaseInsensitive prop
+`sortCaseInsensitive` is another sorting control that simply forces FlatList to ignore casing. This is great for 
 when you don't care about exact match on casing and can be used with searching.
 
 #### Grouping Items

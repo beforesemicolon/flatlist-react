@@ -224,6 +224,13 @@ FlatList allows you to search the list with full control on your search using th
 The `searchTerm` prop is your way of telling FlatList that you want it to handle the search. This prop by itself does
 not do anything. To initialize the search functionality you need to also provide the `searchBy` prop.
 
+### Note
+
+```
+SearchTerm must be at least 3 characters long to trigger a search. If searchOnEveryWord prop is specified, same rule
+applies to every word. Each word should be at least 3 characters long to be considered.
+```
+
 ##### searchBy prop
 The `searchBy` can be either a string or a function. Similar to 
 [`filterBy`](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop) the function must return 

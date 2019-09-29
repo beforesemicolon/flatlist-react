@@ -259,6 +259,11 @@ export default class FlatList extends PureComponent<Props, {}> {
         }
     }
 
+    public renderBlank = () => {
+        const {renderWhenEmpty} = this.props;
+        return (renderWhenEmpty ? renderWhenEmpty() : this.defaultBlank);
+    }
+
     public renderGroupedList = (renderList: any[]) => {
         const {
             renderItem, groupBy, sort, sortGroupBy, sortGroupDesc,
@@ -310,11 +315,10 @@ export default class FlatList extends PureComponent<Props, {}> {
     }
 
     public render() {
-        const {renderWhenEmpty, list} =  this.props;
-        const blank = renderWhenEmpty ? renderWhenEmpty() || this.defaultBlank : this.defaultBlank;
+        const {list} = this.props;
 
         if (list.length === 0) {
-           return blank;
+           return this.renderBlank();
         }
 
         const {
@@ -347,9 +351,15 @@ export default class FlatList extends PureComponent<Props, {}> {
 
         return (
             <Fragment>
+                {
+                    renderList.length > 0 ?
+                        (groupBy || groupOf) ?
+                            this.renderGroupedList(renderList) :
+                            renderList.map(renderItem) :
+                        this.renderBlank()
+                }
                 {/* following span is only used here to get the parent of this items since they are wrapped */}
                 {/* in fragment which is not rendered on the dom  */}
-                {(groupBy || groupOf) ? this.renderGroupedList(renderList) : renderList.map(renderItem)}
                 {!this.parentComponent && <span ref={this.childSpanRef} style={{display: 'none'}}/>}
             </Fragment>
         );

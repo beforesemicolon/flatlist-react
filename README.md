@@ -15,11 +15,11 @@ grouping, searching, styling and more.
     * [Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string)
     * [Filtering Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#filteringsearching-items)
         * [filterBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop)
-    * [Searching Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#grouping-items)
+    * [Searching Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching-items)
         * [searchTerm prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchterm-prop)
         * [searchBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchby-prop)
         * [searchCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchcaseinsensitive-prop)
-        * [searchOnEveryWord prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupseparator-prop)
+        * [searchOnEveryWord prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchoneveryword-prop)
     * [Sorting Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#sorting-items)
         * [sort prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sort-prop)
         * [sortBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortby-prop)
@@ -256,13 +256,13 @@ return (
 )
 ```
 ###### Searching on multiple keys
-For now if you want to search on multiple keys you need to use `searchBy` as function. The function is called the item,
-the term (if `searchOnEveryWord` is off) or the word (if `searchOnEveryWord` is on). To have case insensitive 
-functionality you need to trim each key value. You can do something like:
+For now if you want to search on multiple keys you need to use `searchBy` as function. The function is called with the 
+item, the term (if `searchOnEveryWord` is off) or the word (if `searchOnEveryWord` is on). To have case insensitive 
+functionality you need to `toLowerCase()` each key value. You can have a function like this to pass it to:
 
 ```js
 matchSearchTerm = (person, term, idx) => {
-    return person.firstName.trim().search(term) >= 0 || person.lastName.trim().search(term) >= 0;
+    return person.firstName.toLowerCase().search(term) >= 0 || person.lastName.toLowerCase().search(term) >= 0;
 }
 ```
 
@@ -330,8 +330,8 @@ group.
 ##### sortGroupDesc prop
 `sortGroupDesc` is similar to `sortDesc` but will only affect groups. This should be used along with grouping props.
 
-##### ignoreCaseOnWhenSorting prop
-`ignoreCaseOnWhenSorting` is another sorting control that simply forces FlatList to ignore casing. This is great for 
+##### sortCaseInsensitive prop
+`sortCaseInsensitive` is another sorting control that simply forces FlatList to ignore casing. This is great for 
 when you don't care about exact match on casing and can be used with searching.
 
 #### Grouping Items

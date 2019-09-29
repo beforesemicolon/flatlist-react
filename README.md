@@ -18,6 +18,7 @@ grouping, searching, styling and more.
     * [Searching Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching-items)
         * [searchTerm prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchterm-prop)
         * [searchBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchby-prop)
+            * [Searching on multiple keys](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching-on-multiple-keys)
         * [searchCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchcaseinsensitive-prop)
         * [searchOnEveryWord prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchoneveryword-prop)
     * [Sorting Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#sorting-items)
@@ -196,11 +197,11 @@ return (
 The above filter will only remove `Marcus Correia` from the view since his age is zero and `filterBy` will check for
 `truthy`, `falsy` values in that key. 
 
-For more power we can use a function to filter people below 20 years old like this.
+For more power we can use a function to include only people above 20 years old and lastName is Correia like this.
 
 ```js
-filterOutPeopleBelowTwenty = (person, index) => {
-    return person.info.age >= 20;
+handleFilter = (person, index) => {
+    return person.info.age >= 20 && person.lastName === 'Correia';
 }
 ...
 
@@ -209,7 +210,7 @@ return (
         <FlatList 
             list={this.props.people} 
             renderItem={this.renderPerson}
-            filterBy={this.filterOutPeopleBelowTwenty}
+            filterBy={this.handleFilter}
             />
     </ul>
 )

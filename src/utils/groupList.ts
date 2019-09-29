@@ -36,7 +36,7 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
                     prevList[groupLabel] = [];
                 }
 
-                if (!limit || prevList[groupLabel].length < limit) {
+                if (!limit || (limit > 0 && prevList[groupLabel].length < limit)) {
                     prevList[groupLabel].push(item);
                 }
 

@@ -174,13 +174,13 @@ describe('Util sortList()', () => {
 
     it('Should sort mixed array of numbers and strings', () => {
         expect.assertions(3);
-        const mixedArray = [1, '2', 'B', 'AA', 'z', -23, 9, '-a'];
+        const mixedArray = [1, '2', 'B', 'AA', 'z', -23, 9, 'a'];
 
         expect(sortList(mixedArray))
-            .toEqual([1, '2', 'AA', 'B', 'z', -23, 9, '-a']);
+            .toEqual([1, '2', 'AA', 'B', 'z', -23, 9, 'a']);
         expect(sortList(mixedArray, {descending: true}))
-            .toEqual(['2', 1, 'z', 'B', 'AA', 9, -23, '-a']);
+            .toEqual(['2', 1, 'z', 'B', 'AA', 9, -23, 'a']);
         expect(sortList(mixedArray, {descending: true, caseInsensitive: true}))
-            .toEqual(['2', 1, 'z', 'B', 'AA', 9, -23, '-a']);
+            .toEqual(['2', 1, 'z', 'B', 'AA', 9, -23, 'a']);
     });
 });

@@ -29,8 +29,8 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
         }
 
         if (options.caseInsensitive) {
-            first = first.toUpperCase();
-            second = second.toUpperCase();
+            first = isString(first) ? first.toLowerCase() : first;
+            second = isString(second) ? second.toLowerCase() : second;
         }
 
         return first > second ? (options.descending ? -1 : 1) :

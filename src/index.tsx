@@ -2,7 +2,7 @@ import React, {Fragment, PureComponent, createRef} from 'react';
 import {array, func, oneOfType, string, bool, node, element, number} from 'prop-types';
 import filterList from './utils/filterList';
 import sortList from './utils/sortList';
-import searchList from './utils/searchList';
+import searchList, {SearchOptionsInterface} from './utils/searchList';
 import groupList, {GroupOptionsInterface} from './utils/groupList';
 import limitList from './utils/limitList';
 import {isFunction} from './utils/isType';
@@ -35,10 +35,10 @@ interface Props {
     renderItem: (item: any, idx: number | string) => any;
     renderWhenEmpty?: null | (() => any);
     filterBy?: string | ((item: any, idx: number) => boolean);
-    searchTerm?: string;
-    searchBy?: string | ((item: any, idx: number) => boolean);
-    searchOnEveryWord?: boolean;
-    searchCaseInsensitive?: boolean;
+    searchTerm?: SearchOptionsInterface['term'];
+    searchBy?: SearchOptionsInterface['by'];
+    searchOnEveryWord?: SearchOptionsInterface['everyWord'];
+    searchCaseInsensitive?: SearchOptionsInterface['caseInsensitive'];
     groupBy?: GroupOptionsInterface['by'];
     groupOf?: GroupOptionsInterface['limit'];
 }

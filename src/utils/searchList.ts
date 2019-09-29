@@ -6,7 +6,7 @@ export interface SearchOptionsInterface {
     term?: string;
     everyWord?: boolean;
     caseInsensitive?: boolean;
-    by?: string | ((item: any, idx: number) => boolean);
+    by?: string | ((item: any, term: string, idx: number) => boolean);
 }
 
 const defaultSearchOptions: SearchOptionsInterface = {
@@ -16,7 +16,13 @@ const defaultSearchOptions: SearchOptionsInterface = {
     term: ''
 };
 
-const getFilterByFn = (term: string, by: string, caseInsensitive: boolean = false) => {
+const getFilterByFn = (term: string, by: SearchOptionsInterface['by'], caseInsensitive: boolean = false) => {
+    if (isFunction(by)) {
+        return (item: any, idx: number) => {
+            return (by as (item: any, term: string, idx: number) => boolean)(item, term, idx);
+        };
+    }
+
     return (item: any) => {
         const keyValue = (isObject(item) || isArray(item)) ?
             getObjectDeepKeyValue(by as string, item) :
@@ -48,7 +54,7 @@ const searchList = <T>(list: T[], options: SearchOptionsInterface) => {
                     const searchedList: Set<any> = new Set([]);
 
                     termWords.forEach((word) => {
-                        const filterByFn = isFunction(by) ? by : getFilterByFn(word, by as string, caseInsensitive);
+                        const filterByFn = getFilterByFn(word, by as string, caseInsensitive);
 
                         filterList(list, filterByFn).forEach((item: any) => searchedList.add(item));
                     });
@@ -56,7 +62,7 @@ const searchList = <T>(list: T[], options: SearchOptionsInterface) => {
                     return Array.from(searchedList);
                 }
             } else {
-                const filterByFn = isFunction(by) ? by : getFilterByFn(term, by as string, caseInsensitive);
+                const filterByFn = getFilterByFn(term, by as string, caseInsensitive);
 
                 return filterList(list, filterByFn);
             }

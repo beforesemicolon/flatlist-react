@@ -9,7 +9,8 @@
     "build": "rm -rf ./lib && npm run lint && tsc",
     "build:local": "npm run lint && npm run tsc",
     "local": "nodemon --watch ./src -e ts,tsx --exec npm run build:local",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -28,9 +29,12 @@
   },
   "devDependencies": {
     "@types/core-js": "^2.5.2",
+    "@types/jest": "^24.0.18",
     "@types/node": "^12.6.9",
     "@types/react": "^16.8.24",
+    "jest": "^24.8.0",
     "nodemon": "^1.19.1",
+    "ts-jest": "^24.0.2",
     "tslint": "^5.18.0",
     "tslint-react": "^4.0.0",
     "typescript": "^3.5.3"

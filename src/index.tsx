@@ -2,6 +2,7 @@ import React, {Fragment, PureComponent, createRef} from 'react';
 import {array, func, oneOfType, string, bool, node, element, number} from 'prop-types';
 import filterList from './utils/filterList';
 import sortList from './utils/sortList';
+import searchList, {SearchOptionsInterface} from './utils/searchList';
 import groupList, {GroupOptionsInterface} from './utils/groupList';
 import limitList from './utils/limitList';
 import {isFunction} from './utils/isType';
@@ -30,10 +31,14 @@ interface Props {
     minColumnWidth?: string;
     groupSeparator?: null | any;
     dontSortOnGroup?: boolean;
-    ignoreCaseOnWhenSorting?: boolean;
+    sortCaseInsensitive?: boolean;
     renderItem: (item: any, idx: number | string) => any;
     renderWhenEmpty?: null | (() => any);
     filterBy?: string | ((item: any, idx: number) => boolean);
+    searchTerm?: SearchOptionsInterface['term'];
+    searchBy?: SearchOptionsInterface['by'];
+    searchOnEveryWord?: SearchOptionsInterface['everyWord'];
+    searchCaseInsensitive?: SearchOptionsInterface['caseInsensitive'];
     groupBy?: GroupOptionsInterface['by'];
     groupOf?: GroupOptionsInterface['limit'];
 }
@@ -95,6 +100,23 @@ export default class FlatList extends PureComponent<Props, {}> {
          */
         rowGap: string,
         /**
+         * a string representing a key on the object or a function takes the item and its index that returns
+         * true or false whether to include the item or not
+         */
+        searchBy: oneOfType([func, string]),
+        /**
+         * a flag that indicates whether to make search case insensitive or not
+         */
+        searchCaseInsensitive: bool,
+        /**
+         * a flag that indicates how the search should be done. By default is set to True
+         */
+        searchOnEveryWord: bool,
+        /**
+         * a string representing the term to match when doing search or that will be passed to searchBy function
+         */
+        searchTerm: string,
+        /**
          * a flag to indicate whether the separator should be on the bottom or not
          */
         showGroupSeparatorAtTheBottom: bool,
@@ -128,13 +150,17 @@ export default class FlatList extends PureComponent<Props, {}> {
         groupBy: '',
         groupOf: 0,
         groupSeparator: null,
-        ignoreCaseOnWhenSorting: false,
         minColumnWidth: '200px',
         renderWhenEmpty: null,
         rowGap: '20px',
+        searchBy: '',
+        searchCaseInsensitive: false,
+        searchOnEveryWord: false,
+        searchTerm: '',
         showGroupSeparatorAtTheBottom: false,
         sort: false,
         sortBy: '',
+        sortCaseInsensitive: false,
         sortDesc: false,
         sortGroupBy: '',
         sortGroupDesc: false,
@@ -167,20 +193,13 @@ export default class FlatList extends PureComponent<Props, {}> {
 
     public componentDidUpdate(prevProps: Readonly<Props>) {
         if (this.parentComponent) {
-            const {displayGrid, gridGap, minColumnWidth, displayRow, rowGap} = this.props;
+            const {displayGrid, displayRow} = this.props;
 
-            if (
-                prevProps.displayGrid !== displayGrid ||
-                prevProps.gridGap !== gridGap ||
-                prevProps.minColumnWidth !== minColumnWidth
-            ) {
+            if (displayGrid) {
                 this.styleParentGrid();
             }
 
-            if (
-                prevProps.displayRow !== displayRow ||
-                prevProps.rowGap !== rowGap
-            ) {
+            if (displayRow) {
                 this.styleParentRow();
             }
         }
@@ -238,7 +257,7 @@ export default class FlatList extends PureComponent<Props, {}> {
     public renderGroupedList = (renderList: any[]) => {
         const {
             renderItem, groupBy, sort, sortGroupBy, sortGroupDesc,
-            ignoreCaseOnWhenSorting, groupSeparator, groupOf, showGroupSeparatorAtTheBottom
+            sortCaseInsensitive, groupSeparator, groupOf, showGroupSeparatorAtTheBottom
         } = this.props;
 
         const groupingOptions: GroupOptionsInterface = {
@@ -268,8 +287,8 @@ export default class FlatList extends PureComponent<Props, {}> {
 
                     if (sort || sortGroupBy) {
                         group = sortList(group, {
+                            caseInsensitive: sortCaseInsensitive,
                             descending: sortGroupDesc,
-                            ignoreCasing: ignoreCaseOnWhenSorting,
                             onKey: sortGroupBy
                         });
                     }
@@ -288,7 +307,8 @@ export default class FlatList extends PureComponent<Props, {}> {
     public render() {
         const {
             list, renderItem, filterBy, groupBy, renderWhenEmpty, sortBy,
-            sortDesc, sort, ignoreCaseOnWhenSorting, groupOf, limit
+            sortDesc, sort, sortCaseInsensitive, groupOf, limit,
+            searchBy, searchTerm, searchOnEveryWord, searchCaseInsensitive
         } = this.props;
 
         let renderList = limitList(list, limit);
@@ -296,13 +316,22 @@ export default class FlatList extends PureComponent<Props, {}> {
         const blank = renderWhenEmpty ? renderWhenEmpty() || this.defaultBlank : this.defaultBlank;
 
         if (filterBy) {
-            renderList = filterList(list, filterBy);
+            renderList = filterList(renderList, filterBy);
+        }
+
+        if (searchTerm && searchBy) {
+            renderList = searchList(renderList, {
+                by: searchBy,
+                caseInsensitive: searchCaseInsensitive,
+                everyWord: searchOnEveryWord,
+                term: searchTerm
+            });
         }
 
         if (sort || sortBy) {
             renderList = sortList(renderList, {
+                caseInsensitive: sortCaseInsensitive,
                 descending: sortDesc,
-                ignoreCasing: ignoreCaseOnWhenSorting,
                 onKey: sortBy
             });
         }

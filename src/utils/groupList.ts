@@ -16,7 +16,7 @@ interface GroupedItemsObjectInterface<T> {
 }
 
 const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {
-    let groupLabels: string[] = [];
+    let groupLabels: any[] = [];
 
     if (!isObject(options) || Object.keys(options).length === 0) {
         options = defaultGroupOptions;
@@ -64,6 +64,8 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
 
             return groupedList;
         }, [[]]);
+
+        groupLabels = Array(groupLists.length).fill(0).map((x, i) => i);
 
         return {groupLabels, groupLists};
     }

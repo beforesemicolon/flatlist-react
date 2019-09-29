@@ -4,12 +4,12 @@ import {isString, isObject, isArray} from './isType';
 export interface SortOptionsInterface {
     onKey?: string;
     descending?: boolean;
-    ignoreCasing?: boolean;
+    caseInsensitive?: boolean;
 }
 
 const defaultSortOptions: SortOptionsInterface = {
+    caseInsensitive: false,
     descending: false,
-    ignoreCasing: false,
     onKey: ''
 };
 
@@ -28,9 +28,9 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
             second = (isObject(second) || isArray(second)) ? getObjectDeepKeyValue(options.onKey, second) : second;
         }
 
-        if (options.ignoreCasing) {
-            first = isString(first) ? first.toUpperCase() : first;
-            second = isString(second) ? second.toUpperCase() : second;
+        if (options.caseInsensitive) {
+            first = first.toUpperCase();
+            second = second.toUpperCase();
         }
 
         return first > second ? (options.descending ? -1 : 1) :

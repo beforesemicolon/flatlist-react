@@ -255,12 +255,14 @@ return (
     </>
 )
 ```
-##### Searching on multiple keys
-For now if you want to search on multiple keys you need to use `searchBy` as function. You can do something like:
+###### Searching on multiple keys
+For now if you want to search on multiple keys you need to use `searchBy` as function. The function is called the item,
+the term (if `searchOnEveryWord` is off) or the word (if `searchOnEveryWord` is on). To have case insensitive 
+functionality you need to trim each key value. You can do something like:
 
 ```js
-matchSearchTerm = (person, index) => {
-    return `${person.firstName} ${person.lastName}`.search(this.state.searchTerm) >= 0;
+matchSearchTerm = (person, term, idx) => {
+    return person.firstName.trim().search(term) >= 0 || person.lastName.trim().search(term) >= 0;
 }
 ```
 

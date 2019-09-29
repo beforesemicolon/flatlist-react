@@ -1,4 +1,3 @@
-import {escapeRegExp} from 'tslint/lib/utils';
 import sortList from './sortList';
 
 describe('Util sortList()', () => {
@@ -17,7 +16,7 @@ describe('Util sortList()', () => {
         expect(sortList(stringArr1)).toEqual(stringArr1);
         expect(sortList(stringArr2, {descending: true})).toEqual(stringArr2);
         expect(sortList(stringArr3)).toEqual(stringArr3);
-        expect(sortList(stringArr3, {ignoreCasing: true})).toEqual(['a', 'AA', 'Aa', 'aa', 'ba', 'tc']);
+        expect(sortList(stringArr3, {caseInsensitive: true})).toEqual(['a', 'AA', 'Aa', 'aa', 'ba', 'tc']);
         expect(sortList(stringArr4, {descending: true})).toEqual(stringArr4);
     });
 
@@ -55,15 +54,15 @@ describe('Util sortList()', () => {
 
         expect(sortList(stringArr1, {descending: true}))
             .toEqual(['b', 'aa', 'aA', 'a', 'BB', 'Aa']);
-        expect(sortList(stringArr1, {descending: true, ignoreCasing: true}))
+        expect(sortList(stringArr1, {descending: true, caseInsensitive: true}))
             .toEqual(['BB', 'b', 'aa', 'aA', 'Aa', 'a']);
         expect(sortList(stringArr2, {descending: true}))
             .toEqual(['c', 'aA', 'a B', 'B 1', 'B', 'AA']);
-        expect(sortList(stringArr2, {descending: true, ignoreCasing: true}))
+        expect(sortList(stringArr2, {descending: true, caseInsensitive: true}))
             .toEqual(['c', 'B 1', 'B', 'aA', 'AA', 'a B']);
         expect(sortList(stringArr3, {descending: true}))
             .toEqual(['z 1', 'B 32', '9', '1A', '0 B', '-0A']);
-        expect(sortList(stringArr3, {descending: true, ignoreCasing: true}))
+        expect(sortList(stringArr3, {descending: true, caseInsensitive: true}))
             .toEqual(['z 1', 'B 32', '9', '1A', '0 B', '-0A']);
     });
 
@@ -74,13 +73,13 @@ describe('Util sortList()', () => {
         const stringArr3 = ['9', '0 B', '1A', '-0A', 'B 32', 'z 1'];
 
         expect(sortList(stringArr1)).toEqual(['Aa', 'BB', 'a', 'aA', 'aa', 'b', ]);
-        expect(sortList(stringArr1, {ignoreCasing: true}))
+        expect(sortList(stringArr1, {caseInsensitive: true}))
             .toEqual(['a', 'aa', 'aA', 'Aa', 'b', 'BB']);
         expect(sortList(stringArr2)).toEqual(['AA', 'B', 'B 1', 'a B', 'aA', 'c']);
-        expect(sortList(stringArr2, {ignoreCasing: true}))
+        expect(sortList(stringArr2, {caseInsensitive: true}))
             .toEqual(['a B', 'aA', 'AA', 'B', 'B 1', 'c']);
         expect(sortList(stringArr3)).toEqual(['-0A', '0 B', '1A', '9', 'B 32', 'z 1']);
-        expect(sortList(stringArr3, {ignoreCasing: true}))
+        expect(sortList(stringArr3, {caseInsensitive: true}))
             .toEqual(['-0A', '0 B', '1A', '9', 'B 32', 'z 1']);
     });
 
@@ -92,15 +91,15 @@ describe('Util sortList()', () => {
 
         expect(sortList(objectArr1, {descending: true, onKey: 'name'}))
             .toEqual([{name: 'b'}, {name: 'aa'}, {name: 'aA'}, {name: 'a'}, {name: 'BB'}, {name: 'Aa'}]);
-        expect(sortList(objectArr1, {descending: true, ignoreCasing: true, onKey: 'name'}))
+        expect(sortList(objectArr1, {descending: true, caseInsensitive: true, onKey: 'name'}))
             .toEqual([{name: 'BB'}, {name: 'b'}, {name: 'aa'}, {name: 'aA'}, {name: 'Aa'}, {name: 'a'}]);
         expect(sortList(objectArr2, {descending: true, onKey: 'name'}))
             .toEqual([{name: 'c'}, {name: 'aA'}, {name: 'a B'}, {name: 'B 1'}, {name: 'B'}, {name: 'AA'}]);
-        expect(sortList(objectArr2, {descending: true, ignoreCasing: true, onKey: 'name'}))
+        expect(sortList(objectArr2, {descending: true, caseInsensitive: true, onKey: 'name'}))
             .toEqual([{name: 'c'}, {name: 'B 1'}, {name: 'B'}, {name: 'aA'}, {name: 'AA'}, {name: 'a B'}]);
         expect(sortList(objectArr3, {descending: true, onKey: 'name'}))
             .toEqual([{name: 'z 1'}, {name: 'B 32'}, {name: '9'}, {name: '1A'}, {name: '0 B'}, {name: '-0A'}]);
-        expect(sortList(objectArr3, {descending: true, ignoreCasing: true, onKey: 'name'}))
+        expect(sortList(objectArr3, {descending: true, caseInsensitive: true, onKey: 'name'}))
             .toEqual([{name: 'z 1'}, {name: 'B 32'}, {name: '9'}, {name: '1A'}, {name: '0 B'}, {name: '-0A'}]);
     });
 
@@ -112,15 +111,15 @@ describe('Util sortList()', () => {
 
         expect(sortList(stringArr1, {onKey: 'name'}))
             .toEqual([{name: 'Aa'}, {name: 'BB'}, {name: 'a'}, {name: 'aA'}, {name: 'aa'}, {name: 'b'}]);
-        expect(sortList(stringArr1, {ignoreCasing: true, onKey: 'name'}))
+        expect(sortList(stringArr1, {caseInsensitive: true, onKey: 'name'}))
             .toEqual([{name: 'a'}, {name: 'aa'}, {name: 'aA'}, {name: 'Aa'}, {name: 'b'}, {name: 'BB'}]);
         expect(sortList(stringArr2, {onKey: 'name'}))
             .toEqual([{name: 'AA'}, {name: 'B'}, {name: 'B 1'}, {name: 'a B'}, {name: 'aA'}, {name: 'c'}]);
-        expect(sortList(stringArr2, {ignoreCasing: true, onKey: 'name'}))
+        expect(sortList(stringArr2, {caseInsensitive: true, onKey: 'name'}))
             .toEqual([{name: 'a B'}, {name: 'aA'}, {name: 'AA'}, {name: 'B'}, {name: 'B 1'}, {name: 'c'}]);
         expect(sortList(stringArr3, {onKey: 'name'}))
             .toEqual([{name: '-0A'}, {name: '0 B'}, {name: '1A'}, {name: '9'}, {name: 'B 32'}, {name: 'z 1'}]);
-        expect(sortList(stringArr3, {ignoreCasing: true, onKey: 'name'}))
+        expect(sortList(stringArr3, {caseInsensitive: true, onKey: 'name'}))
             .toEqual([{name: '-0A'}, {name: '0 B'}, {name: '1A'}, {name: '9'}, {name: 'B 32'}, {name: 'z 1'}]);
     });
 
@@ -181,7 +180,7 @@ describe('Util sortList()', () => {
             .toEqual([1, '2', 'AA', 'B', 'z', -23, 9, '-a']);
         expect(sortList(mixedArray, {descending: true}))
             .toEqual(['2', 1, 'z', 'B', 'AA', 9, -23, '-a']);
-        expect(sortList(mixedArray, {descending: true, ignoreCasing: true}))
+        expect(sortList(mixedArray, {descending: true, caseInsensitive: true}))
             .toEqual(['2', 1, 'z', 'B', 'AA', 9, -23, '-a']);
     });
 });

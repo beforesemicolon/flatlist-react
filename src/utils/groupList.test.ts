@@ -14,14 +14,15 @@ describe('Util: groupList()', () => {
     });
 
     it('Should return array groups length matching "limit" option', () => {
-        expect.assertions(3);
+        expect.assertions(4);
         const list = [1, 3, 45, 8, 0, 20, 10];
 
         const groupedList = groupList(list, {limit: 2});
 
         expect(groupedList.groupLists).toHaveLength(4);
         expect(groupedList.groupLists).toEqual([[1, 3], [45, 8], [0, 20], [10]]);
-        expect(groupedList.groupLabels).toHaveLength(0);
+        expect(groupedList.groupLabels).toHaveLength(4);
+        expect(groupedList.groupLabels).toEqual([1, 2, 3, 4]);
     });
 
     it('Should group list by age', () => {

@@ -65,7 +65,7 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
             return groupedList;
         }, [[]]);
 
-        groupLabels = Array(groupLists.length).fill(0).map((x, i) => i);
+        groupLabels = Array(groupLists.length).fill(0).map((x, i) => (i + 1));
 
         return {groupLabels, groupLists};
     }

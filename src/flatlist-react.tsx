@@ -39,7 +39,7 @@ interface Props {
 
 const FlatList = (props: Props) => {
     const {
-        list, renderItem, limit, renderWhenEmpty, // render related props
+        list, renderItem, limit, renderWhenEmpty, // render/list related props
         filterBy, // filter props
         groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, // group props
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props

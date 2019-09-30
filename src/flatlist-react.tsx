@@ -50,7 +50,7 @@ const FlatList = (props: Props) => {
     let renderList = limitList([...list], limit);
 
     const renderBlank = () => {
-        return (renderWhenEmpty ? renderWhenEmpty() : DefaultBlank);
+        return (renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank);
     };
 
     if (renderList.length === 0) {
@@ -65,9 +65,10 @@ const FlatList = (props: Props) => {
 
         const {groupLists, groupLabels} = groupList(renderList, groupingOptions);
 
-        return (groupLists
-                .reduce(((groupedList, group, idx: number) => {
-                    const separatorKey = `${idx}-${group.length}`;
+        return groupLists
+                .reduce((groupedList, group, idx: number) => {
+                    const separatorKey = `separator-${idx}`;
+
                     let separator = (<hr key={separatorKey} className='___list-separator'/>);
 
                     if (groupSeparator) {
@@ -98,8 +99,7 @@ const FlatList = (props: Props) => {
                     }
 
                     return groupedList.concat(separator, ...groupedItems);
-                }), [])
-        );
+                }, []);
     };
 
     if (filterBy) {

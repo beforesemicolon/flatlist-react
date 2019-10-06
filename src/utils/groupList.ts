@@ -1,19 +1,29 @@
-import {isNumber, isObject, isFunction, isString} from './isType';
+import {isNumber, isObject, isFunction, isString, isBoolean} from './isType';
 import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 
 export interface GroupOptionsInterface {
     by?: string | ((item: any, idx: number) => string | number) ;
     limit?: number;
+    reversed?: boolean;
 }
 
 const defaultGroupOptions: GroupOptionsInterface = {
     by: '',
-    limit: 0
+    limit: 0,
+    reversed: false
 };
 
 interface GroupedItemsObjectInterface<T> {
     [s: string]: T[];
 }
+
+const handleGroupReverse = <T>(groupedLists: T[][], reverse: boolean = false) => {
+    if (reverse && isBoolean(reverse)) {
+        return groupedLists.map((group) => group.reverse());
+    }
+
+    return groupedLists;
+};
 
 const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {
     let groupLabels: any[] = [];
@@ -46,7 +56,7 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
         // using Set here so the order is preserved and prevent duplicates
         groupLabels = Array.from(new Set(Object.keys(groupedList)));
 
-        return {groupLabels, groupLists: Object.values(groupedList)};
+        return {groupLabels, groupLists: handleGroupReverse(Object.values(groupedList), options.reversed)};
 
     } else if (limit && isNumber(limit) && (limit > 0)) {
 
@@ -67,10 +77,10 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
 
         groupLabels = Array(groupLists.length).fill(0).map((x, i) => (i + 1));
 
-        return {groupLabels, groupLists};
+        return {groupLabels, groupLists: handleGroupReverse(groupLists, options.reversed)};
     }
 
-    return {groupLabels, groupLists: [list]};
+    return {groupLabels, groupLists: handleGroupReverse([list], options.reversed)};
 };
 
 export default groupList;

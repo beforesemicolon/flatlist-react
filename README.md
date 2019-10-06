@@ -12,6 +12,7 @@ grouping, searching, styling and more.
         * [renderItem prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#renderitem-prop)
         * [renderWhenEmpty prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#render-when-list-is-empty)
         * [limit prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#limit-prop)
+        * [reversed prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#reversed-prop)
     * [Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string)
     * [Filtering Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#filteringsearching-items)
         * [filterBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop)
@@ -29,6 +30,7 @@ grouping, searching, styling and more.
         * [sortGroupDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupdesc-prop)
         * [sortCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortcaseinsensitive-prop)
     * [Grouping Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#grouping-items)
+        * [groupReversed prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupreversed-prop)
         * [groupBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupby-prop)
         * [groupOf prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupof-prop)
         * [Custom Group Separator](https://github.com/ECorreia45/flatlist-react/tree/documentation#custom-group-separator)
@@ -163,6 +165,20 @@ this documentation.
 This prop will make sure that the number of items to render is up to a number you indicate here. There is also 
 [groupOf](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupof-prop) 
 if you want to limit the size of the groups.
+
+##### reversed prop
+This simply reverse the provided list. Instead of reading the list from first to last item it will do the reverse. There is also 
+[groupReversed](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupreversed-prop) 
+if you want the same effect on the individual groups.
+
+### Note
+
+```
+Reversing a list or group will happen before any sorting. If you don't see the effect of your reverse is because
+your sorting order will overwrite the reversing of the list or groups. When sorting, the list or groups will still be 
+read in reverse order but the output may not match the reverse result. If you think that reverting the list might make
+the sorting faster, it is a great combo of props to use.
+```
 
 #### Dot Notation for string
 The FlatList component takes some props like `filterBy`, `sortBy` and `groupBy` which can be strings and you can use
@@ -346,6 +362,10 @@ when you don't care about exact match on casing and can be used with searching.
 Grouping is a powerful feature and by default FlatList will add a `<hr/>` in between groups but you can override this
 as well by using `groupSeparator` props. You can control list grouping with props `groupBy` and `groupOf`.
 
+##### groupReversed prop
+`groupReversed` will have the save effect as `reversed` but on a group level. It will read/display your group in reversed
+order unless there is some group level sorting. Any group level sorting will overwrite reversing.
+
 ##### groupBy prop
 `groupBy` can either be a string using 
 [Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string) 
@@ -406,7 +426,7 @@ know whats going on and for that we should look into our custom group separator 
 
 ##### Custom Group Separator
 To create your own group separator you should use `groupSeparator` prop and If you don't want any separator at all you
-can simply pass `null` like this `groupSeparator={null}`.
+can simply pass `null` like this `groupSeparator={null}`. 
 
 ##### groupSeparator prop
 `groupSeparator` should be a element or a function that returns an element. When you use a function, the function is

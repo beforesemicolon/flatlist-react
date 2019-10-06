@@ -14,6 +14,7 @@ interface Props {
     sortBy?: string;
     sortGroupBy?: string;
     sortDesc?: boolean;
+    groupReversed?: boolean;
     sortGroupDesc?: boolean;
     showGroupSeparatorAtTheBottom?: boolean;
     limit?: number;
@@ -21,6 +22,7 @@ interface Props {
     displayRow?: boolean;
     rowGap?: string;
     displayGrid?: boolean;
+    reversed?: boolean;
     gridGap?: string;
     minColumnWidth?: string;
     groupSeparator?: null | any;
@@ -39,28 +41,37 @@ interface Props {
 
 const FlatList = (props: Props) => {
     const {
-        list, renderItem, limit, renderWhenEmpty, // render/list related props
+        list, renderItem, limit, reversed, renderWhenEmpty, // render/list related props
         filterBy, // filter props
-        groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, // group props
+        groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
         searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
         ...displayProps
     } = props;
 
-    let renderList = limitList([...list], limit);
-
     const renderBlank = () => {
         return (renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank);
     };
 
-    if (renderList.length === 0) {
+    if (list.length === 0) {
         return renderBlank();
+    }
+
+    let renderList = [...list];
+
+    if (reversed) {
+        renderList = renderList.reverse();
+    }
+
+    if (limit !== null) {
+        renderList = limitList(renderList, limit);
     }
 
     const renderGroupedList = () => {
         const groupingOptions: GroupOptionsInterface = {
             by: groupBy,
-            limit: groupOf
+            limit: groupOf,
+            reversed: groupReversed
         };
 
         const {groupLists, groupLabels} = groupList(renderList, groupingOptions);
@@ -166,6 +177,10 @@ FlatList.propTypes = {
      */
     groupOf: number,
     /**
+     * a flag to read groups backwards(in reverse)
+     */
+    groupReversed: bool,
+    /**
      * a component or a function that returns a component to be rendered in between groups
      */
     groupSeparator: oneOfType([node, func, element]),
@@ -189,6 +204,10 @@ FlatList.propTypes = {
      * the function that gets called when the list is empty or was filtered to the point it became empty
      */
     renderWhenEmpty: func,
+    /**
+     * a flag to read the given list backwards(in reverse)
+     */
+    reversed: bool,
     /**
      * the spacing in between rows when display row is activated
      */
@@ -243,9 +262,12 @@ FlatList.defaultProps = {
     gridGap: '20px',
     groupBy: '',
     groupOf: 0,
+    groupReversed: false,
     groupSeparator: null,
+    limit: null,
     minColumnWidth: '200px',
     renderWhenEmpty: null,
+    reversed: false,
     rowGap: '20px',
     searchBy: '',
     searchCaseInsensitive: false,

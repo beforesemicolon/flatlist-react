@@ -4,7 +4,7 @@ import filterList from './utils/filterList';
 import sortList from './utils/sortList';
 import searchList, {SearchOptionsInterface} from './utils/searchList';
 import groupList, {GroupOptionsInterface} from './utils/groupList';
-import {isFunction} from './utils/isType';
+import {isFunction, isString} from './utils/isType';
 import limitList from './utils/limitList';
 import DefaultBlank from './subComponents/DefaultBlank';
 import DisplayHandler, {DisplayHandlerProps} from './subComponents/DisplayHandler';
@@ -13,6 +13,7 @@ interface Props {
     list: any[];
     sortBy?: string;
     sortGroupBy?: string;
+    wrapperHtmlTag?: string;
     sortDesc?: boolean;
     groupReversed?: boolean;
     sortGroupDesc?: boolean;
@@ -41,7 +42,7 @@ interface Props {
 
 const FlatList = (props: Props) => {
     const {
-        list, renderItem, limit, reversed, renderWhenEmpty, // render/list related props
+        list, renderItem, limit, reversed, renderWhenEmpty, wrapperHtmlTag, // render/list related props
         filterBy, // filter props
         groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
@@ -148,7 +149,7 @@ const FlatList = (props: Props) => {
         });
     }
 
-    return (
+    const content = (
         <Fragment>
             {
                 renderList.length > 0 ?
@@ -162,6 +163,20 @@ const FlatList = (props: Props) => {
                 showGroupSeparatorAtTheBottom={showGroupSeparatorAtTheBottom || false}
             />
         </Fragment>
+    );
+
+    const WrapperElement = `${wrapperHtmlTag}`;
+
+    return (
+        <Fragment>
+            {
+                WrapperElement ?
+                    // @ts-ignore
+                    <WrapperElement>{content}</WrapperElement> :
+                    content
+            }
+        </Fragment>
+
     );
 };
 
@@ -268,7 +283,11 @@ FlatList.propTypes = {
     /**
      * a flag to indicate that sort should be done in descending order inside each group
      */
-    sortGroupDesc: bool
+    sortGroupDesc: bool,
+    /**
+     * a optional html tag to use to wrap the list items
+     */
+    wrapperHtmlTag: string
 };
 
 FlatList.defaultProps = {
@@ -296,6 +315,7 @@ FlatList.defaultProps = {
     sortDesc: false,
     sortGroupBy: '',
     sortGroupDesc: false,
+    wrapperHtmlTag: '',
 };
 
 export default memo(FlatList);

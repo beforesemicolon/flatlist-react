@@ -1,4 +1,3 @@
-import {ifError} from 'assert';
 import React, {Fragment, memo} from 'react';
 import {array, func, oneOfType, string, bool, node, element, number} from 'prop-types';
 import filterList from './utils/filterList';
@@ -68,13 +67,13 @@ const FlatList = (props: Props) => {
         renderList = limitList(renderList, limit);
     }
 
-    const handleRenderItem = (item: any, idx: number | string) => {
+    const handleRenderItem = (item: any, key: number | string) => {
         if (isFunction(renderItem)) {
-            return (renderItem as (item: any, idx: number | string) => JSX.Element)(item, idx);
+            return (renderItem as (item: any, idx: number | string) => JSX.Element)(item, key);
         }
 
         const comp = renderItem as JSX.Element;
-        return (<comp.type{...comp.props} key={idx} item={item}/>);
+        return (<comp.type{...comp.props} key={key} item={item}/>);
     };
 
     const renderGroupedList = () => {
@@ -214,7 +213,7 @@ FlatList.propTypes = {
      */
     minColumnWidth: string,
     /**
-     * the function that it is called for every item on the list and returns a component
+     * a jsx element or a function that it is called for every item on the list and returns a jsx element
      */
     renderItem: oneOfType([func, node]).isRequired,
     /**

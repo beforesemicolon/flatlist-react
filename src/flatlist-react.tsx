@@ -25,11 +25,11 @@ interface Props {
     reversed?: boolean;
     gridGap?: string;
     minColumnWidth?: string;
-    groupSeparator?: null | any;
+    groupSeparator?: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element);
     dontSortOnGroup?: boolean;
     sortCaseInsensitive?: boolean;
-    renderItem: (item: any, idx: number | string) => any;
-    renderWhenEmpty?: null | (() => any);
+    renderItem: JSX.Element | ((item: any, idx: number | string) => JSX.Element);
+    renderWhenEmpty?: null | (() => JSX.Element);
     filterBy?: string | ((item: any, idx: number) => boolean);
     searchTerm?: SearchOptionsInterface['term'];
     searchBy?: SearchOptionsInterface['by'];
@@ -67,6 +67,15 @@ const FlatList = (props: Props) => {
         renderList = limitList(renderList, limit);
     }
 
+    const handleRenderItem = (item: any, key: number | string) => {
+        if (isFunction(renderItem)) {
+            return (renderItem as (item: any, idx: number | string) => JSX.Element)(item, key);
+        }
+
+        const comp = renderItem as JSX.Element;
+        return (<comp.type{...comp.props} key={key} item={item}/>);
+    };
+
     const renderGroupedList = () => {
         const groupingOptions: GroupOptionsInterface = {
             by: groupBy,
@@ -83,8 +92,12 @@ const FlatList = (props: Props) => {
                     let separator = (<hr key={separatorKey} className='___list-separator'/>);
 
                     if (groupSeparator) {
-                        separator = isFunction(groupSeparator) ?
-                            groupSeparator(group, idx, groupLabels[idx]) : groupSeparator;
+                        if (isFunction(groupSeparator)) {
+                            separator = (groupSeparator as (g: any, idx: number, label: string) => JSX.Element)
+                            (group, idx, groupLabels[idx]);
+                        } else {
+                            separator = groupSeparator as JSX.Element;
+                        }
 
                         separator = (
                             <separator.type
@@ -103,7 +116,8 @@ const FlatList = (props: Props) => {
                         });
                     }
 
-                    const groupedItems = group.map((item: any, i: number) => renderItem(item, `${idx}-${i}`));
+                    const groupedItems = group
+                        .map((item: any, i: number) => handleRenderItem(item, `${idx}-${i}`));
 
                     if (showGroupSeparatorAtTheBottom) {
                         return groupedList.concat(...groupedItems, separator);
@@ -138,7 +152,9 @@ const FlatList = (props: Props) => {
         <Fragment>
             {
                 renderList.length > 0 ?
-                    (groupBy || groupOf) ? renderGroupedList() : renderList.map(renderItem) :
+                    (groupBy || groupOf) ?
+                        renderGroupedList() :
+                        renderList.map(handleRenderItem) :
                     renderBlank()
             }
             <DisplayHandler
@@ -197,9 +213,9 @@ FlatList.propTypes = {
      */
     minColumnWidth: string,
     /**
-     * the function that it is called for every item on the list and returns a component
+     * a jsx element or a function that it is called for every item on the list and returns a jsx element
      */
-    renderItem: func.isRequired,
+    renderItem: oneOfType([func, node]).isRequired,
     /**
      * the function that gets called when the list is empty or was filtered to the point it became empty
      */

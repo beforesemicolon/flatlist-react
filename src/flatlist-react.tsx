@@ -45,8 +45,6 @@ interface ForwardRefExoticComponentExtended extends ForwardRefExoticComponent<Pr
     propTypes: object;
 }
 
-const y: any = null;
-
 const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
     const {
         list, renderItem, limit, reversed, renderWhenEmpty, wrapperHtmlTag, // render/list related props
@@ -55,10 +53,10 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
         searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
         displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
-        ...otherProps
-    }: Props = props;
+        ...otherProps // props to be added to the wrapper container if wrapperHtmlTag is specified
+    } = props;
 
-    const renderBlank = () => {
+    const renderBlank = (): JSX.Element => {
         return (renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank);
     };
 

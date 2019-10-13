@@ -1,5 +1,5 @@
 import {bool, string} from 'prop-types';
-import React, {PureComponent, createRef, Fragment, Ref} from 'react';
+import React, {PureComponent, createRef, Fragment} from 'react';
 
 export interface DisplayHandlerProps {
   displayRow: boolean;
@@ -14,8 +14,8 @@ interface State {
   parentComponent: HTMLElement | null;
 }
 
-class DisplayHandler extends PureComponent<DisplayHandlerProps, {}> {
-  public static propTypes = {
+class DisplayHandler extends PureComponent<DisplayHandlerProps, State> {
+  static propTypes = {
     displayGrid: bool.isRequired,
     displayRow: bool.isRequired,
     gridGap: string.isRequired,
@@ -24,13 +24,13 @@ class DisplayHandler extends PureComponent<DisplayHandlerProps, {}> {
     showGroupSeparatorAtTheBottom: bool.isRequired,
   };
 
-  public childSpanRef = createRef<HTMLSpanElement>();
+  childSpanRef = createRef<HTMLSpanElement>();
 
-  public state: State = {
+  state: State = {
     parentComponent: null
   };
 
-  public componentDidMount(): void {
+  componentDidMount(): void {
     const {current}: any = this.childSpanRef;
 
     if (current) {
@@ -40,11 +40,11 @@ class DisplayHandler extends PureComponent<DisplayHandlerProps, {}> {
     }
   }
 
-  public componentDidUpdate(prevProps: Readonly<DisplayHandlerProps>) {
+  componentDidUpdate(prevProps: Readonly<DisplayHandlerProps>) {
     this.handleDisplayHandlerProps();
   }
 
-  public handleDisplayHandlerProps() {
+  handleDisplayHandlerProps() {
     const {parentComponent} = this.state;
     if (parentComponent) {
       const {displayGrid, displayRow} = this.props;
@@ -57,13 +57,12 @@ class DisplayHandler extends PureComponent<DisplayHandlerProps, {}> {
     }
   }
 
-  public styleParentGrid(parentComponent: HTMLElement) {
+  styleParentGrid(parentComponent: HTMLElement) {
     if (this.props.displayGrid) {
       const {gridGap, minColumnWidth} = this.props;
       parentComponent.style.display = 'grid';
       parentComponent.style.gridGap = gridGap || '20px';
-      parentComponent.style.gridTemplateColumns =
-          `repeat(auto-fill, minmax(${minColumnWidth || '200px'}, 1fr))`;
+      parentComponent.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minColumnWidth || '200px'}, 1fr))`;
       parentComponent.style.gridTemplateRows = 'auto';
       parentComponent.style.alignItems = 'stretch';
       parentComponent.querySelectorAll<HTMLElement>('.___list-separator')
@@ -83,7 +82,7 @@ class DisplayHandler extends PureComponent<DisplayHandlerProps, {}> {
     }
   }
 
-  public styleParentRow(parentComponent: HTMLElement) {
+  styleParentRow(parentComponent: HTMLElement) {
     if (this.props.displayRow) {
       const {rowGap, showGroupSeparatorAtTheBottom} = this.props;
       parentComponent.style.display = 'block';
@@ -104,7 +103,7 @@ class DisplayHandler extends PureComponent<DisplayHandlerProps, {}> {
     }
   }
 
-  public render() {
+  render() {
     const {parentComponent} = this.state;
     return (
         <Fragment>

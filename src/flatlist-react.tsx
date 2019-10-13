@@ -1,4 +1,4 @@
-import React, {Fragment, memo} from 'react';
+import React, {Fragment, memo, forwardRef, Ref, ForwardRefExoticComponent} from 'react';
 import {array, func, oneOfType, string, bool, node, element, number} from 'prop-types';
 import filterList from './utils/filterList';
 import sortList from './utils/sortList';
@@ -11,45 +11,52 @@ import DisplayHandler, {DisplayHandlerProps} from './subComponents/DisplayHandle
 
 interface Props {
     list: any[];
-    sortBy?: string;
-    sortGroupBy?: string;
-    sortDesc?: boolean;
-    groupReversed?: boolean;
-    sortGroupDesc?: boolean;
-    showGroupSeparatorAtTheBottom?: boolean;
-    limit?: number;
-    sort?: boolean;
-    displayRow?: boolean;
-    rowGap?: string;
-    displayGrid?: boolean;
-    reversed?: boolean;
-    gridGap?: string;
-    minColumnWidth?: string;
-    groupSeparator?: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element);
-    dontSortOnGroup?: boolean;
-    sortCaseInsensitive?: boolean;
-    renderItem: JSX.Element | ((item: any, idx: number | string) => JSX.Element);
-    renderWhenEmpty?: null | (() => JSX.Element);
-    filterBy?: string | ((item: any, idx: number) => boolean);
-    searchTerm?: SearchOptionsInterface['term'];
-    searchBy?: SearchOptionsInterface['by'];
-    searchOnEveryWord?: SearchOptionsInterface['everyWord'];
-    searchCaseInsensitive?: SearchOptionsInterface['caseInsensitive'];
-    groupBy?: GroupOptionsInterface['by'];
-    groupOf?: GroupOptionsInterface['limit'];
+    sortBy: string;
+    sortGroupBy: string;
+    wrapperHtmlTag: string;
+    sortDesc: boolean;
+    groupReversed: boolean;
+    sortGroupDesc: boolean;
+    showGroupSeparatorAtTheBottom: boolean;
+    limit: number;
+    sort: boolean;
+    displayRow: DisplayHandlerProps['displayRow'];
+    rowGap: DisplayHandlerProps['rowGap'];
+    displayGrid: DisplayHandlerProps['displayGrid'];
+    reversed: boolean;
+    gridGap: DisplayHandlerProps['gridGap'];
+    minColumnWidth: DisplayHandlerProps['minColumnWidth'];
+    groupSeparator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
+    dontSortOnGroup: boolean;
+    sortCaseInsensitive: boolean;
+    renderItem: JSX.Element | ((item: any, idx: number | string) => JSX.Element | null);
+    renderWhenEmpty: null | (() => JSX.Element);
+    filterBy: string | ((item: any, idx: number) => boolean);
+    searchTerm: SearchOptionsInterface['term'];
+    searchBy: SearchOptionsInterface['by'];
+    searchOnEveryWord: SearchOptionsInterface['everyWord'];
+    searchCaseInsensitive: SearchOptionsInterface['caseInsensitive'];
+    groupBy: GroupOptionsInterface['by'];
+    groupOf: GroupOptionsInterface['limit'];
 }
 
-const FlatList = (props: Props) => {
+// this interface is to deal with the fact that ForwardRefExoticComponent does not have the propTypes
+interface ForwardRefExoticComponentExtended extends ForwardRefExoticComponent<Props> {
+    propTypes: object;
+}
+
+const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
     const {
-        list, renderItem, limit, reversed, renderWhenEmpty, // render/list related props
+        list, renderItem, limit, reversed, renderWhenEmpty, wrapperHtmlTag, // render/list related props
         filterBy, // filter props
         groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
         searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
-        ...displayProps
+        displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
+        ...otherProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
 
-    const renderBlank = () => {
+    const renderBlank = (): JSX.Element => {
         return (renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank);
     };
 
@@ -148,7 +155,7 @@ const FlatList = (props: Props) => {
         });
     }
 
-    return (
+    const content = (
         <Fragment>
             {
                 renderList.length > 0 ?
@@ -158,12 +165,24 @@ const FlatList = (props: Props) => {
                     renderBlank()
             }
             <DisplayHandler
-                {...(displayProps as DisplayHandlerProps)}
-                showGroupSeparatorAtTheBottom={showGroupSeparatorAtTheBottom || false}
+                {...{displayRow, rowGap, displayGrid, gridGap, minColumnWidth, showGroupSeparatorAtTheBottom}}
             />
         </Fragment>
     );
-};
+
+    const WrapperElement = `${wrapperHtmlTag}`;
+
+    return (
+        <Fragment>
+            {
+                WrapperElement ?
+                    // @ts-ignore
+                    <WrapperElement ref={ref}{...otherProps}>{content}</WrapperElement> :
+                    content
+            }
+        </Fragment>
+    );
+}) as ForwardRefExoticComponentExtended;
 
 FlatList.propTypes = {
     /**
@@ -268,7 +287,11 @@ FlatList.propTypes = {
     /**
      * a flag to indicate that sort should be done in descending order inside each group
      */
-    sortGroupDesc: bool
+    sortGroupDesc: bool,
+    /**
+     * a optional html tag to use to wrap the list items
+     */
+    wrapperHtmlTag: string
 };
 
 FlatList.defaultProps = {
@@ -280,7 +303,7 @@ FlatList.defaultProps = {
     groupOf: 0,
     groupReversed: false,
     groupSeparator: null,
-    limit: null,
+    limit: 0,
     minColumnWidth: '200px',
     renderWhenEmpty: null,
     reversed: false,
@@ -296,6 +319,7 @@ FlatList.defaultProps = {
     sortDesc: false,
     sortGroupBy: '',
     sortGroupDesc: false,
+    wrapperHtmlTag: '',
 };
 
 export default memo(FlatList);

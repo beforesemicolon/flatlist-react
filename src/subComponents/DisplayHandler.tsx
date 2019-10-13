@@ -1,5 +1,5 @@
 import {bool, string} from 'prop-types';
-import React, {PureComponent, createRef, Fragment} from 'react';
+import React, {PureComponent, createRef, Fragment, Ref} from 'react';
 
 export interface DisplayHandlerProps {
   displayRow: boolean;
@@ -8,6 +8,10 @@ export interface DisplayHandlerProps {
   showGroupSeparatorAtTheBottom?: boolean;
   gridGap: string;
   minColumnWidth: string;
+}
+
+interface State {
+  parentComponent: HTMLElement | null;
 }
 
 class DisplayHandler extends PureComponent<DisplayHandlerProps, {}> {
@@ -22,14 +26,15 @@ class DisplayHandler extends PureComponent<DisplayHandlerProps, {}> {
 
   public childSpanRef = createRef<HTMLSpanElement>();
 
-  public parentComponent: any = null;
+  public state: State = {
+    parentComponent: null
+  };
 
   public componentDidMount(): void {
     const {current}: any = this.childSpanRef;
 
     if (current) {
-      this.parentComponent = current.parentNode;
-      this.handleDisplayHandlerProps();
+      this.setState({parentComponent: current.parentNode}, this.handleDisplayHandlerProps);
     } else {
       console.warn('FlatList: it was not possible to get container\'s ref. Styling will not be possible');
     }
@@ -39,55 +44,50 @@ class DisplayHandler extends PureComponent<DisplayHandlerProps, {}> {
     this.handleDisplayHandlerProps();
   }
 
-  public componentWillUnmount(): void {
-    this.parentComponent = null;
-  }
-
   public handleDisplayHandlerProps() {
-    if (this.parentComponent) {
+    const {parentComponent} = this.state;
+    if (parentComponent) {
       const {displayGrid, displayRow} = this.props;
 
       if (displayGrid) {
-        this.styleParentGrid();
+        this.styleParentGrid(parentComponent);
       } else if (displayRow) {
-        this.styleParentRow();
+        this.styleParentRow(parentComponent);
       }
     }
   }
 
-  public styleParentGrid() {
+  public styleParentGrid(parentComponent: HTMLElement) {
     if (this.props.displayGrid) {
       const {gridGap, minColumnWidth} = this.props;
-      this.parentComponent.style.display = 'grid';
-      this.parentComponent.style.gridGap = gridGap || '20px';
-      this.parentComponent.style.gridTemplateColumns =
+      parentComponent.style.display = 'grid';
+      parentComponent.style.gridGap = gridGap || '20px';
+      parentComponent.style.gridTemplateColumns =
           `repeat(auto-fill, minmax(${minColumnWidth || '200px'}, 1fr))`;
-      this.parentComponent.style.gridTemplateRows = 'auto';
-      this.parentComponent.style.alignItems = 'stretch';
-      this.parentComponent
-          .querySelectorAll('.___list-separator')
+      parentComponent.style.gridTemplateRows = 'auto';
+      parentComponent.style.alignItems = 'stretch';
+      parentComponent.querySelectorAll<HTMLElement>('.___list-separator')
           .forEach((item: HTMLElement) => {
             item.style.gridColumn = '1 / -1';
           });
     } else {
-      this.parentComponent.style.removeProperty('display');
-      this.parentComponent.style.removeProperty('grid-gap');
-      this.parentComponent.style.removeProperty('grid-template-columns');
-      this.parentComponent.style.removeProperty('grid-template-rows');
-      this.parentComponent.style.removeProperty('align-items');
-      this.parentComponent
-          .querySelectorAll('.___list-separator')
+      parentComponent.style.removeProperty('display');
+      parentComponent.style.removeProperty('grid-gap');
+      parentComponent.style.removeProperty('grid-template-columns');
+      parentComponent.style.removeProperty('grid-template-rows');
+      parentComponent.style.removeProperty('align-items');
+      parentComponent.querySelectorAll<HTMLElement>('.___list-separator')
           .forEach((item: HTMLElement) => {
             item.style.removeProperty('grid-column');
           });
     }
   }
 
-  public styleParentRow() {
+  public styleParentRow(parentComponent: HTMLElement) {
     if (this.props.displayRow) {
       const {rowGap, showGroupSeparatorAtTheBottom} = this.props;
-      this.parentComponent.style.display = 'block';
-      [].forEach.call(this.parentComponent.children, (item: HTMLElement) => {
+      parentComponent.style.display = 'block';
+      [].forEach.call(parentComponent.children, (item: HTMLElement) => {
         item.style.display = 'block';
         const nextEl = item.nextElementSibling;
 
@@ -96,8 +96,8 @@ class DisplayHandler extends PureComponent<DisplayHandlerProps, {}> {
         }
       });
     } else {
-      this.parentComponent.style.removeProperty('display');
-      [].forEach.call(this.parentComponent.children, (item: HTMLElement) => {
+      parentComponent.style.removeProperty('display');
+      [].forEach.call(parentComponent.children, (item: HTMLElement) => {
         item.style.removeProperty('display');
         item.style.removeProperty('margin');
       });
@@ -105,11 +105,12 @@ class DisplayHandler extends PureComponent<DisplayHandlerProps, {}> {
   }
 
   public render() {
+    const {parentComponent} = this.state;
     return (
         <Fragment>
           {/* following span is only used here to get the parent of this items since they are wrapped */}
           {/* in fragment which is not rendered on the dom  */}
-          {!this.parentComponent && <span ref={this.childSpanRef} style={{display: 'none'}}/>}
+          {!parentComponent && <span ref={this.childSpanRef} style={{display: 'none'}}/>}
         </Fragment>
     );
   }

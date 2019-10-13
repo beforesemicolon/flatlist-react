@@ -1,5 +1,5 @@
 import {bool, string} from 'prop-types';
-import React, {PureComponent, createRef, Fragment} from 'react';
+import React, {Component, createRef, Fragment} from 'react';
 
 export interface DisplayHandlerProps {
   displayRow: boolean;
@@ -14,7 +14,7 @@ interface State {
   parentComponent: HTMLElement | null;
 }
 
-class DisplayHandler extends PureComponent<DisplayHandlerProps, State> {
+class DisplayHandler extends Component<DisplayHandlerProps, State> {
   static propTypes = {
     displayGrid: bool.isRequired,
     displayRow: bool.isRequired,

@@ -108,7 +108,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         return (<comp.type{...comp.props} key={key} item={item}/>);
     };
 
-    let {group} = props;
+    let {group, search} = props;
     // make sure group always have the defaults
     group = {
         ...(FlatList.defaultProps && FlatList.defaultProps.group),
@@ -173,12 +173,17 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         renderList = filterList(renderList, filterBy);
     }
 
-    if (searchTerm && searchBy) {
+    // make sure search always have the defaults
+    search = {
+        ...(FlatList.defaultProps && FlatList.defaultProps.search),
+        ...search
+    };
+    if ((searchTerm && searchBy) || (search.term && search.by)) {
         renderList = searchList(renderList, {
-            by: searchBy,
-            caseInsensitive: searchCaseInsensitive,
-            everyWord: searchOnEveryWord,
-            term: searchTerm
+            by: searchBy || search.by,
+            caseInsensitive: searchCaseInsensitive || search.caseInsensitive,
+            everyWord: searchOnEveryWord || search.everyWord,
+            term: searchTerm || search.term
         });
     }
 
@@ -298,6 +303,15 @@ FlatList.propTypes = {
      */
     rowGap: string,
     /**
+     * a search shorthand configuration
+     */
+    search: shape({
+        by: oneOfType([func, string]),
+        caseInsensitive: bool,
+        everyWord: bool,
+        term: string
+    }),
+    /**
      * a string representing a key on the object or a function takes the item and its index that returns
      * true or false whether to include the item or not
      */
@@ -375,6 +389,12 @@ FlatList.defaultProps = {
     renderWhenEmpty: null,
     reversed: false,
     rowGap: '20px',
+    search: {
+        by: '',
+        caseInsensitive: false,
+        everyWord: false,
+        term: ''
+    },
     searchBy: '',
     searchCaseInsensitive: false,
     searchOnEveryWord: false,

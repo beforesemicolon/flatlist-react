@@ -14,15 +14,16 @@ interface GroupInterface extends GroupOptionsInterface {
     separatorAtTheBottom: boolean;
     sortBy: string;
     sortDescending: boolean;
-    reversed: boolean;
+    sortCaseInsensitive: boolean;
 }
 
 interface SortInterface {
     by: string;
     descending: boolean;
     caseInsensitive: boolean;
-    groupsBy: GroupInterface['sortBy'];
-    groupsDescending: GroupInterface['sortDescending'];
+    groupBy: GroupInterface['sortBy'];
+    groupDescending: GroupInterface['sortDescending'];
+    groupCaseInsensitive: GroupInterface['sortCaseInsensitive'];
 }
 
 interface Props {
@@ -107,27 +108,34 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         return (<comp.type{...comp.props} key={key} item={item}/>);
     };
 
+    let {group} = props;
+    // make sure group always have the defaults
+    group = {
+        ...(FlatList.defaultProps && FlatList.defaultProps.group),
+        ...group
+    };
+
     const renderGroupedList = () => {
         const groupingOptions: GroupOptionsInterface = {
-            by: groupBy,
-            limit: groupOf,
-            reversed: groupReversed
+            by: groupBy || group.by,
+            limit: groupOf || group.limit,
+            reversed: groupReversed || group.reversed
         };
 
         const {groupLists, groupLabels} = groupList(renderList, groupingOptions);
 
         return groupLists
-                .reduce((groupedList, group, idx: number) => {
+                .reduce((groupedList, aGroup, idx: number) => {
+                    const customSeparator = groupSeparator || group.separator;
                     const separatorKey = `separator-${idx}`;
-
                     let separator = (<hr key={separatorKey} className='___list-separator'/>);
 
-                    if (groupSeparator) {
-                        if (isFunction(groupSeparator)) {
-                            separator = (groupSeparator as (g: any, idx: number, label: string) => JSX.Element)
-                            (group, idx, groupLabels[idx]);
+                    if (customSeparator) {
+                        if (isFunction(customSeparator)) {
+                            separator = (customSeparator as (g: any, idx: number, label: string) => JSX.Element)
+                            (aGroup, idx, groupLabels[idx]);
                         } else {
-                            separator = groupSeparator as JSX.Element;
+                            separator = customSeparator as JSX.Element;
                         }
 
                         separator = (
@@ -139,18 +147,21 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                         );
                     }
 
-                    if (sort || sortGroupBy) {
-                        group = sortList(group, {
-                            caseInsensitive: sortCaseInsensitive,
-                            descending: sortGroupDesc,
-                            onKey: sortGroupBy
+                    if (sortGroupBy || group.sortBy || (sort as SortInterface).groupBy) {
+                        aGroup = sortList(aGroup, {
+                            caseInsensitive: sortCaseInsensitive ||
+                                group.sortCaseInsensitive || (sort as SortInterface).groupCaseInsensitive,
+                            descending: sortGroupDesc ||
+                                group.sortDescending || (sort as SortInterface).groupDescending,
+                            onKey: sortGroupBy ||
+                                group.sortBy || (sort as SortInterface).groupBy
                         });
                     }
 
-                    const groupedItems = group
+                    const groupedItems = aGroup
                         .map((item: any, i: number) => handleRenderItem(item, `${idx}-${i}`));
 
-                    if (showGroupSeparatorAtTheBottom) {
+                    if (showGroupSeparatorAtTheBottom || group.separatorAtTheBottom) {
                         return groupedList.concat(...groupedItems, separator);
                     }
 
@@ -184,13 +195,14 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         <Fragment>
             {
                 renderList.length > 0 ?
-                    (groupBy || groupOf) ?
+                    (groupBy || groupOf || (group.by || group.limit)) ?
                         renderGroupedList() :
                         renderList.map(handleRenderItem) :
                     renderBlank()
             }
             <DisplayHandler
-                {...{displayRow, rowGap, displayGrid, gridGap, minColumnWidth, showGroupSeparatorAtTheBottom}}
+                {...{displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
+                showGroupSeparatorAtTheBottom={showGroupSeparatorAtTheBottom || group.separatorAtTheBottom}
             />
         </Fragment>
     );
@@ -227,6 +239,19 @@ FlatList.propTypes = {
      * the spacing in between columns and rows. Similar to CSS grid-gap
      */
     gridGap: string,
+    /**
+     * a group shorthand configuration
+     */
+    group: shape({
+        by: oneOfType([func, string]),
+        limit: number,
+        reversed: bool,
+        separator: oneOfType([node, func, element]),
+        separatorAtTheBottom: bool,
+        sortBy: string,
+        sortCaseInsensitive: bool,
+        sortDescending: bool,
+    }),
     /**
      * a string representing a key on the object or a function takes the item and its index that returns
      * true or false whether to include the item or not
@@ -300,6 +325,9 @@ FlatList.propTypes = {
         by: string,
         caseInsensitive: bool,
         descending: bool,
+        groupBy: string,
+        groupCaseInsensitive: bool,
+        groupDescending: bool,
     })]),
     /**
      * a string representing a key in the item that should be used to sort the list
@@ -328,6 +356,16 @@ FlatList.defaultProps = {
     displayRow: false,
     filterBy: '',
     gridGap: '20px',
+    group: {
+        by: '',
+        limit: 0,
+        reversed: false,
+        separator: null,
+        separatorAtTheBottom: false,
+        sortBy: '',
+        sortCaseInsensitive: false,
+        sortDescending: false,
+    },
     groupBy: '',
     groupOf: 0,
     groupReversed: false,

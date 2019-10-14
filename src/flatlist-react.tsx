@@ -1,19 +1,13 @@
 import React, {Fragment, memo, forwardRef, Ref, ForwardRefExoticComponent} from 'react';
-import {array, func, oneOfType, string, bool, node, element, number} from 'prop-types';
+import {array, func, oneOfType, string, bool, node, element, number, shape} from 'prop-types';
 import filterList from './utils/filterList';
 import sortList from './utils/sortList';
 import searchList, {SearchOptionsInterface} from './utils/searchList';
 import groupList, {GroupOptionsInterface} from './utils/groupList';
-import {isFunction} from './utils/isType';
+import {isFunction, isBoolean, isObject, isString} from './utils/isType';
 import limitList from './utils/limitList';
 import DefaultBlank from './subComponents/DefaultBlank';
 import DisplayHandler, {DisplayHandlerProps} from './subComponents/DisplayHandler';
-
-interface SortInterface {
-    by: string;
-    descending: boolean;
-    caseInsensitive: boolean;
-}
 
 interface GroupInterface extends GroupOptionsInterface {
     separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
@@ -21,6 +15,14 @@ interface GroupInterface extends GroupOptionsInterface {
     sortBy: string;
     sortDescending: boolean;
     reversed: boolean;
+}
+
+interface SortInterface {
+    by: string;
+    descending: boolean;
+    caseInsensitive: boolean;
+    groupsBy: GroupInterface['sortBy'];
+    groupsDescending: GroupInterface['sortDescending'];
 }
 
 interface ListInterface {
@@ -173,11 +175,12 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         });
     }
 
-    if (sort || sortBy) {
+    const {caseInsensitive, by, descending} = sort as SortInterface;
+    if (sortBy || by || (isBoolean(sort) && sort)) {
         renderList = sortList(renderList, {
-            caseInsensitive: sortCaseInsensitive,
-            descending: sortDesc,
-            onKey: sortBy
+            caseInsensitive: sortCaseInsensitive || caseInsensitive,
+            descending: sortDesc || descending,
+            onKey: sortBy || by
         });
     }
 
@@ -297,7 +300,11 @@ FlatList.propTypes = {
     /**
      * a flag to indicate that the list should be sorted (uses default sort configuration)
      */
-    sort: bool,
+    sort: oneOfType([bool, shape({
+        by: string,
+        caseInsensitive: bool,
+        descending: bool,
+    })]),
     /**
      * a string representing a key in the item that should be used to sort the list
      */

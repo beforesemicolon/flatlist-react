@@ -9,35 +9,61 @@ import limitList from './utils/limitList';
 import DefaultBlank from './subComponents/DefaultBlank';
 import DisplayHandler, {DisplayHandlerProps} from './subComponents/DisplayHandler';
 
-interface Props {
-    list: any[];
+interface SortInterface {
+    by: string;
+    descending: boolean;
+    caseInsensitive: boolean;
+}
+
+interface GroupInterface extends GroupOptionsInterface {
+    separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
+    separatorAtTheBottom: boolean;
     sortBy: string;
-    sortGroupBy: string;
-    wrapperHtmlTag: string;
-    sortDesc: boolean;
-    groupReversed: boolean;
-    sortGroupDesc: boolean;
-    showGroupSeparatorAtTheBottom: boolean;
+    sortDescending: boolean;
+    reversed: boolean;
+}
+
+interface ListInterface {
+    renderItem: JSX.Element | ((item: any, idx: number | string) => JSX.Element | null);
+    renderWhenEmpty: null | (() => JSX.Element);
     limit: number;
-    sort: boolean;
+    reversed: boolean;
+    wrapperHtmlTag: string;
+    items: any[];
+}
+
+interface Props extends ListInterface {
+    // shorthands
+    group: GroupInterface;
+    search: SearchOptionsInterface;
+    style: DisplayHandlerProps;
+    sort: boolean | SortInterface;
+    list: ListInterface['items'] | ListInterface;
+    // sorting
+    sortBy: SortInterface['by'];
+    sortCaseInsensitive: SortInterface['caseInsensitive'];
+    sortDesc: SortInterface['descending'];
+    sortGroupBy: string;
+    sortGroupDesc: boolean;
+    // grouping
+    showGroupSeparatorAtTheBottom: GroupInterface['separatorAtTheBottom'];
+    groupReversed: GroupInterface['reversed'];
+    groupSeparator: GroupInterface['separator'];
+    groupBy: GroupInterface['by'];
+    groupOf: GroupInterface['limit'];
+    // style
     displayRow: DisplayHandlerProps['displayRow'];
     rowGap: DisplayHandlerProps['rowGap'];
     displayGrid: DisplayHandlerProps['displayGrid'];
-    reversed: boolean;
     gridGap: DisplayHandlerProps['gridGap'];
     minColumnWidth: DisplayHandlerProps['minColumnWidth'];
-    groupSeparator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
-    dontSortOnGroup: boolean;
-    sortCaseInsensitive: boolean;
-    renderItem: JSX.Element | ((item: any, idx: number | string) => JSX.Element | null);
-    renderWhenEmpty: null | (() => JSX.Element);
+    // filtering
     filterBy: string | ((item: any, idx: number) => boolean);
+    // searching
     searchTerm: SearchOptionsInterface['term'];
     searchBy: SearchOptionsInterface['by'];
     searchOnEveryWord: SearchOptionsInterface['everyWord'];
     searchCaseInsensitive: SearchOptionsInterface['caseInsensitive'];
-    groupBy: GroupOptionsInterface['by'];
-    groupOf: GroupOptionsInterface['limit'];
 }
 
 // this interface is to deal with the fact that ForwardRefExoticComponent does not have the propTypes
@@ -60,11 +86,11 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         return (renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank);
     };
 
-    if (list.length === 0) {
+    if ((list as any[]).length === 0) {
         return renderBlank();
     }
 
-    let renderList = [...list];
+    let renderList = [...(list as any[])];
 
     if (reversed) {
         renderList = renderList.reverse();

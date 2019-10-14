@@ -25,22 +25,18 @@ interface SortInterface {
     groupsDescending: GroupInterface['sortDescending'];
 }
 
-interface ListInterface {
+interface Props {
+    list: any[];
     renderItem: JSX.Element | ((item: any, idx: number | string) => JSX.Element | null);
     renderWhenEmpty: null | (() => JSX.Element);
     limit: number;
     reversed: boolean;
     wrapperHtmlTag: string;
-    items: any[];
-}
-
-interface Props extends ListInterface {
     // shorthands
     group: GroupInterface;
     search: SearchOptionsInterface;
     style: DisplayHandlerProps;
     sort: boolean | SortInterface;
-    list: ListInterface['items'] | ListInterface;
     // sorting
     sortBy: SortInterface['by'];
     sortCaseInsensitive: SortInterface['caseInsensitive'];

@@ -1,5 +1,13 @@
-import {bool, string} from 'prop-types';
 import React, {Component, createRef, Fragment} from 'react';
+import {bool, string, shape} from 'prop-types';
+
+export interface DisplayInterface {
+  row: boolean;
+  rowGap: string;
+  grid: boolean;
+  gridGap: string;
+  gridMinColumnWidth: string;
+}
 
 export interface DisplayHandlerProps {
   displayRow: boolean;
@@ -8,6 +16,7 @@ export interface DisplayHandlerProps {
   showGroupSeparatorAtTheBottom?: boolean;
   gridGap: string;
   minColumnWidth: string;
+  display: DisplayInterface;
 }
 
 interface State {
@@ -16,12 +25,29 @@ interface State {
 
 class DisplayHandler extends Component<DisplayHandlerProps, State> {
   static propTypes = {
+    display: shape({
+      grid: bool,
+      gridGap: string,
+      gridMinColumnWidth: string,
+      row: bool,
+      rowGap: string,
+    }),
     displayGrid: bool.isRequired,
     displayRow: bool.isRequired,
     gridGap: string.isRequired,
     minColumnWidth: string.isRequired,
     rowGap: string.isRequired,
     showGroupSeparatorAtTheBottom: bool.isRequired,
+  };
+
+  static defaultProps = {
+    display: {
+      grid: false,
+      gridGap: '20px',
+      gridMinColumnWidth: '200px',
+      row: false,
+      rowGap: '20px',
+    }
   };
 
   childSpanRef = createRef<HTMLSpanElement>();
@@ -47,22 +73,29 @@ class DisplayHandler extends Component<DisplayHandlerProps, State> {
   handleDisplayHandlerProps() {
     const {parentComponent} = this.state;
     if (parentComponent) {
-      const {displayGrid, displayRow} = this.props;
+      const {displayGrid, displayRow, display} = this.props;
 
-      if (displayGrid) {
+      if (display.grid || displayGrid) {
         this.styleParentGrid(parentComponent);
-      } else if (displayRow) {
+      } else if (display.row || displayRow) {
         this.styleParentRow(parentComponent);
       }
     }
   }
 
   styleParentGrid(parentComponent: HTMLElement) {
-    if (this.props.displayGrid) {
-      const {gridGap, minColumnWidth} = this.props;
+    const {display, displayGrid} = this.props;
+
+    if (displayGrid || display.grid) {
+      let {gridGap, minColumnWidth} = this.props;
+      const {defaultProps} = DisplayHandler;
+
+      gridGap = display.gridGap || gridGap || defaultProps.display.gridGap;
+      minColumnWidth = display.gridMinColumnWidth || minColumnWidth || defaultProps.display.gridMinColumnWidth;
+
       parentComponent.style.display = 'grid';
-      parentComponent.style.gridGap = gridGap || '20px';
-      parentComponent.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minColumnWidth || '200px'}, 1fr))`;
+      parentComponent.style.gridGap = gridGap;
+      parentComponent.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minColumnWidth}, 1fr))`;
       parentComponent.style.gridTemplateRows = 'auto';
       parentComponent.style.alignItems = 'stretch';
       parentComponent.querySelectorAll<HTMLElement>('.___list-separator')
@@ -83,15 +116,20 @@ class DisplayHandler extends Component<DisplayHandlerProps, State> {
   }
 
   styleParentRow(parentComponent: HTMLElement) {
-    if (this.props.displayRow) {
-      const {rowGap, showGroupSeparatorAtTheBottom} = this.props;
+    const {displayRow, display, showGroupSeparatorAtTheBottom} = this.props;
+
+    if (displayRow || display.row) {
+      let {rowGap} = this.props;
+
+      rowGap = display.rowGap || rowGap || DisplayHandler.defaultProps.display.rowGap;
+
       parentComponent.style.display = 'block';
       [].forEach.call(parentComponent.children, (item: HTMLElement) => {
         item.style.display = 'block';
         const nextEl = item.nextElementSibling;
 
         if (!showGroupSeparatorAtTheBottom || !nextEl || !nextEl.classList.contains('___list-separator')) {
-          item.style.margin = `0 0 ${rowGap || '20px'}`;
+          item.style.margin = `0 0 ${rowGap}`;
         }
       });
     } else {

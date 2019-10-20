@@ -1,43 +1,68 @@
 import React, {Fragment, memo, forwardRef, Ref, ForwardRefExoticComponent} from 'react';
-import {array, func, oneOfType, string, bool, node, element, number} from 'prop-types';
+import {array, func, oneOfType, string, bool, node, element, number, shape} from 'prop-types';
 import filterList from './utils/filterList';
 import sortList from './utils/sortList';
 import searchList, {SearchOptionsInterface} from './utils/searchList';
 import groupList, {GroupOptionsInterface} from './utils/groupList';
-import {isFunction} from './utils/isType';
+import {isFunction, isBoolean} from './utils/isType';
 import limitList from './utils/limitList';
 import DefaultBlank from './subComponents/DefaultBlank';
-import DisplayHandler, {DisplayHandlerProps} from './subComponents/DisplayHandler';
+import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './subComponents/DisplayHandler';
+
+interface GroupInterface extends GroupOptionsInterface {
+    separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
+    separatorAtTheBottom: boolean;
+    sortBy: string;
+    sortDescending: boolean;
+    sortCaseInsensitive: boolean;
+}
+
+interface SortInterface {
+    by: string;
+    descending: boolean;
+    caseInsensitive: boolean;
+    groupBy: GroupInterface['sortBy'];
+    groupDescending: GroupInterface['sortDescending'];
+    groupCaseInsensitive: GroupInterface['sortCaseInsensitive'];
+}
 
 interface Props {
     list: any[];
-    sortBy: string;
-    sortGroupBy: string;
-    wrapperHtmlTag: string;
-    sortDesc: boolean;
-    groupReversed: boolean;
-    sortGroupDesc: boolean;
-    showGroupSeparatorAtTheBottom: boolean;
+    renderItem: JSX.Element | ((item: any, idx: number | string) => JSX.Element | null);
+    renderWhenEmpty: null | (() => JSX.Element);
     limit: number;
-    sort: boolean;
+    reversed: boolean;
+    wrapperHtmlTag: string;
+    // shorthands
+    group: GroupInterface;
+    search: SearchOptionsInterface;
+    display: DisplayInterface;
+    sort: boolean | SortInterface;
+    // sorting
+    sortBy: SortInterface['by'];
+    sortCaseInsensitive: SortInterface['caseInsensitive'];
+    sortDesc: SortInterface['descending'];
+    sortGroupBy: string;
+    sortGroupDesc: boolean;
+    // grouping
+    showGroupSeparatorAtTheBottom: GroupInterface['separatorAtTheBottom'];
+    groupReversed: GroupInterface['reversed'];
+    groupSeparator: GroupInterface['separator'];
+    groupBy: GroupInterface['by'];
+    groupOf: GroupInterface['limit'];
+    // display
     displayRow: DisplayHandlerProps['displayRow'];
     rowGap: DisplayHandlerProps['rowGap'];
     displayGrid: DisplayHandlerProps['displayGrid'];
-    reversed: boolean;
     gridGap: DisplayHandlerProps['gridGap'];
     minColumnWidth: DisplayHandlerProps['minColumnWidth'];
-    groupSeparator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
-    dontSortOnGroup: boolean;
-    sortCaseInsensitive: boolean;
-    renderItem: JSX.Element | ((item: any, idx: number | string) => JSX.Element | null);
-    renderWhenEmpty: null | (() => JSX.Element);
+    // filtering
     filterBy: string | ((item: any, idx: number) => boolean);
+    // searching
     searchTerm: SearchOptionsInterface['term'];
     searchBy: SearchOptionsInterface['by'];
     searchOnEveryWord: SearchOptionsInterface['everyWord'];
     searchCaseInsensitive: SearchOptionsInterface['caseInsensitive'];
-    groupBy: GroupOptionsInterface['by'];
-    groupOf: GroupOptionsInterface['limit'];
 }
 
 // this interface is to deal with the fact that ForwardRefExoticComponent does not have the propTypes
@@ -52,9 +77,10 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
         searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
-        displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
+        display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         ...otherProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
+    let {group, search} = props;
 
     const renderBlank = (): JSX.Element => {
         return (renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank);
@@ -84,26 +110,32 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
     };
 
     const renderGroupedList = () => {
+        // make sure group always has the defaults
+        group = {
+            ...(FlatList.defaultProps && FlatList.defaultProps.group),
+            ...group
+        };
+
         const groupingOptions: GroupOptionsInterface = {
-            by: groupBy,
-            limit: groupOf,
-            reversed: groupReversed
+            by: group.by || groupBy,
+            limit: group.limit || groupOf,
+            reversed: group.reversed || groupReversed
         };
 
         const {groupLists, groupLabels} = groupList(renderList, groupingOptions);
 
         return groupLists
-                .reduce((groupedList, group, idx: number) => {
+                .reduce((groupedList, aGroup, idx: number) => {
+                    const customSeparator = group.separator || groupSeparator;
                     const separatorKey = `separator-${idx}`;
-
                     let separator = (<hr key={separatorKey} className='___list-separator'/>);
 
-                    if (groupSeparator) {
-                        if (isFunction(groupSeparator)) {
-                            separator = (groupSeparator as (g: any, idx: number, label: string) => JSX.Element)
-                            (group, idx, groupLabels[idx]);
+                    if (customSeparator) {
+                        if (isFunction(customSeparator)) {
+                            separator = (customSeparator as (g: any, idx: number, label: string) => JSX.Element)
+                            (aGroup, idx, groupLabels[idx]);
                         } else {
-                            separator = groupSeparator as JSX.Element;
+                            separator = customSeparator as JSX.Element;
                         }
 
                         separator = (
@@ -115,18 +147,20 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                         );
                     }
 
-                    if (sort || sortGroupBy) {
-                        group = sortList(group, {
-                            caseInsensitive: sortCaseInsensitive,
-                            descending: sortGroupDesc,
-                            onKey: sortGroupBy
+                    if (group.sortBy || sortGroupBy || (sort as SortInterface).groupBy) {
+                        aGroup = sortList(aGroup, {
+                            caseInsensitive: group.sortCaseInsensitive ||
+                                sortCaseInsensitive || (sort as SortInterface).groupCaseInsensitive,
+                            descending: group.sortDescending ||
+                                sortGroupDesc || (sort as SortInterface).groupDescending,
+                            onKey: group.sortBy || sortGroupBy || (sort as SortInterface).groupBy
                         });
                     }
 
-                    const groupedItems = group
+                    const groupedItems = aGroup
                         .map((item: any, i: number) => handleRenderItem(item, `${idx}-${i}`));
 
-                    if (showGroupSeparatorAtTheBottom) {
+                    if (group.separatorAtTheBottom || showGroupSeparatorAtTheBottom) {
                         return groupedList.concat(...groupedItems, separator);
                     }
 
@@ -138,20 +172,27 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         renderList = filterList(renderList, filterBy);
     }
 
-    if (searchTerm && searchBy) {
+    if ((searchTerm && searchBy) || (search.term && search.by)) {
+        // make sure search always has the defaults
+        search = {
+            ...(FlatList.defaultProps && FlatList.defaultProps.search),
+            ...search
+        };
+
         renderList = searchList(renderList, {
-            by: searchBy,
-            caseInsensitive: searchCaseInsensitive,
-            everyWord: searchOnEveryWord,
-            term: searchTerm
+            by: search.by || searchBy,
+            caseInsensitive: search.caseInsensitive || searchCaseInsensitive,
+            everyWord: search.everyWord || searchOnEveryWord,
+            term: search.term || searchTerm
         });
     }
 
-    if (sort || sortBy) {
+    const {caseInsensitive, by, descending} = sort as SortInterface;
+    if (by || sortBy || (isBoolean(sort) && sort)) {
         renderList = sortList(renderList, {
-            caseInsensitive: sortCaseInsensitive,
-            descending: sortDesc,
-            onKey: sortBy
+            caseInsensitive: caseInsensitive || sortCaseInsensitive,
+            descending: descending || sortDesc,
+            onKey: by || sortBy
         });
     }
 
@@ -159,13 +200,14 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         <Fragment>
             {
                 renderList.length > 0 ?
-                    (groupBy || groupOf) ?
+                    (group.by || group.limit || groupBy || groupOf) ?
                         renderGroupedList() :
                         renderList.map(handleRenderItem) :
                     renderBlank()
             }
             <DisplayHandler
-                {...{displayRow, rowGap, displayGrid, gridGap, minColumnWidth, showGroupSeparatorAtTheBottom}}
+                {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
+                showGroupSeparatorAtTheBottom={group.separatorAtTheBottom || showGroupSeparatorAtTheBottom}
             />
         </Fragment>
     );
@@ -186,6 +228,16 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
 
 FlatList.propTypes = {
     /**
+     * display shorthand configuration
+     */
+    display: shape({
+        grid: bool,
+        gridColumnWidth: string,
+        gridGap: string,
+        row: bool,
+        rowGap: string,
+    }),
+    /**
      * activate display grid on the items container
      */
     displayGrid: bool,
@@ -202,6 +254,19 @@ FlatList.propTypes = {
      * the spacing in between columns and rows. Similar to CSS grid-gap
      */
     gridGap: string,
+    /**
+     * a group shorthand configuration
+     */
+    group: shape({
+        by: oneOfType([func, string]),
+        limit: number,
+        reversed: bool,
+        separator: oneOfType([node, func, element]),
+        separatorAtTheBottom: bool,
+        sortBy: string,
+        sortCaseInsensitive: bool,
+        sortDescending: bool,
+    }),
     /**
      * a string representing a key on the object or a function takes the item and its index that returns
      * true or false whether to include the item or not
@@ -248,6 +313,15 @@ FlatList.propTypes = {
      */
     rowGap: string,
     /**
+     * a search shorthand configuration
+     */
+    search: shape({
+        by: oneOfType([func, string]),
+        caseInsensitive: bool,
+        everyWord: bool,
+        term: string
+    }),
+    /**
      * a string representing a key on the object or a function takes the item and its index that returns
      * true or false whether to include the item or not
      */
@@ -271,7 +345,14 @@ FlatList.propTypes = {
     /**
      * a flag to indicate that the list should be sorted (uses default sort configuration)
      */
-    sort: bool,
+    sort: oneOfType([bool, shape({
+        by: string,
+        caseInsensitive: bool,
+        descending: bool,
+        groupBy: string,
+        groupCaseInsensitive: bool,
+        groupDescending: bool,
+    })]),
     /**
      * a string representing a key in the item that should be used to sort the list
      */
@@ -295,19 +376,42 @@ FlatList.propTypes = {
 };
 
 FlatList.defaultProps = {
+    display: {
+        grid: false,
+        gridGap: '',
+        gridMinColumnWidth: '',
+        row: false,
+        rowGap: '',
+    },
     displayGrid: false,
     displayRow: false,
     filterBy: '',
-    gridGap: '20px',
+    gridGap: '',
+    group: {
+        by: '',
+        limit: 0,
+        reversed: false,
+        separator: null,
+        separatorAtTheBottom: false,
+        sortBy: '',
+        sortCaseInsensitive: false,
+        sortDescending: false,
+    },
     groupBy: '',
     groupOf: 0,
     groupReversed: false,
     groupSeparator: null,
     limit: 0,
-    minColumnWidth: '200px',
+    minColumnWidth: '',
     renderWhenEmpty: null,
     reversed: false,
-    rowGap: '20px',
+    rowGap: '',
+    search: {
+        by: '',
+        caseInsensitive: false,
+        everyWord: false,
+        term: ''
+    },
     searchBy: '',
     searchCaseInsensitive: false,
     searchOnEveryWord: false,

@@ -92,7 +92,6 @@ class DisplayHandler extends Component<DisplayHandlerProps, State> {
 
       gridGap = display.gridGap || gridGap || defaultProps.display.gridGap;
       minColumnWidth = display.gridMinColumnWidth || minColumnWidth || defaultProps.display.gridMinColumnWidth;
-      console.log('-- minColumnWidth', minColumnWidth);
 
       parentComponent.style.display = 'grid';
       parentComponent.style.gridGap = gridGap;

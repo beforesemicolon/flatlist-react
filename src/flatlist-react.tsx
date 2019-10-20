@@ -50,7 +50,7 @@ interface Props {
     groupSeparator: GroupInterface['separator'];
     groupBy: GroupInterface['by'];
     groupOf: GroupInterface['limit'];
-    // style
+    // display
     displayRow: DisplayHandlerProps['displayRow'];
     rowGap: DisplayHandlerProps['rowGap'];
     displayGrid: DisplayHandlerProps['displayGrid'];
@@ -86,11 +86,11 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         return (renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank);
     };
 
-    if ((list as any[]).length === 0) {
+    if (list.length === 0) {
         return renderBlank();
     }
 
-    let renderList = [...(list as any[])];
+    let renderList = [...list];
 
     if (reversed) {
         renderList = renderList.reverse();
@@ -117,16 +117,16 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         };
 
         const groupingOptions: GroupOptionsInterface = {
-            by: groupBy || group.by,
-            limit: groupOf || group.limit,
-            reversed: groupReversed || group.reversed
+            by: group.by || groupBy,
+            limit: group.limit || groupOf,
+            reversed: group.reversed || groupReversed
         };
 
         const {groupLists, groupLabels} = groupList(renderList, groupingOptions);
 
         return groupLists
                 .reduce((groupedList, aGroup, idx: number) => {
-                    const customSeparator = groupSeparator || group.separator;
+                    const customSeparator = group.separator || groupSeparator;
                     const separatorKey = `separator-${idx}`;
                     let separator = (<hr key={separatorKey} className='___list-separator'/>);
 
@@ -147,21 +147,20 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                         );
                     }
 
-                    if (sortGroupBy || group.sortBy || (sort as SortInterface).groupBy) {
+                    if (group.sortBy || sortGroupBy || (sort as SortInterface).groupBy) {
                         aGroup = sortList(aGroup, {
-                            caseInsensitive: sortCaseInsensitive ||
-                                group.sortCaseInsensitive || (sort as SortInterface).groupCaseInsensitive,
-                            descending: sortGroupDesc ||
-                                group.sortDescending || (sort as SortInterface).groupDescending,
-                            onKey: sortGroupBy ||
-                                group.sortBy || (sort as SortInterface).groupBy
+                            caseInsensitive: group.sortCaseInsensitive ||
+                                sortCaseInsensitive || (sort as SortInterface).groupCaseInsensitive,
+                            descending: group.sortDescending ||
+                                sortGroupDesc || (sort as SortInterface).groupDescending,
+                            onKey: group.sortBy || sortGroupBy || (sort as SortInterface).groupBy
                         });
                     }
 
                     const groupedItems = aGroup
                         .map((item: any, i: number) => handleRenderItem(item, `${idx}-${i}`));
 
-                    if (showGroupSeparatorAtTheBottom || group.separatorAtTheBottom) {
+                    if (group.separatorAtTheBottom || showGroupSeparatorAtTheBottom) {
                         return groupedList.concat(...groupedItems, separator);
                     }
 
@@ -181,19 +180,19 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         };
 
         renderList = searchList(renderList, {
-            by: searchBy || search.by,
-            caseInsensitive: searchCaseInsensitive || search.caseInsensitive,
-            everyWord: searchOnEveryWord || search.everyWord,
-            term: searchTerm || search.term
+            by: search.by || searchBy,
+            caseInsensitive: search.caseInsensitive || searchCaseInsensitive,
+            everyWord: search.everyWord || searchOnEveryWord,
+            term: search.term || searchTerm
         });
     }
 
     const {caseInsensitive, by, descending} = sort as SortInterface;
-    if (sortBy || by || (isBoolean(sort) && sort)) {
+    if (by || sortBy || (isBoolean(sort) && sort)) {
         renderList = sortList(renderList, {
-            caseInsensitive: sortCaseInsensitive || caseInsensitive,
-            descending: sortDesc || descending,
-            onKey: sortBy || by
+            caseInsensitive: caseInsensitive || sortCaseInsensitive,
+            descending: descending || sortDesc,
+            onKey: by || sortBy
         });
     }
 
@@ -201,14 +200,14 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         <Fragment>
             {
                 renderList.length > 0 ?
-                    (groupBy || groupOf || (group.by || group.limit)) ?
+                    (group.by || group.limit || groupBy || groupOf) ?
                         renderGroupedList() :
                         renderList.map(handleRenderItem) :
                     renderBlank()
             }
             <DisplayHandler
                 {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
-                showGroupSeparatorAtTheBottom={showGroupSeparatorAtTheBottom || group.separatorAtTheBottom}
+                showGroupSeparatorAtTheBottom={group.separatorAtTheBottom || showGroupSeparatorAtTheBottom}
             />
         </Fragment>
     );

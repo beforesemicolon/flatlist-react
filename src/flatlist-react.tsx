@@ -1,10 +1,11 @@
 import React, {Fragment, memo, forwardRef, Ref, ForwardRefExoticComponent} from 'react';
-import {array, func, oneOfType, string, bool, node, element, number, shape} from 'prop-types';
+import {array, func, oneOfType, string, bool, node, element, number, shape, object} from 'prop-types';
 import filterList from './utils/filterList';
 import sortList from './utils/sortList';
 import searchList, {SearchOptionsInterface} from './utils/searchList';
 import groupList, {GroupOptionsInterface} from './utils/groupList';
 import {isFunction, isBoolean} from './utils/isType';
+import convertListToArray from './utils/convertListToArray';
 import limitList from './utils/limitList';
 import DefaultBlank from './subComponents/DefaultBlank';
 import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './subComponents/DisplayHandler';
@@ -72,7 +73,7 @@ interface ForwardRefExoticComponentExtended extends ForwardRefExoticComponent<Pr
 
 const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
     const {
-        list, renderItem, limit, reversed, renderWhenEmpty, wrapperHtmlTag, // render/list related props
+        renderItem, limit, reversed, renderWhenEmpty, wrapperHtmlTag, // render/list related props
         filterBy, // filter props
         groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
@@ -80,7 +81,9 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         ...otherProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
-    let {group, search} = props;
+    let {list, group, search} = props;
+
+    list = convertListToArray(list);
 
     const renderBlank = (): JSX.Element => {
         return (renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank);
@@ -291,7 +294,7 @@ FlatList.propTypes = {
     /**
      * a list of anything to be displayed
      */
-    list: array.isRequired,
+    list: oneOfType([array, object]).isRequired,
     /**
      * the minimum column width when display grid is activated
      */

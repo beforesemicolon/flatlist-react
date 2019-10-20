@@ -4,10 +4,10 @@ import filterList from './utils/filterList';
 import sortList from './utils/sortList';
 import searchList, {SearchOptionsInterface} from './utils/searchList';
 import groupList, {GroupOptionsInterface} from './utils/groupList';
-import {isFunction, isBoolean, isObject, isString} from './utils/isType';
+import {isFunction, isBoolean} from './utils/isType';
 import limitList from './utils/limitList';
 import DefaultBlank from './subComponents/DefaultBlank';
-import DisplayHandler, {DisplayHandlerProps} from './subComponents/DisplayHandler';
+import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './subComponents/DisplayHandler';
 
 interface GroupInterface extends GroupOptionsInterface {
     separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
@@ -36,7 +36,7 @@ interface Props {
     // shorthands
     group: GroupInterface;
     search: SearchOptionsInterface;
-    style: DisplayHandlerProps;
+    display: DisplayInterface;
     sort: boolean | SortInterface;
     // sorting
     sortBy: SortInterface['by'];
@@ -77,9 +77,10 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
         searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
-        displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
+        display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         ...otherProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
+    let {group, search} = props;
 
     const renderBlank = (): JSX.Element => {
         return (renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank);
@@ -108,14 +109,13 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         return (<comp.type{...comp.props} key={key} item={item}/>);
     };
 
-    let {group, search} = props;
-    // make sure group always have the defaults
-    group = {
-        ...(FlatList.defaultProps && FlatList.defaultProps.group),
-        ...group
-    };
-
     const renderGroupedList = () => {
+        // make sure group always has the defaults
+        group = {
+            ...(FlatList.defaultProps && FlatList.defaultProps.group),
+            ...group
+        };
+
         const groupingOptions: GroupOptionsInterface = {
             by: groupBy || group.by,
             limit: groupOf || group.limit,
@@ -173,12 +173,13 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         renderList = filterList(renderList, filterBy);
     }
 
-    // make sure search always have the defaults
-    search = {
-        ...(FlatList.defaultProps && FlatList.defaultProps.search),
-        ...search
-    };
     if ((searchTerm && searchBy) || (search.term && search.by)) {
+        // make sure search always has the defaults
+        search = {
+            ...(FlatList.defaultProps && FlatList.defaultProps.search),
+            ...search
+        };
+
         renderList = searchList(renderList, {
             by: searchBy || search.by,
             caseInsensitive: searchCaseInsensitive || search.caseInsensitive,
@@ -206,7 +207,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                     renderBlank()
             }
             <DisplayHandler
-                {...{displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
+                {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
                 showGroupSeparatorAtTheBottom={showGroupSeparatorAtTheBottom || group.separatorAtTheBottom}
             />
         </Fragment>
@@ -227,6 +228,16 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
 }) as ForwardRefExoticComponentExtended;
 
 FlatList.propTypes = {
+    /**
+     * display shorthand configuration
+     */
+    display: shape({
+        grid: bool,
+        gridColumnWidth: string,
+        gridGap: string,
+        row: bool,
+        rowGap: string,
+    }),
     /**
      * activate display grid on the items container
      */
@@ -366,10 +377,17 @@ FlatList.propTypes = {
 };
 
 FlatList.defaultProps = {
+    display: {
+        grid: false,
+        gridGap: '',
+        gridMinColumnWidth: '',
+        row: false,
+        rowGap: '',
+    },
     displayGrid: false,
     displayRow: false,
     filterBy: '',
-    gridGap: '20px',
+    gridGap: '',
     group: {
         by: '',
         limit: 0,
@@ -385,10 +403,10 @@ FlatList.defaultProps = {
     groupReversed: false,
     groupSeparator: null,
     limit: 0,
-    minColumnWidth: '200px',
+    minColumnWidth: '',
     renderWhenEmpty: null,
     reversed: false,
-    rowGap: '20px',
+    rowGap: '',
     search: {
         by: '',
         caseInsensitive: false,

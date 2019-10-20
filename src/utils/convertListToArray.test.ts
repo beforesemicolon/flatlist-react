@@ -15,11 +15,7 @@ describe('Util: convertListToArray()', () => {
         expect.assertions(1);
         const obj = {...arr};
 
-        expect(convertListToArray(obj)).toEqual([
-            {name: 'test a'},
-            {name: 'test b'},
-            {name: 'test c'}
-        ]);
+        expect(convertListToArray(obj)).toEqual(arr);
     });
 
     it('should convert Set to a array', () => {

@@ -12,7 +12,8 @@
     "ordered-imports": [false],
     "no-namespace": [false],
     "interface-name": [true, "never-prefix"],
-    "jsx-no-multiline-js": [false]
+    "jsx-no-multiline-js": [false],
+    "member-access": [true, "no-public"]
   },
   "rulesDirectory": []
 }

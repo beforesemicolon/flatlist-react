@@ -113,11 +113,11 @@ return (
 The list can be empty as long as it is an empty array or object.
 
 ##### renderItem prop
-`renderItem` prop takes a function that should return a component or a component itself like `renderItem={<ItemComponent/>}`. 
-If you pass a function, it will be called for every item on the list with the item as the first argument and index of 
+`renderItem` prop takes either a function that should return a component or a component itself like `renderItem={<ItemComponent/>}`. 
+If you pass a function, it will be called for every item on the list with the "item" as the first argument and index of 
 the item as second argument. Use this function to do everything related to rendering the item component.
-If you pass a component, it will render it for every item in the `list` and injecting `item` prop will be injected into 
-it and you can use that to access the item.
+If you pass a component, it will render it for every item in the `list` while injecting `item` prop into 
+it and you can use that to access the "item" prop in your component.
 
 In our example above we are simply returning a `li` tag with person's full name and age using function for renderItem. 
 The same can be done as:
@@ -156,7 +156,7 @@ return (
 )
 ```
 
-The above can also be written as:
+The above can also be written as and will generate the same result:
 
 ```jsx
 listRef = createRef();
@@ -169,12 +169,12 @@ return (
 
 ##### renderWhenEmpty prop
 
-You are required to pass an array/object to the `list` prop, it does not mean the array/object needs to contain anything. 
+You are required to pass an array/object to the `list` prop, it does not mean that the array/object needs to contain anything. 
 Because when doing so nothing will be displayed, there is another prop called `renderWhenEmpty` that you can use to tell the
 component what to display when list has no items. This is ideal for blanks, telling the user the filtering or search 
 ended up leaving the list empty.
 
-`renderWhenEmpty` must be a function that returns a component. The function is not called with any argument.
+`renderWhenEmpty` must be a function that returns a component. The function is not called with any arguments.
 
 ```jsx
 ...

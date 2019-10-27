@@ -213,7 +213,6 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                 {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
                 showGroupSeparatorAtTheBottom={group.separatorAtTheBottom || showGroupSeparatorAtTheBottom}
             />
-            <InfiniteLoader/>
         </Fragment>
     );
 

@@ -79,9 +79,10 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
         searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
         display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
-        ...otherProps // props to be added to the wrapper container if wrapperHtmlTag is specified
+        ...otherProps
     } = props;
-    let {list, group, search} = props;
+    // tslint:disable-next-line:prefer-const
+    let {list, group, search, ...tagProps} = otherProps;
 
     list = convertListToArray(list);
 
@@ -145,7 +146,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                             <separator.type
                                 {...separator.props}
                                 key={separatorKey}
-                                className={`${separator.props.className} ___list-separator`}
+                                className={`${separator.props.className || ''} ___list-separator`.trim()}
                             />
                         );
                     }
@@ -222,7 +223,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
             {
                 WrapperElement ?
                     // @ts-ignore
-                    <WrapperElement ref={ref}{...otherProps}>{content}</WrapperElement> :
+                    <WrapperElement ref={ref}{...tagProps}>{content}</WrapperElement> :
                     content
             }
         </Fragment>

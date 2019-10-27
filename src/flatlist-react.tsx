@@ -40,6 +40,7 @@ interface Props {
     search: SearchOptionsInterface;
     display: DisplayInterface;
     sort: boolean | SortInterface;
+    // pagination: PaginationInterface;
     // sorting
     sortBy: SortInterface['by'];
     sortCaseInsensitive: SortInterface['caseInsensitive'];
@@ -68,6 +69,10 @@ interface Props {
     // pagination
     hasMoreItems: boolean;
     onListPagination: null | (() => void);
+    // paginationScrollThreshold
+    // paginationScrollingContainer
+    // paginationLoader
+    // paginationInReverse
 }
 
 // this interface is to deal with the fact that ForwardRefExoticComponent does not have the propTypes

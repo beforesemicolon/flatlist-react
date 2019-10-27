@@ -65,6 +65,9 @@ interface Props {
     searchBy: SearchOptionsInterface['by'];
     searchOnEveryWord: SearchOptionsInterface['everyWord'];
     searchCaseInsensitive: SearchOptionsInterface['caseInsensitive'];
+    // pagination
+    hasMoreItems: boolean;
+    onListPagination: null | (() => void);
 }
 
 // this interface is to deal with the fact that ForwardRefExoticComponent does not have the propTypes
@@ -80,6 +83,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
         searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
         display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
+        hasMoreItems, onListPagination, // pagination props
         ...otherProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
     let {list, group, search} = props;
@@ -213,7 +217,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                 {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
                 showGroupSeparatorAtTheBottom={group.separatorAtTheBottom || showGroupSeparatorAtTheBottom}
             />
-            <InfiniteLoader/>
+            {onListPagination && <InfiniteLoader hasMore={hasMoreItems} loadMore={onListPagination}/>}
         </Fragment>
     );
 
@@ -290,6 +294,10 @@ FlatList.propTypes = {
      */
     groupSeparator: oneOfType([node, func, element]),
     /**
+     * a flag to indicate whether there are more items to the list that can be loaded
+     */
+    hasMoreItems: bool,
+    /**
      * the number representing the max number of items to display
      */
     limit: number,
@@ -301,6 +309,10 @@ FlatList.propTypes = {
      * the minimum column width when display grid is activated
      */
     minColumnWidth: string,
+    /**
+     * a function to be called when list has been scrolled to the end
+     */
+    onListPagination: func,
     /**
      * a jsx element or a function that it is called for every item on the list and returns a jsx element
      */
@@ -406,8 +418,10 @@ FlatList.defaultProps = {
     groupOf: 0,
     groupReversed: false,
     groupSeparator: null,
+    hasMoreItems: false,
     limit: 0,
     minColumnWidth: '',
+    onListPagination: null,
     renderWhenEmpty: null,
     reversed: false,
     rowGap: '',

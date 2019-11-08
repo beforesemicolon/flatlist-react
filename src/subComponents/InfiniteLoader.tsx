@@ -21,7 +21,7 @@ class InfiniteLoader extends Component<InfiniteLoaderInterface, State> {
     hasMore: bool.isRequired,
     loadMore: func.isRequired,
     loadingIndicator: oneOfType([func, node, element]),
-    loadingIndicatorPosition: oneOf(['left', 'center', 'right']),
+    loadingIndicatorPosition: oneOf(['left', 'center', 'right', '']),
   };
 
   static defaultProps = {

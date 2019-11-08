@@ -86,6 +86,8 @@ class DisplayHandler extends Component<DisplayHandlerProps, State> {
   styleParentGrid(parentComponent: HTMLElement) {
     const {display, displayGrid} = this.props;
 
+    const infiniteLoader = parentComponent.querySelector<HTMLElement>('.__infinite-loader');
+
     if (displayGrid || display.grid) {
       let {gridGap, minColumnWidth} = this.props;
       const {defaultProps} = DisplayHandler;
@@ -102,6 +104,10 @@ class DisplayHandler extends Component<DisplayHandlerProps, State> {
           .forEach((item: HTMLElement) => {
             item.style.gridColumn = '1 / -1';
           });
+
+      if (infiniteLoader) {
+        infiniteLoader.style.gridColumn = '1 / -1';
+      }
     } else {
       parentComponent.style.removeProperty('display');
       parentComponent.style.removeProperty('grid-gap');
@@ -112,6 +118,10 @@ class DisplayHandler extends Component<DisplayHandlerProps, State> {
           .forEach((item: HTMLElement) => {
             item.style.removeProperty('grid-column');
           });
+
+      if (infiniteLoader) {
+        infiniteLoader.style.removeProperty('grid-column');
+      }
     }
   }
 
@@ -125,11 +135,13 @@ class DisplayHandler extends Component<DisplayHandlerProps, State> {
 
       parentComponent.style.display = 'block';
       [].forEach.call(parentComponent.children, (item: HTMLElement) => {
-        item.style.display = 'block';
-        const nextEl = item.nextElementSibling;
+        if (!item.classList.contains('__infinite-loader')) {
+          item.style.display = 'block';
+          const nextEl = item.nextElementSibling;
 
-        if (!showGroupSeparatorAtTheBottom || !nextEl || !nextEl.classList.contains('___list-separator')) {
-          item.style.margin = `0 0 ${rowGap}`;
+          if (!showGroupSeparatorAtTheBottom || !nextEl || !nextEl.classList.contains('___list-separator')) {
+            item.style.margin = `0 0 ${rowGap}`;
+          }
         }
       });
     } else {

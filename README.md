@@ -14,6 +14,12 @@ grouping, searching, styling and more.
         * [renderWhenEmpty prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#renderwhenempty-prop)
         * [limit prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#limit-prop)
         * [reversed prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#reversed-prop)
+    * [Paginating list (Infinite Loader)](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginating-list)
+        * [hasMoreItems prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#hasmoreitems-prop)
+        * [loadMoreItems prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#loadmoreitems-prop)
+        * [paginationLoadingIndicator prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginationloadingindicator-prop)
+        * [paginationLoadingIndicatorPosition prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginationloadingindicatorposition-prop)
+        * [paginate prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginate-prop)
     * [Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string)
     * [Filtering Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#filteringsearching-items)
         * [filterBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop)
@@ -210,6 +216,132 @@ if you want to limit the size of the groups.
 This simply reverse the provided list. Instead of reading the list from first to last item it will do the reverse. There is also 
 [groupReversed](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupreversed-prop) 
 if you want the same effect on the individual groups.
+
+#### Paginate list
+You don't have to start with a full list from the beginning. Flatlist allows you to specify that the list you gave
+is not complete and a handler to call when user scrolled to the end of the list. You can specify a loading indicator
+component to show while you are fetching the next page of the list. This feature works really well with api. Let's take
+the following situation:
+
+```jsx
+
+state={
+    hasMorePeople: false,
+    nextOffset: 0
+}
+
+componentDidMount() {
+    this.fetchPeople();
+}
+
+fetchPeople() {
+    this.api.getPeople({perPage: 10, offset: this.state.nextOffset})
+        .then(res => {
+            this.setState(prevState => ({
+                            people: [...prevState.people, ...res.data], 
+                            nextOffset: res.data.pagination.nextOffset,
+                            hasMorePeople: res.data.pagination.max > prevState.people.length
+                        }));
+        });
+}
+
+render() {
+    const {people} = this.state;
+    return (
+        <ul>
+            <FlatList 
+                list={people} 
+                renderItem={this.renderPerson}
+                />
+        </ul>
+    );
+}
+
+```
+
+##### hasMoreItems prop
+`hasMoreItems` is the prop to communicate with FlatList that the `list` you provided is not complete. This prop by itself
+will not do anything until you provide `loadMoreItems` prop. This is a boolean representing whether you are done paginating
+or not.
+
+##### loadMoreItems prop
+`loadMoreItems` is the function to call when user has scrolled to the end of the list. FlatList will wait till the user
+reached the bottom to call this handler as long as `hasMoreItems` is true. Otherwise it will remove the loader all
+together. This function does not need to return anything. In our example above, we would do as so:
+
+```jsx
+...
+render() {
+    const {people, hasMorePeople} = this.state;
+    return (
+        <ul>
+            <FlatList 
+                list={people} 
+                renderItem={this.renderPerson}
+                hasMoreItems={hasMorePeople}
+                loadMoreItems={this.fetchPeople}
+                />
+        </ul>
+    );
+}
+```
+
+##### paginationLoadingIndicator prop
+The default `paginationLoadingIndicator` is pretty basic(for now) and you might feel the need to change it to your
+liking and this is the prop to use. This prop can be a component/element or a function that return a component/element.
+
+##### paginationLoadingIndicatorPosition prop
+By default, the loading indicator will be positioned on the left. You can use `paginationLoadingIndicatorPosition` to
+position the loading indicator whether or the `center`, `right` or `left`(default).
+
+```jsx
+...
+render() {
+    const {people, hasMorePeople} = this.state;
+    return (
+        <ul>
+            <FlatList 
+                list={people} 
+                renderItem={this.renderPerson}
+                hasMoreItems={hasMorePeople}
+                loadMoreItems={this.fetchPeople}
+                paginationLoadingIndicator={<Loader/>}
+                paginationLoadingIndicatorPosition="center"
+                />
+        </ul>
+    );
+}
+```
+##### pagination prop
+The `pagination` prop is the pagination shorthand. It does everything specified above but it is a object configuration
+with the following format
+* `hasMore` (same as [hasMoreItems prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#hasmoreitems-prop))
+* `loadMore` (same as [loadMoreItems prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#loadmoreitems-prop))
+* `loadingIndicator` (same as [paginationLoadingIndicator prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginationloadingindicator-prop))
+* `loadingIndicatorPosition` (same as [paginationLoadingIndicatorPosition prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginationloadingindicatorposition-prop))
+
+So we could write the above example as:
+
+```jsx
+...
+render() {
+    const {people, hasMorePeople} = this.state;
+    return (
+        <ul>
+            <FlatList 
+                list={people} 
+                renderItem={this.renderPerson}
+                pagination={{
+                    hasMore={hasMorePeople}
+                    loadMore={this.fetchPeople}
+                    loadingIndicator={<Loader/>}
+                    loadingIndicatorPosition="center"
+                }}
+                />
+        </ul>
+    );
+}
+```
 
 ### Note
 

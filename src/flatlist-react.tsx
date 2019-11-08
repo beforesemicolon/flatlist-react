@@ -1,5 +1,5 @@
 import React, {Fragment, memo, forwardRef, Ref, ForwardRefExoticComponent} from 'react';
-import {array, func, oneOfType, string, bool, node, element, number, shape, object} from 'prop-types';
+import {array, func, oneOfType, string, bool, node, element, number, shape, object, oneOf} from 'prop-types';
 import filterList from './utils/filterList';
 import sortList from './utils/sortList';
 import searchList, {SearchOptionsInterface} from './utils/searchList';
@@ -9,7 +9,7 @@ import convertListToArray from './utils/convertListToArray';
 import limitList from './utils/limitList';
 import DefaultBlank from './subComponents/DefaultBlank';
 import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './subComponents/DisplayHandler';
-import InfiniteLoader from './subComponents/InfiniteLoader';
+import InfiniteLoader, {InfiniteLoaderInterface} from './subComponents/InfiniteLoader';
 
 interface GroupInterface extends GroupOptionsInterface {
     separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
@@ -40,13 +40,13 @@ interface Props {
     search: SearchOptionsInterface;
     display: DisplayInterface;
     sort: boolean | SortInterface;
-    // pagination: PaginationInterface;
+    // pagination: InfiniteLoaderInterface;
     // sorting
     sortBy: SortInterface['by'];
     sortCaseInsensitive: SortInterface['caseInsensitive'];
     sortDesc: SortInterface['descending'];
-    sortGroupBy: string;
-    sortGroupDesc: boolean;
+    sortGroupBy: GroupInterface['sortBy'];
+    sortGroupDesc: GroupInterface['sortDescending'];
     // grouping
     showGroupSeparatorAtTheBottom: GroupInterface['separatorAtTheBottom'];
     groupReversed: GroupInterface['reversed'];
@@ -67,12 +67,10 @@ interface Props {
     searchOnEveryWord: SearchOptionsInterface['everyWord'];
     searchCaseInsensitive: SearchOptionsInterface['caseInsensitive'];
     // pagination
-    hasMoreItems: boolean;
-    onListPagination: null | (() => void);
-    // paginationScrollThreshold
-    // paginationScrollingContainer
-    // paginationLoader
-    // paginationInReverse
+    hasMoreItems: InfiniteLoaderInterface['hasMore'];
+    onPagination: null | InfiniteLoaderInterface['loadMore'];
+    paginationLoadingIndicator: InfiniteLoaderInterface['loadingIndicator'];
+    paginationLoadingIndicatorPosition: InfiniteLoaderInterface['loadingIndicatorPosition'];
 }
 
 // this interface is to deal with the fact that ForwardRefExoticComponent does not have the propTypes
@@ -88,7 +86,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
         searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
         display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
-        hasMoreItems, onListPagination, // pagination props
+        hasMoreItems, onPagination, paginationLoadingIndicator, paginationLoadingIndicatorPosition, // pagination props
         ...otherProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
     let {list, group, search} = props;
@@ -222,7 +220,13 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                 {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
                 showGroupSeparatorAtTheBottom={group.separatorAtTheBottom || showGroupSeparatorAtTheBottom}
             />
-            {onListPagination && <InfiniteLoader hasMore={hasMoreItems} loadMore={onListPagination}/>}
+            {onPagination &&
+                <InfiniteLoader
+                  hasMore={hasMoreItems}
+                  loadMore={onPagination}
+                  loadingIndicator={paginationLoadingIndicator}
+                  loadingIndicatorPosition={paginationLoadingIndicatorPosition}
+                />}
         </Fragment>
     );
 
@@ -317,7 +321,15 @@ FlatList.propTypes = {
     /**
      * a function to be called when list has been scrolled to the end
      */
-    onListPagination: func,
+    onPagination: func,
+    /**
+     * a custom element to be used instead of the default loading indicator for pagination
+     */
+    paginationLoadingIndicator: oneOfType([node, func, element]),
+    /**
+     * the position of the custom loader indicator
+     */
+    paginationLoadingIndicatorPosition: oneOf(['left', 'center', 'right']),
     /**
      * a jsx element or a function that it is called for every item on the list and returns a jsx element
      */
@@ -426,7 +438,9 @@ FlatList.defaultProps = {
     hasMoreItems: false,
     limit: 0,
     minColumnWidth: '',
-    onListPagination: null,
+    onPagination: null,
+    paginationLoadingIndicator: undefined,
+    paginationLoadingIndicatorPosition: '',
     renderWhenEmpty: null,
     reversed: false,
     rowGap: '',

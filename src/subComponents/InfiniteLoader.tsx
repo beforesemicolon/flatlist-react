@@ -1,5 +1,14 @@
 import React, {Component, createRef, CSSProperties} from 'react';
-import {bool, func} from 'prop-types';
+import {isFunction} from '../utils/isType';
+import DefaultLoadIndicator from './DefaultLoadIndicator';
+import {bool, element, func, node, oneOf, oneOfType} from 'prop-types';
+
+export interface InfiniteLoaderInterface {
+  loadingIndicator: () => JSX.Element | JSX.Element | null;
+  loadingIndicatorPosition: string;
+  hasMore: boolean;
+  loadMore: () => void;
+}
 
 interface State {
   scrollingContainer: HTMLElement | null;
@@ -7,15 +16,16 @@ interface State {
   loading: boolean;
 }
 
-interface Props {
-  hasMore: boolean;
-  loadMore: () => void;
-}
-
-class InfiniteLoader extends Component<Props, State> {
+class InfiniteLoader extends Component<InfiniteLoaderInterface, State> {
   static propTypes = {
     hasMore: bool.isRequired,
-    loadMore: func.isRequired
+    loadMore: func.isRequired,
+    loadingIndicator: oneOfType([func, node, element]),
+    loadingIndicatorPosition: oneOf(['left', 'center', 'right']),
+  };
+
+  static defaultProps = {
+    loadingIndicatorPosition: 'left'
   };
 
   state: State = {
@@ -138,22 +148,25 @@ class InfiniteLoader extends Component<Props, State> {
 
   render() {
     const {loading} = this.state;
-    const {hasMore} = this.props;
+    const {hasMore, loadingIndicator, loadingIndicatorPosition} = this.props;
 
     // do not remove the element from the dom so the ref is not broken but set it invisible enough
     const styles: CSSProperties = {
+      display: 'flex',
       height: hasMore ? 'auto' : 0,
-      overflow: hasMore ? 'auto' : 'hidden',
-      visibility: (loading && hasMore) ? 'visible' : 'hidden'
+      justifyContent: loadingIndicatorPosition === 'center' ? loadingIndicatorPosition :
+          loadingIndicatorPosition === 'right' ? 'flex-end' : 'flex-start',
+      padding: hasMore ? '5px 0' : 0,
+      visibility: (loading && hasMore) ? 'visible' : 'hidden',
     };
 
     return (
       <div ref={this.loaderContainerRef} className='__infinite-loader' style={styles}>
         {
           hasMore &&
-          <div className='loading-indicator'>
-            loading...
-          </div>
+          (loadingIndicator ?
+              (isFunction(loadingIndicator) ? loadingIndicator() : loadingIndicator) :
+              DefaultLoadIndicator)
         }
       </div>
     );

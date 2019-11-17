@@ -229,7 +229,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                   loadingIndicator={paginationLoadingIndicator || pagination.loadingIndicator}
                   loadingIndicatorPosition={paginationLoadingIndicatorPosition || pagination.loadingIndicatorPosition}
                 />}
-        </Fragment>
+        </Fragment >
     );
 
     const WrapperElement = `${wrapperHtmlTag}`;

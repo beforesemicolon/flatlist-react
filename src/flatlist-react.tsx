@@ -90,7 +90,8 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         pagination, // pagination props
         ...otherProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
-    let {list, group, search} = props;
+    // tslint:disable-next-line:prefer-const
+    let {list, group, search, ...tagProps} = otherProps;
 
     list = convertListToArray(list);
 
@@ -154,7 +155,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                             <separator.type
                                 {...separator.props}
                                 key={separatorKey}
-                                className={`${separator.props.className} ___list-separator`}
+                                className={`${separator.props.className || ''} ___list-separator`.trim()}
                             />
                         );
                     }
@@ -238,7 +239,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
             {
                 WrapperElement ?
                     // @ts-ignore
-                    <WrapperElement ref={ref}{...otherProps}>{content}</WrapperElement> :
+                    <WrapperElement ref={ref}{...tagProps}>{content}</WrapperElement> :
                     content
             }
         </Fragment>

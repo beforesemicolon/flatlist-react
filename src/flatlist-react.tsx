@@ -86,12 +86,11 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
         searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
         display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
-        hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
-        pagination, // pagination props
+        hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition, // pagination props
         ...otherProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
     // tslint:disable-next-line:prefer-const
-    let {list, group, search, ...tagProps} = otherProps;
+    let {list, group, search, pagination, ...tagProps} = otherProps;
 
     list = convertListToArray(list);
 
@@ -209,6 +208,13 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         });
     }
 
+    if (pagination && pagination.loadMore) {
+        pagination = {
+            ...(FlatList.defaultProps && FlatList.defaultProps.pagination),
+            ...pagination
+        };
+    }
+
     const content = (
         <Fragment>
             {
@@ -222,7 +228,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                 {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
                 showGroupSeparatorAtTheBottom={group.separatorAtTheBottom || showGroupSeparatorAtTheBottom}
             />
-            {(loadMoreItems || pagination.loadMore) &&
+            {(loadMoreItems || (pagination && pagination.loadMore)) &&
                 <InfiniteLoader
                   hasMore={hasMoreItems || pagination.hasMore}
                   loadMore={loadMoreItems || pagination.loadMore}
@@ -324,6 +330,15 @@ FlatList.propTypes = {
      * the minimum column width when display grid is activated
      */
     minColumnWidth: string,
+    /**
+     * a pagination shorthand configuration
+     */
+    pagination: shape({
+        hasMore: bool,
+        loadMore: func,
+        loadingIndicator: oneOfType([node, func, element]),
+        loadingIndicatorPosition: string,
+    }),
     /**
      * a custom element to be used instead of the default loading indicator for pagination
      */
@@ -441,6 +456,12 @@ FlatList.defaultProps = {
     limit: 0,
     loadMoreItems: null,
     minColumnWidth: '',
+    pagination: {
+        hasMore: false,
+        loadMore: null,
+        loadingIndicator: null,
+        loadingIndicatorPosition: '',
+    },
     paginationLoadingIndicator: undefined,
     paginationLoadingIndicatorPosition: '',
     renderWhenEmpty: null,

@@ -8,7 +8,7 @@ import {
     isNumeric,
     isBoolean,
     isObjectLiteral
-} from './isType';
+} from '../../src/utils/isType';
 
 describe('Util: isType()', () => {
     const data: { [t: string]: any[] } = {};

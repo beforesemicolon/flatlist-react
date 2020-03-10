@@ -217,12 +217,11 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         });
     }
 
-    const {caseInsensitive, by, descending} = sort as SortInterface;
-    if (by || sortBy || (isBoolean(sort) && sort)) {
+    if ((sort as SortInterface).by || sortBy || (isBoolean(sort) && sort)) {
         renderList = sortList(renderList, {
-            caseInsensitive: caseInsensitive || sortCaseInsensitive,
-            descending: descending || sortDesc,
-            onKey: by || sortBy
+            caseInsensitive: (sort as SortInterface).caseInsensitive || sortCaseInsensitive,
+            descending: (sort as SortInterface).descending || sortDesc,
+            onKey: (sort as SortInterface).by || sortBy
         });
     }
 

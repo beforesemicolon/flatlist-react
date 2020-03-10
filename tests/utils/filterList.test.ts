@@ -1,4 +1,4 @@
-import filterList from './filterList';
+import filterList from '../../src/utils/filterList';
 
 describe('Util: filterList()', () => {
 

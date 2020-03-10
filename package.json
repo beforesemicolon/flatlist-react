@@ -22,7 +22,7 @@
     "flatlist"
   ],
   "author": "Elson T. Correia",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "prop-types": "^15.7.2",
     "react": "^16.10.2",

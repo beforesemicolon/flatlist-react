@@ -168,27 +168,24 @@ const renderBlank = (renderWhenEmpty: Props['renderWhenEmpty']): JSX.Element => 
 
 const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
     const {
-        limit, reversed, renderWhenEmpty, wrapperHtmlTag, // render/list related props
+        list, limit, reversed, renderWhenEmpty, wrapperHtmlTag, // render/list related props
         filterBy, // filter props
-        groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
+        group, groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
-        searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
+        search, searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
         display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
         pagination, // pagination props
-        ...otherProps // props to be added to the wrapper container if wrapperHtmlTag is specified
+        ...tagProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
-    // tslint:disable-next-line:prefer-const
-    let {list, group, search, ...tagProps} = otherProps;
 
-    list = convertListToArray(list);
+    let renderList = convertListToArray(list);
 
-    if (list.length === 0) {
+    if (renderList.length === 0) {
         return renderBlank(renderWhenEmpty);
     }
 
     const renderItem = handleRenderItem(props.renderItem);
-    let renderList = [...list];
 
     if (reversed) {
         renderList = renderList.reverse();
@@ -204,16 +201,16 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
 
     if ((searchTerm && searchBy) || (search.term && search.by)) {
         // make sure search always has the defaults
-        search = {
+        const searchWithDefaults = {
             ...(FlatList.defaultProps && FlatList.defaultProps.search),
             ...search
         };
 
         renderList = searchList(renderList, {
-            by: search.by || searchBy,
-            caseInsensitive: search.caseInsensitive || searchCaseInsensitive,
-            everyWord: search.everyWord || searchOnEveryWord,
-            term: search.term || searchTerm
+            by: searchWithDefaults.by || searchBy,
+            caseInsensitive: searchWithDefaults.caseInsensitive || searchCaseInsensitive,
+            everyWord: searchWithDefaults.everyWord || searchOnEveryWord,
+            term: searchWithDefaults.term || searchTerm
         });
     }
 

@@ -1,4 +1,4 @@
-import sortList from '../../src/utils/sortList';
+import sortList from './sortList';
 
 describe('Util sortList()', () => {
 

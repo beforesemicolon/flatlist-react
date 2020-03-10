@@ -1,4 +1,4 @@
-import limitList from '../../src/utils/limitList';
+import limitList from './limitList';
 
 describe('Util: limitList()', () => {
 

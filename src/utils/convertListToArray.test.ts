@@ -1,4 +1,4 @@
-import convertListToArray from '../../src/utils/convertListToArray';
+import convertListToArray from './convertListToArray';
 
 describe('Util: convertListToArray()', () => {
     let arr: any[];

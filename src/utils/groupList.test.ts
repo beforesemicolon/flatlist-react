@@ -1,4 +1,4 @@
-import groupList from '../../src/utils/groupList';
+import groupList from './groupList';
 
 describe('Util: groupList()', () => {
 

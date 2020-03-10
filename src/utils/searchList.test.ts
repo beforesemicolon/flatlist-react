@@ -1,4 +1,4 @@
-import searchList from '../../src/utils/searchList';
+import searchList from './searchList';
 
 describe('Util: searchList()', () => {
     const objectArrays = [{name: 'Last'}, {name: 'First'}, {name: 'First middle'}, {name: 'Last back'}];

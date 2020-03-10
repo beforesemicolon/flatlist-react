@@ -1,5 +1,5 @@
 /* tslint:disable only-arrow-functions no-empty quotemark */
-import getObjectDeepKeyValue from '../../src/utils/getObjectDeepKeyValue';
+import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 
 interface TestingObjectInterface {
     [s: string]: any;

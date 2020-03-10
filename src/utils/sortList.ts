@@ -14,13 +14,15 @@ const defaultSortOptions: SortOptionsInterface = {
 };
 
 const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptions): T[] => {
+    const listCopy = [...list];
+
     if (!isObject(options) || Object.keys(options).length === 0) {
         options = defaultSortOptions;
     }
 
     options = {...defaultSortOptions, ...options};
 
-    list.sort((first: any, second: any) => {
+    listCopy.sort((first: any, second: any) => {
         if (options.onKey) {
             first = (isObject(first) || isArray(first)) ? getObjectDeepKeyValue(options.onKey, first) : first;
             second = (isObject(second) || isArray(second)) ? getObjectDeepKeyValue(options.onKey, second) : second;
@@ -36,7 +38,7 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
                 0;
     });
 
-    return list;
+    return listCopy;
 };
 
 export default sortList;

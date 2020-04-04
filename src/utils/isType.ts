@@ -28,7 +28,7 @@ export const isArray = (x: any): boolean => {
     return getType(x) === types.ARRAY;
 };
 
-export const isNil = (x: any): boolean => {
+export const isNilOrEmpty = (x: any): boolean => {
     return (x === null ||
         getType(x) === types.UNDEFINED ||
         ((isString(x) || isArray(x)) && x.length === 0) ||
@@ -44,7 +44,7 @@ export const isFunction = (x: any): boolean => {
 export default {
     isArray,
     isFunction,
-    isNil,
+    isNilOrEmpty,
     isNumber,
     isObject,
     isString,

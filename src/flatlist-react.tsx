@@ -222,6 +222,13 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
         });
     }
 
+    if (pagination && pagination.loadMore) {
+        pagination = {
+            ...(FlatList.defaultProps && FlatList.defaultProps.pagination),
+            ...pagination
+        };
+    }
+
     const content = (
         <Fragment>
             {
@@ -235,7 +242,7 @@ const FlatList = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
                 {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
                 showGroupSeparatorAtTheBottom={group.separatorAtTheBottom || showGroupSeparatorAtTheBottom}
             />
-            {(loadMoreItems || pagination.loadMore) &&
+            {(loadMoreItems || (pagination && pagination.loadMore)) &&
                 <InfiniteLoader
                     hasMore={hasMoreItems || pagination.hasMore}
                     loadMore={loadMoreItems || pagination.loadMore}
@@ -337,6 +344,15 @@ FlatList.propTypes = {
      * the minimum column width when display grid is activated
      */
     minColumnWidth: string,
+    /**
+     * a pagination shorthand configuration
+     */
+    pagination: shape({
+        hasMore: bool,
+        loadMore: func,
+        loadingIndicator: oneOfType([node, func, element]),
+        loadingIndicatorPosition: string,
+    }),
     /**
      * a custom element to be used instead of the default loading indicator for pagination
      */
@@ -454,6 +470,12 @@ FlatList.defaultProps = {
     limit: 0,
     loadMoreItems: null,
     minColumnWidth: '',
+    pagination: {
+        hasMore: false,
+        loadMore: null,
+        loadingIndicator: null,
+        loadingIndicatorPosition: '',
+    },
     paginationLoadingIndicator: undefined,
     paginationLoadingIndicatorPosition: '',
     renderWhenEmpty: null,

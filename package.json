@@ -25,18 +25,18 @@
   "license": "MIT",
   "dependencies": {
     "prop-types": "^15.7.2",
-    "react": "^16.13.0"
+    "react": "^16.13.1"
   },
   "devDependencies": {
-    "@types/core-js": "^2.5.2",
-    "@types/jest": "^24.0.18",
-    "@types/node": "^12.6.9",
-    "@types/react": "^16.8.24",
-    "jest": "^24.8.0",
-    "nodemon": "^1.19.1",
+    "@types/core-js": "^2.5.3",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.12.34",
+    "@types/react": "^16.9.32",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.4",
     "ts-jest": "^24.0.2",
-    "tslint": "^5.18.0",
-    "tslint-react": "^4.0.0",
-    "typescript": "^3.5.3"
+    "tslint": "^5.20.1",
+    "tslint-react": "^4.2.0",
+    "typescript": "^3.8.3"
   }
 }

@@ -14,8 +14,8 @@ const typesMap: StringObjectInterface = {
     string: 'STRING',
     symbol: 'SYMBOL',
     undefined: 'UNDEFINED',
-    weak_map: 'WEAK_MAP',
-    weak_set: 'WEAK_SET',
+    weakMap: 'WEAK_MAP',
+    weakSet: 'WEAK_SET'
 };
 
 export const types: StringObjectInterface = Object.values(typesMap)
@@ -36,13 +36,13 @@ const getType = (x: any): string => {
         case 'function':
             return typesMap[type];
         default:
-            return x === null ? typesMap.null :
-                (x instanceof Set) ? typesMap.set :
-                    (x instanceof WeakSet) ? typesMap.weak_set :
-                        (x instanceof Map) ? typesMap.map :
-                            (x instanceof WeakMap) ? typesMap.weak_map :
-                                Array.isArray(x) ? typesMap.array :
-                                    typesMap.object; // otherwise it is an object
+            return x === null ? typesMap.null
+                : (x instanceof Set) ? typesMap.set
+                    : (x instanceof WeakSet) ? typesMap.weak_set
+                        : (x instanceof Map) ? typesMap.map
+                            : (x instanceof WeakMap) ? typesMap.weak_map
+                                : Array.isArray(x) ? typesMap.array
+                                    : typesMap.object; // otherwise it is an object
     }
 };
 

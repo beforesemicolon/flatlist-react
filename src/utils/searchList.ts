@@ -1,34 +1,32 @@
 import filterList from './filterList';
-import getObjectDeepKeyValue from './getObjectDeepKeyValue';
+import getObjectDeepKeyValue, {StringObjectInterface} from './getObjectDeepKeyValue';
 import {isArray, isFunction, isObject} from './isType';
 
-export interface SearchOptionsInterface {
+export interface SearchOptionsInterface<T> {
     term?: string;
     everyWord?: boolean;
     caseInsensitive?: boolean;
-    by?: string | ((item: any, term: string, idx: number) => boolean);
+    by?: string | ((item: T, term: string, idx: number) => boolean);
 }
 
-const defaultSearchOptions: SearchOptionsInterface = {
+const defaultSearchOptions = {
     by: '',
     caseInsensitive: false,
     everyWord: false,
     term: ''
 };
 
-const getFilterByFn = (term: string, by: SearchOptionsInterface['by'], caseInsensitive: boolean = false) => {
+const getFilterByFn = <T>(term: string, by: SearchOptionsInterface<T>['by'], caseInsensitive = false): (item: T, idx: number) => boolean => {
     term = (caseInsensitive ? term.toLowerCase() : term).trim();
 
     if (isFunction(by)) {
-        return (item: any, idx: number) => {
-            return (by as (item: any, term: string, idx: number) => boolean)(item, term, idx);
-        };
+        return (item: T, idx: number) => (by as (item: T, term: string, idx: number) => boolean)(item, term, idx);
     }
 
-    return (item: any) => {
-        const keyValue = (isObject(item) || isArray(item)) ?
-            getObjectDeepKeyValue(by as string, item) :
-            item;
+    return (item: StringObjectInterface<T> | T) => {
+        const keyValue = (isObject(item) || isArray(item))
+            ? getObjectDeepKeyValue<T>(by as string, item as StringObjectInterface<T>)
+            : item;
 
         const value = caseInsensitive ? `${keyValue}`.toLowerCase() : `${keyValue}`;
 
@@ -36,10 +34,9 @@ const getFilterByFn = (term: string, by: SearchOptionsInterface['by'], caseInsen
     };
 };
 
-const searchList = <T>(list: T[], options: SearchOptionsInterface) => {
-
+const searchList = <T>(list: T[], options: SearchOptionsInterface<T>): T[] => {
     if (!isObject(options) || Object.keys(options).length === 0) {
-        options = defaultSearchOptions;
+        options = defaultSearchOptions as SearchOptionsInterface<T>;
     }
 
     if (list.length > 0) {
@@ -52,12 +49,12 @@ const searchList = <T>(list: T[], options: SearchOptionsInterface) => {
                 const termWords = term.trim().split(/\s+/).filter((word: string) => (word.length >= 3));
 
                 if (termWords.length > 0) {
-                    const searchedList: Set<any> = new Set([]);
+                    const searchedList: Set<T> = new Set([]);
 
                     termWords.forEach((word) => {
                         const filterByFn = getFilterByFn(word, by, caseInsensitive);
 
-                        filterList(list, filterByFn).forEach((item: any) => searchedList.add(item));
+                        filterList(list, filterByFn).forEach((item: T) => searchedList.add(item));
                     });
 
                     return Array.from(searchedList);

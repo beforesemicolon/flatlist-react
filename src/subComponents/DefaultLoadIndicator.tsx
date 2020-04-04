@@ -1,7 +1,7 @@
 import React from 'react';
 
 const DefaultBlank = (
-    <div className='loading-indicator'>
+    <div className="loading-indicator">
         loading...
     </div>
 );

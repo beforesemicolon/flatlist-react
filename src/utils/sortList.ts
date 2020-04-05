@@ -2,7 +2,7 @@ import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 import {isString, isObject, isArray, isNilOrEmpty} from './isType';
 
 export interface SortOptionsInterface {
-    by?: string | string[] | { by: string; descending?: boolean; caseInsensitive?: boolean }[];
+    by?: string | Array<string | { by: string; descending?: boolean; caseInsensitive?: boolean }>;
     descending?: boolean;
     caseInsensitive?: boolean;
 }

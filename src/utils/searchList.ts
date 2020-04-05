@@ -7,7 +7,7 @@ export interface SearchOptionsInterface<T> {
     everyWord?: boolean;
     caseInsensitive?: boolean;
     minCharactersCount?: number;
-    by?: string | ((item: T, term: string, idx: number) => boolean);
+    by?: string | string[] | {by: string; caseInsensitive?: boolean}[] | ((item: T, term: string, idx: number) => boolean);
 }
 
 const defaultSearchOptions = {
@@ -18,22 +18,32 @@ const defaultSearchOptions = {
     term: ''
 };
 
-const getFilterByFn = <T>(term: string, by: SearchOptionsInterface<T>['by'], caseInsensitive = false): (item: T, idx: number) => boolean => {
+const defaultFilterByFn = (item: any, term: string, caseInsensitive = false, by = '0') => {
+    const keyValue = (isObject(item) || isArray(item))
+        ? getObjectDeepKeyValue(by as string, item)
+        : item;
+
+    const value = caseInsensitive ? `${keyValue}`.toLowerCase() : `${keyValue}`;
     term = (caseInsensitive ? term.toLowerCase() : term).trim();
 
+    return value.search(term) >= 0;
+};
+
+const getFilterByFn = <T>(term: string, by: SearchOptionsInterface<T>['by'], caseInsensitive = false): (item: T, idx: number) => boolean => {
     if (isFunction(by)) {
         return (item: T, idx: number) => (by as (item: T, term: string, idx: number) => boolean)(item, term, idx);
     }
 
-    return (item: T) => {
-        const keyValue = (isObject(item) || isArray(item))
-            ? getObjectDeepKeyValue(by as string, item as T)
-            : item;
+    if (isArray(by)) {
+        return (item: T) => (by as []).some((key: any) => {
+            const keyCaseInsensitive = isObject(key) && key.caseInsensitive !== undefined
+                ? key.caseInsensitive : caseInsensitive;
+            const keyBy = isObject(key) ? key.by : key;
+            return defaultFilterByFn(item, term, keyCaseInsensitive, keyBy);
+        });
+    }
 
-        const value = caseInsensitive ? `${keyValue}`.toLowerCase() : `${keyValue}`;
-
-        return value.search(term) >= 0;
-    };
+    return (item: T) => defaultFilterByFn(item, term, caseInsensitive, by as string);
 };
 
 const searchList = <T>(list: T[], options: SearchOptionsInterface<T>): T[] => {
@@ -48,7 +58,10 @@ const searchList = <T>(list: T[], options: SearchOptionsInterface<T>): T[] => {
             const {everyWord, caseInsensitive} = options;
 
             if (everyWord) {
-                const termWords = term.trim().split(/\s+/).filter((word: string) => (word.length >= minCharactersCount));
+                const termWords = term
+                    .trim()
+                    .split(/\s+/)
+                    .filter((word: string) => (word.length >= minCharactersCount));
 
                 if (termWords.length > 0) {
                     const searchedList: Set<T> = new Set([]);

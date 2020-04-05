@@ -193,7 +193,10 @@ const propTypes = {
      * a search shorthand configuration
      */
     search: shape({
-        by: oneOfType([func, string]),
+        by: oneOfType([
+            func, string,
+            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool})]))
+        ]),
         caseInsensitive: bool,
         everyWord: bool,
         searchableMinCharactersCount: number,
@@ -203,7 +206,10 @@ const propTypes = {
      * a string representing a key on the object or a function takes the item and its index that returns
      * true or false whether to include the item or not
      */
-    searchBy: oneOfType([func, string]),
+    searchBy: oneOfType([
+        func, string,
+        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool})]))
+    ]),
     /**
      * a flag that indicates whether to make search case insensitive or not
      */
@@ -305,18 +311,18 @@ const defaultProps = {
     reversed: false,
     rowGap: '',
     search: {
-        by: '0',
+        by: '',
         caseInsensitive: false,
         everyWord: false,
-        searchableMinCharactersCount: 3,
+        searchableMinCharactersCount: null,
         term: ''
     },
-    searchBy: '0',
+    searchBy: '',
     searchCaseInsensitive: false,
     searchOnEveryWord: false,
     searchTerm: '',
     showGroupSeparatorAtTheBottom: false,
-    searchableMinCharactersCount: 3,
+    searchableMinCharactersCount: null,
     sort: false,
     sortBy: '',
     sortCaseInsensitive: false,
@@ -425,8 +431,6 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         ...tagProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
 
-    console.log('-- sort', sort);
-
     let renderList = convertListToArray(list);
 
     if (renderList.length === 0) {
@@ -447,7 +451,7 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         renderList = filterList(renderList, filterBy);
     }
 
-    if ((searchTerm && searchBy) || (search.term && search.by)) {
+    if (searchTerm || search.term) {
         // make sure search always has the defaults
         const searchWithDefaults = {
             ...(defaultProps && defaultProps.search),
@@ -455,12 +459,11 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         };
 
         renderList = searchList(renderList, {
-            by: searchWithDefaults.by || searchBy,
+            by: searchWithDefaults.by || searchBy || '0',
             caseInsensitive: searchWithDefaults.caseInsensitive || searchCaseInsensitive,
             everyWord: searchWithDefaults.everyWord || searchOnEveryWord,
             term: searchWithDefaults.term || searchTerm,
-            minCharactersCount: !isNilOrEmpty(searchWithDefaults.searchableMinCharactersCount)
-                ? searchWithDefaults.searchableMinCharactersCount : searchableMinCharactersCount
+            minCharactersCount: searchWithDefaults.searchableMinCharactersCount || searchableMinCharactersCount || 3
         });
     }
 

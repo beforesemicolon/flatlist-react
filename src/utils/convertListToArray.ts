@@ -1,6 +1,6 @@
 import getType, {types} from './getType';
 
-export default (list: any) => {
+export default (list: any): any[] => {
     const listType = getType(list);
 
     switch (listType) {

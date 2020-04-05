@@ -1,4 +1,4 @@
-const limitList = <T>(list: T[], limit: number = 0): T[] => {
+const limitList = <T>(list: T[], limit = 0): T[] => {
     if (limit <= 0 || limit >= list.length) {
         return list;
     }

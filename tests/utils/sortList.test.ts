@@ -157,6 +157,64 @@ describe('Util sortList()', () => {
             .toEqual([{count: -40}, {count: -0}, {count: 5}, {count: 13}, {count: 1000.92}, {count: Infinity}]);
     });
 
+    it('Should sort on many keys', () => {
+        const objectArray = [
+            {name: 'Last', other: 'Zer', age: 2},
+            {name: 'First', other: 'Last', age: 8},
+            {name: 'Middle', other: 'Zer', age: 1},
+            {name: 'First', other: 'Middle', age: 8},
+            {name: 'Last', other: 'Abo', age: 2}
+        ];
+
+        expect(sortList(objectArray, {
+            by: ['name', 'other'],
+            descending: false,
+            caseInsensitive: false,
+        })).toEqual([
+            {name: 'First', other: 'Last', age: 8},
+            {name: 'First', other: 'Middle', age: 8},
+            {name: 'Last', other: 'Abo', age: 2},
+            {name: 'Last', other: 'Zer', age: 2},
+            {name: 'Middle', other: 'Zer', age: 1},
+        ])
+
+        expect(sortList(objectArray, {
+            by: ['name', {by: 'other', descending: true}],
+            descending: false,
+            caseInsensitive: false,
+        })).toEqual([
+            {name: 'First', other: 'Middle', age: 8},
+            {name: 'First', other: 'Last', age: 8},
+            {name: 'Last', other: 'Zer', age: 2},
+            {name: 'Last', other: 'Abo', age: 2},
+            {name: 'Middle', other: 'Zer', age: 1},
+        ])
+
+        expect(sortList(objectArray, {
+            by: ['name', {by: 'age', descending: true}],
+            descending: false,
+            caseInsensitive: false,
+        })).toEqual([
+            {name: 'First', other: 'Last', age: 8},
+            {name: 'First', other: 'Middle', age: 8},
+            {name: 'Last', other: 'Zer', age: 2},
+            {name: 'Last', other: 'Abo', age: 2},
+            {name: 'Middle', other: 'Zer', age: 1},
+        ])
+
+        expect(sortList(objectArray, {
+            by: ['name', 'other'],
+            descending: true,
+            caseInsensitive: false,
+        })).toEqual([
+            {name: 'Middle', other: 'Zer', age: 1},
+            {name: 'Last', other: 'Zer', age: 2},
+            {name: 'Last', other: 'Abo', age: 2},
+            {name: 'First', other: 'Middle', age: 8},
+            {name: 'First', other: 'Last', age: 8},
+        ])
+    });
+
     it('Should throw error for object or array arrays if key is no found', () => {
         expect.assertions(4);
         const objectArray = [{name: 'Ta'}, {count: 1}];

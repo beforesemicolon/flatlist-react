@@ -213,6 +213,30 @@ describe('Util sortList()', () => {
             {name: 'First', other: 'Middle', age: 8},
             {name: 'First', other: 'Last', age: 8},
         ])
+
+        expect(sortList(objectArray, {
+            by: ['age', 'other'],
+            descending: true,
+            caseInsensitive: false,
+        })).toEqual([
+            {name: 'First', other: 'Middle', age: 8},
+            {name: 'First', other: 'Last', age: 8},
+            {name: 'Last', other: 'Zer', age: 2},
+            {name: 'Last', other: 'Abo', age: 2},
+            {name: 'Middle', other: 'Zer', age: 1},
+        ])
+
+        expect(sortList(objectArray, {
+            by: [{by: 'age', descending: false}, 'other'],
+            descending: true,
+            caseInsensitive: false,
+        })).toEqual([
+            {name: 'Middle', other: 'Zer', age: 1},
+            {name: 'Last', other: 'Zer', age: 2},
+            {name: 'Last', other: 'Abo', age: 2},
+            {name: 'First', other: 'Middle', age: 8},
+            {name: 'First', other: 'Last', age: 8},
+        ])
     });
 
     it('Should throw error for object or array arrays if key is no found', () => {

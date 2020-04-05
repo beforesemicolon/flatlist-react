@@ -24,6 +24,7 @@ grouping, searching, styling and more.
     * [Filtering Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#filtering-items)
         * [filterBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop)
     * [Searching Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching-items)
+        * [searchableMinCharactersCount prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchableMinCharactersCount-prop)
         * [searchTerm prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchterm-prop)
         * [searchBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchby-prop)
             * [Searching on multiple keys](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching-on-multiple-keys)
@@ -406,13 +407,18 @@ return (
 
 #### Searching Items
 FlatList allows you to search the list with full control on your search using the props `searchTerm`, `searchBy`,
-`searchCaseInsensitive` and `searchOnEveryWord`. You can also use the short-hand version by simply using the
+`searchCaseInsensitive`, `searchableMinCharactersCount` and `searchOnEveryWord`. You can also use the short-hand version by simply using the
 [`search` prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#search-prop). The search prop will 
 allow to pass an object with search configuration.
 
+##### searchableMinCharactersCount prop
+By default the search only starts when the `searchTerm` is at least 3 characters long but you can change this by specifying
+the `searchableMinCharactersCount` as you want.
+
 ##### searchTerm prop
 The `searchTerm` prop is your way of telling FlatList that you want it to handle the search. This prop by itself does
-not do anything. To initialize the search functionality you need to also provide the `searchBy` prop.
+not do anything. For primitive arrays you dont need to initialize the search by provide the `searchBy` prop, otherwise
+you need to provide the key where to search from.
 
 ### Note
 
@@ -422,7 +428,7 @@ applies to every word. Each word should be at least 3 characters long to be cons
 ```
 
 ##### searchBy prop
-The `searchBy` can be either a string or a function. Similar to 
+The `searchBy` can be either a string or a function and defaults to the item itself on the list. Similar to 
 [`filterBy`](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop) the function must return 
 true or false where false means the item will not be displayed. The function is called with two arguments, 
 the item and its index. If you pass a string know that it should represent the key you want to search on. You can use

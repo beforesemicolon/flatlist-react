@@ -6,7 +6,7 @@ import InfiniteLoader, {InfiniteLoaderProps} from './subComponents/InfiniteLoade
 import convertListToArray from './utils/convertListToArray';
 import filterList from './utils/filterList';
 import groupList, {GroupOptionsInterface} from './utils/groupList';
-import {isBoolean, isFunction} from './utils/isType';
+import {isBoolean, isFunction, isNilOrEmpty} from './utils/isType';
 import limitList from './utils/limitList';
 import searchList, {SearchOptionsInterface} from './utils/searchList';
 import sortList, {SortOptionsInterface} from './utils/sortList';
@@ -65,6 +65,7 @@ interface Props<T> {
     searchBy: SearchOptionsInterface<T>['by'];
     searchOnEveryWord: SearchOptionsInterface<T>['everyWord'];
     searchCaseInsensitive: SearchOptionsInterface<T>['caseInsensitive'];
+    searchableMinCharactersCount: SearchOptionsInterface<T>['minCharactersCount'];
     // pagination
     hasMoreItems: InfiniteLoaderProps['hasMore'];
     loadMoreItems: null | InfiniteLoaderProps['loadMore'];
@@ -195,6 +196,7 @@ const propTypes = {
         by: oneOfType([func, string]),
         caseInsensitive: bool,
         everyWord: bool,
+        searchableMinCharactersCount: number,
         term: string
     }),
     /**
@@ -210,6 +212,10 @@ const propTypes = {
      * a flag that indicates how the search should be done. By default is set to True
      */
     searchOnEveryWord: bool,
+    /**
+     * minimum characters needed to start the search
+     */
+    searchableMinCharactersCount: number,
     /**
      * a string representing the term to match when doing search or that will be passed to searchBy function
      */
@@ -299,16 +305,18 @@ const defaultProps = {
     reversed: false,
     rowGap: '',
     search: {
-        by: '',
+        by: '0',
         caseInsensitive: false,
         everyWord: false,
+        searchableMinCharactersCount: 3,
         term: ''
     },
-    searchBy: '',
+    searchBy: '0',
     searchCaseInsensitive: false,
     searchOnEveryWord: false,
     searchTerm: '',
     showGroupSeparatorAtTheBottom: false,
+    searchableMinCharactersCount: 3,
     sort: false,
     sortBy: '',
     sortCaseInsensitive: false,
@@ -410,7 +418,7 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         filterBy, // filter props
         group, groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
-        search, searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, // search props
+        search, searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, searchableMinCharactersCount, // search props
         display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
         pagination, // pagination props
@@ -442,7 +450,7 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
     if ((searchTerm && searchBy) || (search.term && search.by)) {
         // make sure search always has the defaults
         const searchWithDefaults = {
-            ...(FlatList.defaultProps && FlatList.defaultProps.search),
+            ...(defaultProps && defaultProps.search),
             ...search
         };
 
@@ -450,7 +458,9 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
             by: searchWithDefaults.by || searchBy,
             caseInsensitive: searchWithDefaults.caseInsensitive || searchCaseInsensitive,
             everyWord: searchWithDefaults.everyWord || searchOnEveryWord,
-            term: searchWithDefaults.term || searchTerm
+            term: searchWithDefaults.term || searchTerm,
+            minCharactersCount: !isNilOrEmpty(searchWithDefaults.searchableMinCharactersCount)
+                ? searchWithDefaults.searchableMinCharactersCount : searchableMinCharactersCount
         });
     }
 

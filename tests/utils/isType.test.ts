@@ -7,7 +7,9 @@ import {
     isObject,
     isNumeric,
     isBoolean,
-    isObjectLiteral
+    isObjectLiteral,
+    isNil,
+    isEmpty
 } from '../../src/utils/isType';
 
 describe('Util: isType()', () => {
@@ -24,7 +26,9 @@ describe('Util: isType()', () => {
             // tslint:disable-next-line:only-arrow-functions
         }, function() {
         }];
-        data.nils = [null, '', ``, [], {}, undefined, 0];
+        data.nil = [null, undefined, (() => {})()];
+        data.empty = ['', ``, [], {}, new Map(), new Set(), NaN];
+        data.nilOrEmpty = [null, '', ``, [], {}, undefined, new Map(), new Set()];
         data.booleans = [true, false, 1 === 1, 10 > 5];
         data.numbers = [1, -1, 9.3, NaN, (0 / 3), Infinity, 0];
         data.numerics = [1, -1, 9.3, (0 / 3), 0];
@@ -56,9 +60,23 @@ describe('Util: isType()', () => {
         });
     });
 
-    it('Should be nil only those in data.nils', () => {
-        expect.assertions(data.nils.length);
-        data.nils.forEach((x: any) => {
+    it('Should be nil only those in data.nil', () => {
+        expect.assertions(data.nil.length);
+        data.nil.forEach((x: any) => {
+            expect(isNil(x)).toBe(true);
+        });
+    });
+
+    it('Should be empty only those in data.empty', () => {
+        expect.assertions(data.empty.length);
+        data.empty.forEach((x: any) => {
+            expect(isEmpty(x)).toBe(true);
+        });
+    });
+
+    it('Should be nil or empty only those in data.nilOrEmpty', () => {
+        expect.assertions(data.nilOrEmpty.length);
+        data.nilOrEmpty.forEach((x: any) => {
             expect(isNilOrEmpty(x)).toBe(true);
         });
     });

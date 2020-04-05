@@ -302,13 +302,13 @@ const defaultProps = {
     reversed: false,
     rowGap: '',
     search: {
-        by: '',
+        by: '0',
         caseInsensitive: false,
         everyWord: false,
         searchableMinCharactersCount: 3,
         term: ''
     },
-    searchBy: '',
+    searchBy: '0',
     searchCaseInsensitive: false,
     searchOnEveryWord: false,
     searchTerm: '',

@@ -296,12 +296,12 @@ const defaultProps = {
     reversed: false,
     rowGap: '',
     search: {
-        by: '',
+        by: '0',
         caseInsensitive: false,
         everyWord: false,
         term: ''
     },
-    searchBy: '',
+    searchBy: '0',
     searchCaseInsensitive: false,
     searchOnEveryWord: false,
     searchTerm: '',

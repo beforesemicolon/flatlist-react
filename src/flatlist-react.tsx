@@ -2,7 +2,7 @@ import {array, bool, element, func, node, number, object, oneOf, oneOfType, shap
 import React, {forwardRef, ForwardRefExoticComponent, memo, Ref} from 'react';
 import DefaultBlank from './subComponents/DefaultBlank';
 import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './subComponents/DisplayHandler';
-import InfiniteLoader, {InfiniteLoaderInterface} from './subComponents/InfiniteLoader';
+import InfiniteLoader, {InfiniteLoaderProps} from './subComponents/InfiniteLoader';
 import convertListToArray from './utils/convertListToArray';
 import filterList from './utils/filterList';
 import groupList, {GroupOptionsInterface} from './utils/groupList';
@@ -42,7 +42,7 @@ interface Props<T> {
     search: SearchOptionsInterface<T>;
     display: DisplayInterface;
     sort: boolean | SortInterface;
-    pagination: InfiniteLoaderInterface;
+    pagination: InfiniteLoaderProps;
     // sorting
     sortBy: SortInterface['by'];
     sortCaseInsensitive: SortInterface['caseInsensitive'];
@@ -69,10 +69,10 @@ interface Props<T> {
     searchOnEveryWord: SearchOptionsInterface<T>['everyWord'];
     searchCaseInsensitive: SearchOptionsInterface<T>['caseInsensitive'];
     // pagination
-    hasMoreItems: InfiniteLoaderInterface['hasMore'];
-    loadMoreItems: null | InfiniteLoaderInterface['loadMore'];
-    paginationLoadingIndicator: InfiniteLoaderInterface['loadingIndicator'];
-    paginationLoadingIndicatorPosition: InfiniteLoaderInterface['loadingIndicatorPosition'];
+    hasMoreItems: InfiniteLoaderProps['hasMore'];
+    loadMoreItems: null | InfiniteLoaderProps['loadMore'];
+    paginationLoadingIndicator: InfiniteLoaderProps['loadingIndicator'];
+    paginationLoadingIndicatorPosition: InfiniteLoaderProps['loadingIndicatorPosition'];
 }
 
 // this interface is to deal with the fact that ForwardRefExoticComponent does not have the propTypes
@@ -403,7 +403,7 @@ const renderGroupedList = (
 
 const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
     const {
-        list, limit, reversed, renderWhenEmpty, wrapperHtmlTag, // render/list related props
+        list, limit, reversed, renderWhenEmpty, wrapperHtmlTag, renderItem, // render/list related props
         filterBy, // filter props
         group, groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
         sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
@@ -420,7 +420,7 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         return renderBlank(renderWhenEmpty);
     }
 
-    const renderItem = handleRenderItem(props.renderItem);
+    const renderThisItem = handleRenderItem(renderItem);
 
     if (reversed) {
         renderList = renderList.reverse();
@@ -462,8 +462,8 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
             {
                 renderList.length > 0
                     ? (group.by || group.limit || groupBy || groupOf)
-                        ? renderGroupedList(renderList, renderItem, props)
-                        : renderList.map(renderItem)
+                        ? renderGroupedList(renderList, renderThisItem, props)
+                        : renderList.map(renderThisItem)
                     : renderBlank(renderWhenEmpty)
             }
             <DisplayHandler

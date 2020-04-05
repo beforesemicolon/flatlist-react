@@ -3,7 +3,7 @@ import {bool, element, func, node, oneOf, oneOfType} from 'prop-types';
 import {isFunction} from '../utils/isType';
 import DefaultLoadIndicator from './DefaultLoadIndicator';
 
-export interface InfiniteLoaderInterface {
+export interface InfiniteLoaderProps {
     loadingIndicator: null | (() => JSX.Element) | JSX.Element;
     loadingIndicatorPosition: string;
     hasMore: boolean;
@@ -16,7 +16,7 @@ interface State {
     loading: boolean;
 }
 
-class InfiniteLoader extends Component<InfiniteLoaderInterface, State> {
+class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
     static propTypes = {
         hasMore: bool.isRequired,
         loadMore: func.isRequired,
@@ -40,10 +40,7 @@ class InfiniteLoader extends Component<InfiniteLoaderInterface, State> {
     // track the last scroll position so when new dom elements are inserted to avoid scroll jump
     lastScrollTop = 0;
 
-    // a loading flag which is faster to check and update than "loading" state
-    waitingForUpdate = false;
-
-    mounted = true;
+    mounted = false;
 
     // keep track of the dom items in the list
     currentItemsCount = 0;
@@ -66,13 +63,17 @@ class InfiniteLoader extends Component<InfiniteLoaderInterface, State> {
         }
     }
 
-    componentDidUpdate(): void {
+    componentDidUpdate(prevProps: InfiniteLoaderProps, prevState: State): void {
         // reset scroll position to where last was
         if (this.state.scrollingContainer) {
             this.state.scrollingContainer.scrollTop = this.lastScrollTop;
         }
 
-        this.checkIfListChanged();
+        // if prev and current loading are the same is because the component updated from props change
+        // otherwise is because the component updated itself
+        if (prevState.loading === this.state.loading) {
+            this.reset();
+        }
     }
 
     componentWillUnmount(): void {
@@ -81,21 +82,15 @@ class InfiniteLoader extends Component<InfiniteLoaderInterface, State> {
     }
 
     // update the loading flags and items count whether "hasMore" is false or list changed
-    checkIfListChanged(): void {
-        const currentItemsCount = this.getScrollingContainerChildrenCount();
-
-        if (this.currentItemsCount !== currentItemsCount || !this.props.hasMore) {
-            this.currentItemsCount = currentItemsCount;
-            this.waitingForUpdate = false;
-            if (this.state.loading) {
-                this.setState({loading: false});
-            }
+    reset(): void {
+        if (this.state.loading) {
+            this.setState({loading: false});
         }
 
         this.checkIfLoadingIsNeeded();
     }
 
-    getScrollingContainerChildrenCount = () => {
+    getScrollingContainerChildrenCount = (): number => {
         const {scrollingContainer} = this.state;
 
         if (scrollingContainer) {
@@ -121,8 +116,8 @@ class InfiniteLoader extends Component<InfiniteLoaderInterface, State> {
 
     // show or hide loading indicators based on scroll position
     // calls the "loadMore" function when is needed
-    checkIfLoadingIsNeeded = () => {
-        if (!this.mounted) {
+    checkIfLoadingIsNeeded = (): void => {
+        if (!this.mounted || !this.props.hasMore || this.state.loading) {
             return;
         }
 
@@ -131,18 +126,11 @@ class InfiniteLoader extends Component<InfiniteLoaderInterface, State> {
             const {scrollTop, offsetTop, clientHeight} = scrollingContainer;
             this.lastScrollTop = scrollTop;
 
-            if (!this.props.hasMore || this.waitingForUpdate) {
-                return;
-            }
-
             const loaderPosition = (loadIndicatorContainer.offsetTop - scrollTop);
             const startingPoint = offsetTop + clientHeight;
 
             if (loaderPosition <= startingPoint) {
-                this.waitingForUpdate = true;
-                if (!this.state.loading) {
-                    this.setState({loading: true}, this.props.loadMore as (() => void));
-                }
+                this.setState({loading: true}, this.props.loadMore as (() => void));
             }
         }
     }

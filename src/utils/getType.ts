@@ -38,9 +38,9 @@ const getType = (x: any): string => {
         default:
             return x === null ? typesMap.null
                 : (x instanceof Set) ? typesMap.set
-                    : (x instanceof WeakSet) ? typesMap.weak_set
+                    : (x instanceof WeakSet) ? typesMap.weakSet
                         : (x instanceof Map) ? typesMap.map
-                            : (x instanceof WeakMap) ? typesMap.weak_map
+                            : (x instanceof WeakMap) ? typesMap.weakMap
                                 : Array.isArray(x) ? typesMap.array
                                     : typesMap.object; // otherwise it is an object
     }

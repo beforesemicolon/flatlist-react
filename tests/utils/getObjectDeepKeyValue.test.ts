@@ -100,14 +100,14 @@ describe('Util: getObjectDeepKeyValue()', () => {
 
         // @ts-ignore
         expect(() => getObjectDeepKeyValue('children', ''))
-            .toThrowError('getObjectDeepKeyValue: dot separated keys is not a string or object is not an object.');
+            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
         // @ts-ignore
         expect(() => getObjectDeepKeyValue('children', () => {
         }))
-            .toThrowError('getObjectDeepKeyValue: dot separated keys is not a string or object is not an object.');
+            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
         // @ts-ignore
         expect(() => getObjectDeepKeyValue('children', new Map()))
-            .toThrowError('getObjectDeepKeyValue: dot separated keys is not a string or object is not an object.');
+            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
     });
 
     it('Should throw an error when not STRING is passed as key', () => {
@@ -115,12 +115,12 @@ describe('Util: getObjectDeepKeyValue()', () => {
 
         // @ts-ignore
         expect(() => getObjectDeepKeyValue([], testingObject))
-            .toThrowError('getObjectDeepKeyValue: dot separated keys is not a string or object is not an object.');
+            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
         // @ts-ignore
         expect(() => getObjectDeepKeyValue(1, testingArray))
-            .toThrowError('getObjectDeepKeyValue: dot separated keys is not a string or object is not an object.');
+            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
         // @ts-ignore
         expect(() => getObjectDeepKeyValue({}, testingObject))
-            .toThrowError('getObjectDeepKeyValue: dot separated keys is not a string or object is not an object.');
+            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
     });
 });

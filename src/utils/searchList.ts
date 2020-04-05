@@ -1,5 +1,5 @@
 import filterList from './filterList';
-import getObjectDeepKeyValue, {StringObjectInterface} from './getObjectDeepKeyValue';
+import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 import {isArray, isFunction, isObject} from './isType';
 
 export interface SearchOptionsInterface<T> {
@@ -23,9 +23,9 @@ const getFilterByFn = <T>(term: string, by: SearchOptionsInterface<T>['by'], cas
         return (item: T, idx: number) => (by as (item: T, term: string, idx: number) => boolean)(item, term, idx);
     }
 
-    return (item: StringObjectInterface<T> | T) => {
+    return (item: T) => {
         const keyValue = (isObject(item) || isArray(item))
-            ? getObjectDeepKeyValue<T>(by as string, item as StringObjectInterface<T>)
+            ? getObjectDeepKeyValue(by as string, item as T)
             : item;
 
         const value = caseInsensitive ? `${keyValue}`.toLowerCase() : `${keyValue}`;

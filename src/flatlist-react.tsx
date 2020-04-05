@@ -1,4 +1,4 @@
-import {array, bool, element, func, node, number, object, oneOf, oneOfType, shape, string} from 'prop-types';
+import {array, arrayOf, bool, element, func, node, number, object, oneOf, oneOfType, shape, string} from 'prop-types';
 import React, {forwardRef, ForwardRefExoticComponent, memo, Ref} from 'react';
 import DefaultBlank from './subComponents/DefaultBlank';
 import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './subComponents/DisplayHandler';
@@ -9,7 +9,7 @@ import groupList, {GroupOptionsInterface} from './utils/groupList';
 import {isBoolean, isFunction} from './utils/isType';
 import limitList from './utils/limitList';
 import searchList, {SearchOptionsInterface} from './utils/searchList';
-import sortList from './utils/sortList';
+import sortList, {SortOptionsInterface} from './utils/sortList';
 
 type renderFunc = (item: any, key: number | string) => JSX.Element;
 
@@ -21,10 +21,7 @@ interface GroupInterface extends GroupOptionsInterface {
     sortCaseInsensitive: boolean;
 }
 
-interface SortInterface {
-    by: string;
-    descending: boolean;
-    caseInsensitive: boolean;
+interface SortInterface extends SortOptionsInterface {
     groupBy: GroupInterface['sortBy'];
     groupDescending: GroupInterface['sortDescending'];
     groupCaseInsensitive: GroupInterface['sortCaseInsensitive'];
@@ -225,7 +222,10 @@ const propTypes = {
      * a flag to indicate that the list should be sorted (uses default sort configuration)
      */
     sort: oneOfType([bool, shape({
-        by: string,
+        by: oneOfType([
+            string,
+            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+        ]),
         caseInsensitive: bool,
         descending: bool,
         groupBy: string,
@@ -235,7 +235,10 @@ const propTypes = {
     /**
      * a string representing a key in the item that should be used to sort the list
      */
-    sortBy: string,
+    sortBy: oneOfType([
+        string,
+        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+    ]),
     /**
      * a flag to indicate that sort should be done in descending order
      */
@@ -386,7 +389,7 @@ const renderGroupedList = (
                         || sortCaseInsensitive || (sort as SortInterface).groupCaseInsensitive,
                     descending: group.sortDescending
                         || sortGroupDesc || (sort as SortInterface).groupDescending,
-                    onKey: group.sortBy || sortGroupBy || (sort as SortInterface).groupBy
+                    by: group.sortBy || sortGroupBy || (sort as SortInterface).groupBy
                 });
             }
 
@@ -413,6 +416,8 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         pagination, // pagination props
         ...tagProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
+
+    console.log('-- sort', sort);
 
     let renderList = convertListToArray(list);
 
@@ -453,7 +458,7 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         renderList = sortList(renderList, {
             caseInsensitive: (sort as SortInterface).caseInsensitive || sortCaseInsensitive,
             descending: (sort as SortInterface).descending || sortDesc,
-            onKey: (sort as SortInterface).by || sortBy
+            by: (sort as SortInterface).by || sortBy
         });
     }
 

@@ -2,7 +2,7 @@ import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 import {isString, isObject, isArray} from './isType';
 
 export interface SortOptionsInterface {
-    onKey?: string;
+    by?: string | string[] | { by: string; descending?: boolean; caseInsensitive?: boolean }[];
     descending?: boolean;
     caseInsensitive?: boolean;
 }
@@ -10,7 +10,24 @@ export interface SortOptionsInterface {
 const defaultSortOptions: SortOptionsInterface = {
     caseInsensitive: false,
     descending: false,
-    onKey: ''
+    by: ''
+};
+
+const compareKeys = (first: any, second: any,
+    {by = '', caseInsensitive = false, descending = false}: SortOptionsInterface) => {
+    if (by) {
+        first = (isObject(first) || isArray(first)) ? getObjectDeepKeyValue((by as string), first) : first;
+        second = (isObject(second) || isArray(second)) ? getObjectDeepKeyValue((by as string), second) : second;
+    }
+
+    if (caseInsensitive) {
+        first = isString(first) ? first.toLowerCase() : first;
+        second = isString(second) ? second.toLowerCase() : second;
+    }
+
+    return first > second ? (descending ? -1 : 1)
+        : first < second ? (descending ? 1 : -1)
+            : 0;
 };
 
 const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptions): T[] => {
@@ -23,19 +40,21 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
     options = {...defaultSortOptions, ...options};
 
     listCopy.sort((first: any, second: any) => {
-        if (options.onKey) {
-            first = (isObject(first) || isArray(first)) ? getObjectDeepKeyValue(options.onKey, first) : first;
-            second = (isObject(second) || isArray(second)) ? getObjectDeepKeyValue(options.onKey, second) : second;
+        if (isArray(options.by)) {
+            for (let i = 0; i < (options.by as []).length; i += 1) {
+                const key = (options.by as [])[i];
+                const option = isObject(key) ? key : {...options, by: key};
+                const res = compareKeys(first, second, option as SortOptionsInterface);
+
+                if (res !== 0) {
+                    return res;
+                }
+            }
+
+            return 0;
         }
 
-        if (options.caseInsensitive) {
-            first = isString(first) ? first.toLowerCase() : first;
-            second = isString(second) ? second.toLowerCase() : second;
-        }
-
-        return first > second ? (options.descending ? -1 : 1)
-            : first < second ? (options.descending ? 1 : -1)
-                : 0;
+        return compareKeys(first, second, options);
     });
 
     return listCopy;

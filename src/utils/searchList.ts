@@ -2,12 +2,15 @@ import filterList from './filterList';
 import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 import {isArray, isFunction, isObject, isNilOrEmpty} from './isType';
 
+type cb = (item: any, idx: number) => boolean;
+type termCb = (item: any, term: string, idx: number) => boolean;
+
 export interface SearchOptionsInterface<T> {
     term?: string;
     everyWord?: boolean;
     caseInsensitive?: boolean;
     minCharactersCount?: number;
-    by?: string | ((item: T, term: string, idx: number) => boolean);
+    by?: string | Array<string | {by: string; caseInsensitive?: boolean}> | termCb;
 }
 
 const defaultSearchOptions = {
@@ -18,22 +21,49 @@ const defaultSearchOptions = {
     term: ''
 };
 
-const getFilterByFn = <T>(term: string, by: SearchOptionsInterface<T>['by'], caseInsensitive = false): (item: T, idx: number) => boolean => {
-    term = (caseInsensitive ? term.toLowerCase() : term).trim();
+const defaultFilterByFn = (item: any, term: string | string[], caseInsensitive = false, by = '0') => {
+    const keyValue = (isObject(item) || isArray(item))
+        ? getObjectDeepKeyValue(by as string, item)
+        : item;
 
-    if (isFunction(by)) {
-        return (item: T, idx: number) => (by as (item: T, term: string, idx: number) => boolean)(item, term, idx);
+    const value = caseInsensitive ? `${keyValue}`.toLowerCase() : `${keyValue}`;
+
+    if (isArray(term)) {
+        return (term as []).some((t: string) => {
+            t = caseInsensitive ? t.toLowerCase() : t.trim();
+
+            return value.search(t.trim()) >= 0;
+        });
     }
 
-    return (item: T) => {
-        const keyValue = (isObject(item) || isArray(item))
-            ? getObjectDeepKeyValue(by as string, item as T)
-            : item;
+    term = caseInsensitive ? (term as string).toLowerCase() : (term as string);
 
-        const value = caseInsensitive ? `${keyValue}`.toLowerCase() : `${keyValue}`;
+    return value.search(term.trim() as string) >= 0;
+};
 
-        return value.search(term) >= 0;
-    };
+const getFilterByFn = <T>(term: string | string[], by: SearchOptionsInterface<T>['by'], caseInsensitive = false): cb => {
+    if (isFunction(by)) {
+        if (isArray(term)) {
+            return (item: T, idx: number) => (term as string[]).some((t: string) => {
+                t = caseInsensitive ? (t as string).toLowerCase() : t;
+                return (by as termCb)(item, t.trim(), idx);
+            });
+        }
+
+        term = caseInsensitive ? (term as string).toLowerCase() : term;
+        return (item: T, idx: number) => (by as termCb)(item, (term as string).trim(), idx);
+    }
+
+    if (isArray(by)) {
+        return (item: T) => (by as []).some((key: any) => {
+            const keyCaseInsensitive = isObject(key) && key.caseInsensitive !== undefined
+                ? key.caseInsensitive : caseInsensitive;
+            const keyBy = (isObject(key) ? key.by : key) || '0';
+            return defaultFilterByFn(item, term, keyCaseInsensitive, keyBy);
+        });
+    }
+
+    return (item: T) => defaultFilterByFn(item, term, caseInsensitive, by as string || '0');
 };
 
 const searchList = <T>(list: T[], options: SearchOptionsInterface<T>): T[] => {
@@ -48,18 +78,15 @@ const searchList = <T>(list: T[], options: SearchOptionsInterface<T>): T[] => {
             const {everyWord, caseInsensitive} = options;
 
             if (everyWord) {
-                const termWords = term.trim().split(/\s+/).filter((word: string) => (word.length >= minCharactersCount));
+                const termWords = term
+                    .trim()
+                    .split(/\s+/)
+                    .filter((word: string) => (word.length >= minCharactersCount));
 
                 if (termWords.length > 0) {
-                    const searchedList: Set<T> = new Set([]);
+                    const filterByFn = getFilterByFn(Array.from(new Set(termWords)), by, caseInsensitive);
 
-                    termWords.forEach((word) => {
-                        const filterByFn = getFilterByFn(word, by, caseInsensitive);
-
-                        filterList(list, filterByFn).forEach((item: T) => searchedList.add(item));
-                    });
-
-                    return Array.from(searchedList);
+                    return filterList(list, filterByFn);
                 }
             } else {
                 const filterByFn = getFilterByFn(term, by, caseInsensitive);

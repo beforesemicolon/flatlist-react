@@ -1,4 +1,4 @@
-import {array, bool, element, func, node, number, object, oneOf, oneOfType, shape, string} from 'prop-types';
+import {array, arrayOf, bool, element, func, node, number, object, oneOf, oneOfType, shape, string} from 'prop-types';
 import React, {forwardRef, ForwardRefExoticComponent, memo, Ref} from 'react';
 import DefaultBlank from './subComponents/DefaultBlank';
 import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './subComponents/DisplayHandler';
@@ -6,25 +6,22 @@ import InfiniteLoader, {InfiniteLoaderProps} from './subComponents/InfiniteLoade
 import convertListToArray from './utils/convertListToArray';
 import filterList from './utils/filterList';
 import groupList, {GroupOptionsInterface} from './utils/groupList';
-import {isBoolean, isFunction, isNilOrEmpty} from './utils/isType';
+import {isBoolean, isFunction} from './utils/isType';
 import limitList from './utils/limitList';
 import searchList, {SearchOptionsInterface} from './utils/searchList';
-import sortList from './utils/sortList';
+import sortList, {SortOptionsInterface} from './utils/sortList';
 
 type renderFunc = (item: any, key: number | string) => JSX.Element;
 
 interface GroupInterface extends GroupOptionsInterface {
     separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
     separatorAtTheBottom: boolean;
-    sortBy: string;
+    sortBy: SortOptionsInterface['by'];
     sortDescending: boolean;
     sortCaseInsensitive: boolean;
 }
 
-interface SortInterface {
-    by: string;
-    descending: boolean;
-    caseInsensitive: boolean;
+interface SortInterface extends SortOptionsInterface {
     groupBy: GroupInterface['sortBy'];
     groupDescending: GroupInterface['sortDescending'];
     groupCaseInsensitive: GroupInterface['sortCaseInsensitive'];
@@ -118,7 +115,10 @@ const propTypes = {
         reversed: bool,
         separator: oneOfType([node, func, element]),
         separatorAtTheBottom: bool,
-        sortBy: string,
+        sortBy: oneOfType([
+            string,
+            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+        ]),
         sortCaseInsensitive: bool,
         sortDescending: bool
     }),
@@ -196,7 +196,10 @@ const propTypes = {
      * a search shorthand configuration
      */
     search: shape({
-        by: oneOfType([func, string]),
+        by: oneOfType([
+            func, string,
+            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool})]))
+        ]),
         caseInsensitive: bool,
         everyWord: bool,
         searchableMinCharactersCount: number,
@@ -206,7 +209,10 @@ const propTypes = {
      * a string representing a key on the object or a function takes the item and its index that returns
      * true or false whether to include the item or not
      */
-    searchBy: oneOfType([func, string]),
+    searchBy: oneOfType([
+        func, string,
+        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool})]))
+    ]),
     /**
      * a flag that indicates whether to make search case insensitive or not
      */
@@ -231,7 +237,10 @@ const propTypes = {
      * a flag to indicate that the list should be sorted (uses default sort configuration)
      */
     sort: oneOfType([bool, shape({
-        by: string,
+        by: oneOfType([
+            string,
+            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+        ]),
         caseInsensitive: bool,
         descending: bool,
         groupBy: string,
@@ -241,7 +250,10 @@ const propTypes = {
     /**
      * a string representing a key in the item that should be used to sort the list
      */
-    sortBy: string,
+    sortBy: oneOfType([
+        string,
+        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+    ]),
     /**
      * a flag to indicate that sort should be done in descending order
      */
@@ -249,7 +261,10 @@ const propTypes = {
     /**
      * a string representing a key in the item that should be used to sort the list groups
      */
-    sortGroupBy: string,
+    sortGroupBy: oneOfType([
+        string,
+        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+    ]),
     /**
      * a flag to indicate that sort should be done in descending order inside each group
      */
@@ -302,18 +317,18 @@ const defaultProps = {
     reversed: false,
     rowGap: '',
     search: {
-        by: '0',
+        by: '',
         caseInsensitive: false,
         everyWord: false,
-        searchableMinCharactersCount: 3,
+        searchableMinCharactersCount: 0,
         term: ''
     },
-    searchBy: '0',
+    searchBy: '',
     searchCaseInsensitive: false,
     searchOnEveryWord: false,
     searchTerm: '',
     showGroupSeparatorAtTheBottom: false,
-    searchableMinCharactersCount: 3,
+    searchableMinCharactersCount: 0,
     sort: false,
     sortBy: '',
     sortCaseInsensitive: false,
@@ -394,7 +409,7 @@ const renderGroupedList = (
                         || sortCaseInsensitive || (sort as SortInterface).groupCaseInsensitive,
                     descending: group.sortDescending
                         || sortGroupDesc || (sort as SortInterface).groupDescending,
-                    onKey: group.sortBy || sortGroupBy || (sort as SortInterface).groupBy
+                    by: group.sortBy || sortGroupBy || (sort as SortInterface).groupBy
                 });
             }
 
@@ -442,7 +457,7 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         renderList = filterList(renderList, filterBy);
     }
 
-    if ((searchTerm && searchBy) || (search.term && search.by)) {
+    if (searchTerm || search.term) {
         // make sure search always has the defaults
         const searchWithDefaults = {
             ...(defaultProps && defaultProps.search),
@@ -450,12 +465,11 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         };
 
         renderList = searchList(renderList, {
-            by: searchWithDefaults.by || searchBy,
+            by: searchWithDefaults.by || searchBy || '0',
             caseInsensitive: searchWithDefaults.caseInsensitive || searchCaseInsensitive,
             everyWord: searchWithDefaults.everyWord || searchOnEveryWord,
             term: searchWithDefaults.term || searchTerm,
-            minCharactersCount: !isNilOrEmpty(searchWithDefaults.searchableMinCharactersCount)
-                ? searchWithDefaults.searchableMinCharactersCount : searchableMinCharactersCount
+            minCharactersCount: searchWithDefaults.searchableMinCharactersCount || searchableMinCharactersCount || 3
         });
     }
 
@@ -463,7 +477,7 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         renderList = sortList(renderList, {
             caseInsensitive: (sort as SortInterface).caseInsensitive || sortCaseInsensitive,
             descending: (sort as SortInterface).descending || sortDesc,
-            onKey: (sort as SortInterface).by || sortBy
+            by: (sort as SortInterface).by || sortBy
         });
     }
 

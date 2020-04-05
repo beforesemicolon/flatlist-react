@@ -82,6 +82,67 @@ describe('Util: searchList()', () => {
            expect(search('first Mid Back', false, true)).toHaveLength(0);
            expect(search('first Mid Back', false, true)).toEqual([]);
        });
+
+       describe('multiple key search', () => {
+           const objectArray = [
+               {name: 'Last', other: 'Zer'},
+               {name: 'First', other: 'Last'},
+               {name: 'Middle', other: 'Zer'},
+               {name: 'First', other: 'Middle'},
+               {name: 'Last', other: 'Abo'}
+           ];
+
+           it('Should search on "name" and "other" keys', () => {
+               expect(searchList(objectArray, {
+                   by: ['name', 'other'],
+                   term: 'Last',
+                   everyWord: false,
+                   caseInsensitive: false
+               })).toEqual([
+                   {name: 'Last', other: 'Zer'},
+                   {name: 'First', other: 'Last'},
+                   {name: 'Last', other: 'Abo'}
+               ]);
+
+               expect(searchList(objectArray, {
+                   by: ['name', 'other'],
+                   term: 'last',
+                   everyWord: false,
+                   caseInsensitive: true
+               })).toEqual([
+                   {name: 'Last', other: 'Zer'},
+                   {name: 'First', other: 'Last'},
+                   {name: 'Last', other: 'Abo'}
+               ]);
+
+               expect(searchList(objectArray, {
+                   by: ['name', 'other'],
+                   term: 'last',
+                   everyWord: false,
+                   caseInsensitive: false
+               })).toEqual([]);
+
+               expect(searchList(objectArray, {
+                   by: ['name', {by: 'other', caseInsensitive: true}],
+                   term: 'last',
+                   everyWord: false,
+                   caseInsensitive: false
+               })).toEqual([
+                   {name: 'First', other: 'Last'},
+               ]);
+
+               expect(searchList(objectArray, {
+                   by: ['name', {by: 'other', caseInsensitive: true}],
+                   term: 'zer last',
+                   everyWord: true,
+                   caseInsensitive: false
+               })).toEqual([
+                   {name: 'Last', other: 'Zer'},
+                   {name: 'First', other: 'Last'},
+                   {name: 'Middle', other: 'Zer'},
+               ]);
+           });
+       })
    });
 
    describe('Primitive array', () => {

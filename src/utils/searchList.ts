@@ -10,7 +10,7 @@ export interface SearchOptionsInterface<T> {
 }
 
 const defaultSearchOptions = {
-    by: '',
+    by: '0',
     caseInsensitive: false,
     everyWord: false,
     term: ''
@@ -40,9 +40,9 @@ const searchList = <T>(list: T[], options: SearchOptionsInterface<T>): T[] => {
     }
 
     if (list.length > 0) {
-        const {term, by} = options;
+        const {term, by = '0'} = options;
 
-        if (term && by && term.length >= 3) {
+        if (term && term.length >= 3) {
             const {everyWord, caseInsensitive} = options;
 
             if (everyWord) {

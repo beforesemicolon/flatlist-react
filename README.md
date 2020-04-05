@@ -14,14 +14,14 @@ grouping, searching, styling and more.
         * [renderWhenEmpty prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#renderwhenempty-prop)
         * [limit prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#limit-prop)
         * [reversed prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#reversed-prop)
-    * [Paginating list (Infinite Loader)](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginating-list)
+    * [Paginating list (Infinite Loader)](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginating-list-infinite-loader)
         * [hasMoreItems prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#hasmoreitems-prop)
         * [loadMoreItems prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#loadmoreitems-prop)
         * [paginationLoadingIndicator prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginationloadingindicator-prop)
         * [paginationLoadingIndicatorPosition prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginationloadingindicatorposition-prop)
-        * [paginate prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginate-prop)
+        * [pagination prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginate-prop)
     * [Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string)
-    * [Filtering Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#filteringsearching-items)
+    * [Filtering Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#filtering-items)
         * [filterBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop)
     * [Searching Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching-items)
         * [searchTerm prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchterm-prop)
@@ -49,7 +49,7 @@ grouping, searching, styling and more.
         * [displayGrid prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#displaygrid-prop)
         * [gridGap prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#gridgap-prop)
         * [minColumnWidth prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#mincolumnwidth-prop)
-        * [displayRow prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#displaygrid-row)
+        * [displayRow prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#displayrow-prop)
         * [rowGap prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#rowgap-prop)
         * [display prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#display-prop)
 - [Author](https://github.com/ECorreia45/flatlist-react/tree/documentation#author)
@@ -156,7 +156,7 @@ For example:
 listRef = createRef();
 
 return (
-    <ul class="list-items" ref={this.listRef} onMouseOver={this.handleMouseOver}>
+    <ul className="list-items" ref={this.listRef} onMouseOver={this.handleMouseOver}>
         <FlatList list={this.props.people} renderItem={<Person/>}/>
     </ul>
 )
@@ -169,7 +169,7 @@ listRef = createRef();
 
 return (
     <FlatList list={this.props.people} renderItem={<Person/>} wrapperHtmlTag="ul"
-              class="list-items" ref={this.listRef} onMouseOver={this.handleMouseOver}/>
+              className="list-items" ref={this.listRef} onMouseOver={this.handleMouseOver}/>
 )
 ```
 
@@ -217,7 +217,7 @@ This simply reverse the provided list. Instead of reading the list from first to
 [groupReversed](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupreversed-prop) 
 if you want the same effect on the individual groups.
 
-#### Paginate list
+#### Paginating list (Infinite Loader)
 You don't have to start with a full list from the beginning. Flatlist allows you to specify that the list you gave
 is not complete and a handler to call when user scrolled to the end of the list. You can specify a loading indicator
 component to show while you are fetching the next page of the list. This feature works really well with api. Let's take

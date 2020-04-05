@@ -1,26 +1,22 @@
 import {isObject, isArray, isString} from './isType';
 
-export interface StringObjectInterface {
-    [t: string]: any;
-}
-
-const getObjectDeepKeyValue = (dotSeparatedKeys: string, objectOrArray: StringObjectInterface) => {
+const getObjectDeepKeyValue = (dotSeparatedKeys: string, objectOrArray: any) => {
     if ((isObject(objectOrArray) || isArray(objectOrArray)) && isString(dotSeparatedKeys)) {
-        const keys = dotSeparatedKeys.split('.');
+        const keys: string[] = dotSeparatedKeys.split('.');
         let value = objectOrArray;
 
-        for (const key of keys) {
+        keys.forEach((key: string) => {
             if (value[key] === undefined) {
                 throw new Error(`getObjectDeepKeyValue: "${key}" is undefined.`);
             } else {
                 value = value[key];
             }
-        }
+        });
 
         return value;
-    } else {
-        throw new Error(`getObjectDeepKeyValue: dot separated keys is not a string or object is not an object.`);
     }
+
+    throw new Error('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
 };
 
 export default getObjectDeepKeyValue;

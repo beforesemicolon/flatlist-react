@@ -1,6 +1,6 @@
 import {
     isFunction,
-    isNil,
+    isNilOrEmpty,
     isString,
     isArray,
     isNumber,
@@ -8,7 +8,7 @@ import {
     isNumeric,
     isBoolean,
     isObjectLiteral
-} from './isType';
+} from '../../src/utils/isType';
 
 describe('Util: isType()', () => {
     const data: { [t: string]: any[] } = {};
@@ -59,7 +59,7 @@ describe('Util: isType()', () => {
     it('Should be nil only those in data.nils', () => {
         expect.assertions(data.nils.length);
         data.nils.forEach((x: any) => {
-            expect(isNil(x)).toBe(true);
+            expect(isNilOrEmpty(x)).toBe(true);
         });
     });
 

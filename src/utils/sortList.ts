@@ -33,9 +33,9 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
             second = isString(second) ? second.toLowerCase() : second;
         }
 
-        return first > second ? (options.descending ? -1 : 1) :
-            first < second ? (options.descending ? 1 : -1) :
-                0;
+        return first > second ? (options.descending ? -1 : 1)
+            : first < second ? (options.descending ? 1 : -1)
+                : 0;
     });
 
     return listCopy;

@@ -1,10 +1,10 @@
 {
   "name": "flatlist-react",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "A helpful utility component to handle lists in react like a champ",
   "main": "./lib/index.js",
   "scripts": {
-    "lint": "tslint -c tslint.json -p tsconfig.json --fix",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
     "tsc": "tsc",
     "build": "rm -rf ./lib && npm run lint && tsc",
     "build:local": "npm run lint && npm run tsc",
@@ -22,22 +22,31 @@
     "flatlist"
   ],
   "author": "Elson T. Correia",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "prop-types": "^15.7.2",
-    "react": "^16.10.2",
-    "react-dom": "^16.10.2"
+    "react": "^16.13.1"
   },
   "devDependencies": {
-    "@types/core-js": "^2.5.2",
-    "@types/jest": "^24.0.18",
-    "@types/node": "^12.6.9",
-    "@types/react": "^16.8.24",
-    "jest": "^24.8.0",
-    "nodemon": "^1.19.1",
+    "@types/core-js": "^2.5.3",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.12.34",
+    "@types/react": "^16.9.32",
+    "@typescript-eslint/eslint-plugin": "^2.23.0",
+    "@typescript-eslint/parser": "^2.23.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-json": "^2.1.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.19.0",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.4",
+    "prettier": "^1.19.1",
     "ts-jest": "^24.0.2",
-    "tslint": "^5.18.0",
-    "tslint-react": "^4.0.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.8.3"
   }
 }

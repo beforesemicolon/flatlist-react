@@ -17,7 +17,7 @@ interface GroupedItemsObjectInterface<T> {
     [s: string]: T[];
 }
 
-const handleGroupReverse = <T>(groupedLists: T[][], reverse: boolean = false) => {
+const handleGroupReverse = <T>(groupedLists: T[][], reverse = false) => {
     if (reverse && isBoolean(reverse)) {
         return groupedLists.map((group) => group.reverse());
     }
@@ -35,12 +35,11 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
     const {by: groupBy, limit} = options;
 
     if (groupBy && (isFunction(groupBy) || isString(groupBy))) {
-
         const groupedList: GroupedItemsObjectInterface<T> = list
             .reduce((prevList: GroupedItemsObjectInterface<T>, item: T, idx: number) => {
-                const groupLabel: any = isFunction(groupBy) ?
-                    (groupBy as (item: any, idx: number) => string)(item, idx) :
-                    getObjectDeepKeyValue(groupBy as string, item);
+                const groupLabel: any = isFunction(groupBy)
+                    ? (groupBy as (item: any, idx: number) => string)(item, idx)
+                    : getObjectDeepKeyValue(groupBy as string, item);
 
                 if (!prevList[groupLabel]) {
                     prevList[groupLabel] = [];
@@ -57,17 +56,15 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
         groupLabels = Array.from(new Set(Object.keys(groupedList)));
 
         return {groupLabels, groupLists: handleGroupReverse(Object.values(groupedList), options.reversed)};
-
-    } else if (limit && isNumber(limit) && (limit > 0)) {
-
+    } if (limit && isNumber(limit) && (limit > 0)) {
         const groupLists = list.reduce((groupedList: any[], item: T, idx: number) => {
             groupedList[groupedList.length - 1].push(item);
 
             const itemNumber: number = idx + 1;
 
             if (
-                itemNumber < list.length && // make sure separator is not added at the end
-                (itemNumber % (limit || 0)) === 0
+                itemNumber < list.length // make sure separator is not added at the end
+                && (itemNumber % (limit || 0)) === 0
             ) {
                 groupedList.push([]);
             }

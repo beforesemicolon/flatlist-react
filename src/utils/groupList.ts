@@ -1,4 +1,4 @@
-import {isNumber, isObject, isFunction, isString, isBoolean} from './isType';
+import {isNumber, isObject, isFunction, isString, isBoolean, isNilOrEmpty} from './isType';
 import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 
 export interface GroupOptionsInterface {
@@ -28,7 +28,7 @@ const handleGroupReverse = <T>(groupedLists: T[][], reverse = false) => {
 const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOptions) => {
     let groupLabels: any[] = [];
 
-    if (!isObject(options) || Object.keys(options).length === 0) {
+    if (isNilOrEmpty(options)) {
         options = defaultGroupOptions;
     }
 

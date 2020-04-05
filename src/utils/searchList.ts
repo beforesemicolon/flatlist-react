@@ -1,11 +1,12 @@
 import filterList from './filterList';
 import getObjectDeepKeyValue from './getObjectDeepKeyValue';
-import {isArray, isFunction, isObject} from './isType';
+import {isArray, isFunction, isObject, isNilOrEmpty} from './isType';
 
 export interface SearchOptionsInterface<T> {
     term?: string;
     everyWord?: boolean;
     caseInsensitive?: boolean;
+    minCharactersCount?: number;
     by?: string | ((item: T, term: string, idx: number) => boolean);
 }
 
@@ -13,6 +14,7 @@ const defaultSearchOptions = {
     by: '0',
     caseInsensitive: false,
     everyWord: false,
+    minCharactersCount: 3,
     term: ''
 };
 
@@ -35,18 +37,18 @@ const getFilterByFn = <T>(term: string, by: SearchOptionsInterface<T>['by'], cas
 };
 
 const searchList = <T>(list: T[], options: SearchOptionsInterface<T>): T[] => {
-    if (!isObject(options) || Object.keys(options).length === 0) {
+    if (isNilOrEmpty(options)) {
         options = defaultSearchOptions as SearchOptionsInterface<T>;
     }
 
     if (list.length > 0) {
-        const {term, by = '0'} = options;
+        const {term, by = '0', minCharactersCount = 0} = options;
 
-        if (term && term.length >= 3) {
+        if (term && by && (term.length >= minCharactersCount)) {
             const {everyWord, caseInsensitive} = options;
 
             if (everyWord) {
-                const termWords = term.trim().split(/\s+/).filter((word: string) => (word.length >= 3));
+                const termWords = term.trim().split(/\s+/).filter((word: string) => (word.length >= minCharactersCount));
 
                 if (termWords.length > 0) {
                     const searchedList: Set<T> = new Set([]);

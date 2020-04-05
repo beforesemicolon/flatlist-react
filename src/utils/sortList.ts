@@ -1,5 +1,5 @@
 import getObjectDeepKeyValue from './getObjectDeepKeyValue';
-import {isString, isObject, isArray} from './isType';
+import {isString, isObject, isArray, isNilOrEmpty} from './isType';
 
 export interface SortOptionsInterface {
     onKey?: string;
@@ -16,7 +16,7 @@ const defaultSortOptions: SortOptionsInterface = {
 const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptions): T[] => {
     const listCopy = [...list];
 
-    if (!isObject(options) || Object.keys(options).length === 0) {
+    if (isNilOrEmpty(options)) {
         options = defaultSortOptions;
     }
 

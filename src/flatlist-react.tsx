@@ -110,15 +110,15 @@ const propTypes = {
      * a group shorthand configuration
      */
     group: shape({
-        by: oneOfType([
-            string,
-            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
-        ]),
+        by: oneOfType([func, string]),
         limit: number,
         reversed: bool,
         separator: oneOfType([node, func, element]),
         separatorAtTheBottom: bool,
-        sortBy: string,
+        sortBy: oneOfType([
+            string,
+            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+        ]),
         sortCaseInsensitive: bool,
         sortDescending: bool
     }),

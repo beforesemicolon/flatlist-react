@@ -4,10 +4,10 @@ import {isFunction} from '../utils/isType';
 import DefaultLoadIndicator from './DefaultLoadIndicator';
 
 export interface InfiniteLoaderInterface {
-    loadingIndicator: () => JSX.Element | JSX.Element | null;
+    loadingIndicator: null | (() => JSX.Element) | JSX.Element;
     loadingIndicatorPosition: string;
     hasMore: boolean;
-    loadMore: () => void;
+    loadMore: null | (() => void);
 }
 
 interface State {
@@ -141,13 +141,13 @@ class InfiniteLoader extends Component<InfiniteLoaderInterface, State> {
             if (loaderPosition <= startingPoint) {
                 this.waitingForUpdate = true;
                 if (!this.state.loading) {
-                    this.setState({loading: true}, this.props.loadMore);
+                    this.setState({loading: true}, this.props.loadMore as (() => void));
                 }
             }
         }
     }
 
-    render() {
+    render(): JSX.Element {
         const {loading} = this.state;
         const {hasMore, loadingIndicator, loadingIndicatorPosition} = this.props;
 
@@ -165,9 +165,9 @@ class InfiniteLoader extends Component<InfiniteLoaderInterface, State> {
             <div ref={this.loaderContainerRef} className="__infinite-loader" style={styles}>
                 {
                     hasMore
-          && (loadingIndicator
-              ? (isFunction(loadingIndicator) ? loadingIndicator() : loadingIndicator)
-              : DefaultLoadIndicator)
+                    && (loadingIndicator
+                        ? (isFunction(loadingIndicator) ? (loadingIndicator as () => JSX.Element)() : loadingIndicator)
+                        : DefaultLoadIndicator)
                 }
             </div>
         );

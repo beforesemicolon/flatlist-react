@@ -159,6 +159,15 @@ const propTypes = {
      */
     minColumnWidth: string,
     /**
+     * a pagination shorthand configuration
+     */
+    pagination: shape({
+        hasMore: bool,
+        loadMore: func,
+        loadingIndicator: oneOfType([node, func, element]),
+        loadingIndicatorPosition: string
+    }),
+    /**
      * a custom element to be used instead of the default loading indicator for pagination
      */
     paginationLoadingIndicator: oneOfType([node, func, element]),
@@ -275,6 +284,12 @@ const defaultProps = {
     limit: 0,
     loadMoreItems: null,
     minColumnWidth: '',
+    pagination: {
+        hasMore: false,
+        loadMore: null,
+        loadingIndicator: null,
+        loadingIndicatorPosition: ''
+    },
     paginationLoadingIndicator: undefined,
     paginationLoadingIndicatorPosition: '',
     renderWhenEmpty: null,

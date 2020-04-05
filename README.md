@@ -27,9 +27,8 @@ grouping, searching, styling and more.
         * [searchableMinCharactersCount prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchableMinCharactersCount-prop)
         * [searchTerm prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchterm-prop)
         * [searchBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchby-prop)
-            * [Searching on multiple keys](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching-on-multiple-keys)
-        * [searchCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchcaseinsensitive-prop)
         * [searchOnEveryWord prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchoneveryword-prop)
+        * [searchCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchcaseinsensitive-prop)
         * [search prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#search-prop)
     * [Sorting Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#sorting-items)
         * [sort prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sort-prop)
@@ -413,24 +412,20 @@ allow to pass an object with search configuration.
 
 ##### searchableMinCharactersCount prop
 By default the search only starts when the `searchTerm` is at least 3 characters long but you can change this by specifying
-the `searchableMinCharactersCount` as you want.
+the `searchableMinCharactersCount` as you want. Setting this prop to `0` will be automatically changed to 3 since
+`0` is not a valid minimum.
 
 ##### searchTerm prop
 The `searchTerm` prop is your way of telling FlatList that you want it to handle the search. This prop by itself does
 not do anything. For primitive arrays you dont need to initialize the search by provide the `searchBy` prop, otherwise
 you need to provide the key where to search from.
 
-### Note
-
-```
-SearchTerm must be at least 3 characters long to trigger a search. If searchOnEveryWord prop is specified, same rule
-applies to every word. Each word should be at least 3 characters long to be considered.
-```
-
 ##### searchBy prop
-The `searchBy` can be either a string or a function and defaults to the item itself on the list. Similar to 
-[`filterBy`](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop) the function must return 
-true or false where false means the item will not be displayed. The function is called with two arguments, 
+The `searchBy` can either be a string (`searchBy="lastName"`), an array containing string representing the key 
+(`searchBy={["lastName", "info.age"]}`), an object like `{by: "key.name", caseInsensitive: true}` or a function similar to 
+[`filterBy`](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop). 
+
+The function must return true or false where false means the item will not be displayed. The function is called with two arguments, 
 the item and its index. If you pass a string know that it should represent the key you want to search on. You can use
 [Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string) here.
 
@@ -453,21 +448,12 @@ return (
                 list={this.props.people}
                 renderItem={this.renderPerson}
                 searchTerm={this.state.searchTerm}
-                searchBy="firstName"
+                searchBy={["firstName", {by: "lastName", caseInsensitive: false}]}
+                searchCaseInsensitive // will only apply to "firstName"
                 />
         </ul>
     </>
 )
-```
-###### Searching on multiple keys
-For now if you want to search on multiple keys you need to use `searchBy` as function. The function is called with the 
-item, the term (if `searchOnEveryWord` is off) or the word (if `searchOnEveryWord` is on). To have case insensitive 
-functionality you need to `toLowerCase()` each key value. You can have a function like this to pass it to:
-
-```jsx
-matchSearchTerm = (person, term, idx) => {
-    return person.firstName.toLowerCase().search(term) >= 0 || person.lastName.toLowerCase().search(term) >= 0;
-}
 ```
 
 ##### searchOnEveryWord prop
@@ -521,8 +507,10 @@ configuration for sorting containing the following options:
 * `groupCaseInsensitive` (same as [sortCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortcaseinsensitive-prop))
 
 ##### sortBy prop
-`sortBy` should be a string representing the key of the **object** or **array** and can use 
-[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string). 
+`sortBy` should be a string representing the key (`sortBy="firstName"`) and can use 
+[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string),
+a array of strings (`sortBy=["firstName", "lastName"]`) or an array of object of options for each key like. 
+`sortBy={[{by: "firstName", descending: true}, {by: "lastName", descending: false, caseInsensitive: true}]}`
 This is great when the lists that are not made of **string** or **numbers**.
 
 ##### sortDesc prop
@@ -536,16 +524,16 @@ return (
         <FlatList 
             list={this.props.people} 
             renderItem={this.renderPerson}
-            sortBy="info.age"
-            sortDesc
+            sortBy={["firstName", {by: "lastName", descending: false, caseInsensitive: true}]}
+            sortDesc // will only affect "firstName" since "lastName" is set to false
             />
     </ul>
 )
 ```
 
 ##### sortGroupBy prop
-`sortGroupBy` is the equivalent of `sortBy` but for groups. It helps you use a different sorting criteria withing the
-group.
+`sortGroupBy` is the equivalent of [sortBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortby-prop) 
+but for groups. It helps you use a different sorting criteria withing the group.
 
 ##### sortGroupDesc prop
 `sortGroupDesc` is similar to `sortDesc` but will only affect groups. This should be used along with grouping props.

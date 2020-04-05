@@ -6,7 +6,7 @@ import InfiniteLoader, {InfiniteLoaderProps} from './subComponents/InfiniteLoade
 import convertListToArray from './utils/convertListToArray';
 import filterList from './utils/filterList';
 import groupList, {GroupOptionsInterface} from './utils/groupList';
-import {isBoolean, isFunction, isNilOrEmpty} from './utils/isType';
+import {isBoolean, isFunction} from './utils/isType';
 import limitList from './utils/limitList';
 import searchList, {SearchOptionsInterface} from './utils/searchList';
 import sortList, {SortOptionsInterface} from './utils/sortList';
@@ -16,7 +16,7 @@ type renderFunc = (item: any, key: number | string) => JSX.Element;
 interface GroupInterface extends GroupOptionsInterface {
     separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
     separatorAtTheBottom: boolean;
-    sortBy: string;
+    sortBy: SortOptionsInterface['by'];
     sortDescending: boolean;
     sortCaseInsensitive: boolean;
 }
@@ -110,7 +110,10 @@ const propTypes = {
      * a group shorthand configuration
      */
     group: shape({
-        by: oneOfType([func, string]),
+        by: oneOfType([
+            string,
+            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+        ]),
         limit: number,
         reversed: bool,
         separator: oneOfType([node, func, element]),
@@ -258,7 +261,10 @@ const propTypes = {
     /**
      * a string representing a key in the item that should be used to sort the list groups
      */
-    sortGroupBy: string,
+    sortGroupBy: oneOfType([
+        string,
+        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+    ]),
     /**
      * a flag to indicate that sort should be done in descending order inside each group
      */
@@ -314,7 +320,7 @@ const defaultProps = {
         by: '',
         caseInsensitive: false,
         everyWord: false,
-        searchableMinCharactersCount: null,
+        searchableMinCharactersCount: 0,
         term: ''
     },
     searchBy: '',
@@ -322,7 +328,7 @@ const defaultProps = {
     searchOnEveryWord: false,
     searchTerm: '',
     showGroupSeparatorAtTheBottom: false,
-    searchableMinCharactersCount: null,
+    searchableMinCharactersCount: 0,
     sort: false,
     sortBy: '',
     sortCaseInsensitive: false,

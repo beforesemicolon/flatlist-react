@@ -38,12 +38,12 @@ const getFilterByFn = <T>(term: string, by: SearchOptionsInterface<T>['by'], cas
         return (item: T) => (by as []).some((key: any) => {
             const keyCaseInsensitive = isObject(key) && key.caseInsensitive !== undefined
                 ? key.caseInsensitive : caseInsensitive;
-            const keyBy = isObject(key) ? key.by : key;
+            const keyBy = (isObject(key) ? key.by : key) || '0';
             return defaultFilterByFn(item, term, keyCaseInsensitive, keyBy);
         });
     }
 
-    return (item: T) => defaultFilterByFn(item, term, caseInsensitive, by as string);
+    return (item: T) => defaultFilterByFn(item, term, caseInsensitive, by as string || '0');
 };
 
 const searchList = <T>(list: T[], options: SearchOptionsInterface<T>): T[] => {

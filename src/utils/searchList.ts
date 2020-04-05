@@ -31,6 +31,7 @@ const defaultFilterByFn = (item: any, term: string, caseInsensitive = false, by 
 
 const getFilterByFn = <T>(term: string, by: SearchOptionsInterface<T>['by'], caseInsensitive = false): (item: T, idx: number) => boolean => {
     if (isFunction(by)) {
+        term = (caseInsensitive ? term.toLowerCase() : term).trim();
         return (item: T, idx: number) => (by as (item: T, term: string, idx: number) => boolean)(item, term, idx);
     }
 

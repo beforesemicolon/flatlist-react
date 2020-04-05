@@ -89,17 +89,17 @@ describe('Util sortList()', () => {
         const objectArr2 = [{name: 'c'}, {name: 'a B'}, {name: 'aA'}, {name: 'AA'}, {name: 'B'}, {name: 'B 1'}];
         const objectArr3 = [{name: '9'}, {name: '0 B'}, {name: '1A'}, {name: '-0A'}, {name: 'B 32'}, {name: 'z 1'}];
 
-        expect(sortList(objectArr1, {descending: true, onKey: 'name'}))
+        expect(sortList(objectArr1, {descending: true, by: 'name'}))
             .toEqual([{name: 'b'}, {name: 'aa'}, {name: 'aA'}, {name: 'a'}, {name: 'BB'}, {name: 'Aa'}]);
-        expect(sortList(objectArr1, {descending: true, caseInsensitive: true, onKey: 'name'}))
+        expect(sortList(objectArr1, {descending: true, caseInsensitive: true, by: 'name'}))
             .toEqual([{name: 'BB'}, {name: 'b'}, {name: 'aa'}, {name: 'aA'}, {name: 'Aa'}, {name: 'a'}]);
-        expect(sortList(objectArr2, {descending: true, onKey: 'name'}))
+        expect(sortList(objectArr2, {descending: true, by: 'name'}))
             .toEqual([{name: 'c'}, {name: 'aA'}, {name: 'a B'}, {name: 'B 1'}, {name: 'B'}, {name: 'AA'}]);
-        expect(sortList(objectArr2, {descending: true, caseInsensitive: true, onKey: 'name'}))
+        expect(sortList(objectArr2, {descending: true, caseInsensitive: true, by: 'name'}))
             .toEqual([{name: 'c'}, {name: 'B 1'}, {name: 'B'}, {name: 'aA'}, {name: 'AA'}, {name: 'a B'}]);
-        expect(sortList(objectArr3, {descending: true, onKey: 'name'}))
+        expect(sortList(objectArr3, {descending: true, by: 'name'}))
             .toEqual([{name: 'z 1'}, {name: 'B 32'}, {name: '9'}, {name: '1A'}, {name: '0 B'}, {name: '-0A'}]);
-        expect(sortList(objectArr3, {descending: true, caseInsensitive: true, onKey: 'name'}))
+        expect(sortList(objectArr3, {descending: true, caseInsensitive: true, by: 'name'}))
             .toEqual([{name: 'z 1'}, {name: 'B 32'}, {name: '9'}, {name: '1A'}, {name: '0 B'}, {name: '-0A'}]);
     });
 
@@ -109,17 +109,17 @@ describe('Util sortList()', () => {
         const stringArr2 = [{name: 'c'}, {name: 'a B'}, {name: 'aA'}, {name: 'AA'}, {name: 'B'}, {name: 'B 1'}];
         const stringArr3 = [{name: '9'}, {name: '0 B'}, {name: '1A'}, {name: '-0A'}, {name: 'B 32'}, {name: 'z 1'}];
 
-        expect(sortList(stringArr1, {onKey: 'name'}))
+        expect(sortList(stringArr1, {by: 'name'}))
             .toEqual([{name: 'Aa'}, {name: 'BB'}, {name: 'a'}, {name: 'aA'}, {name: 'aa'}, {name: 'b'}]);
-        expect(sortList(stringArr1, {caseInsensitive: true, onKey: 'name'}))
+        expect(sortList(stringArr1, {caseInsensitive: true, by: 'name'}))
             .toEqual([{name: 'a'}, {name: 'aa'}, {name: 'aA'}, {name: 'Aa'}, {name: 'b'}, {name: 'BB'}]);
-        expect(sortList(stringArr2, {onKey: 'name'}))
+        expect(sortList(stringArr2, {by: 'name'}))
             .toEqual([{name: 'AA'}, {name: 'B'}, {name: 'B 1'}, {name: 'a B'}, {name: 'aA'}, {name: 'c'}]);
-        expect(sortList(stringArr2, {caseInsensitive: true, onKey: 'name'}))
+        expect(sortList(stringArr2, {caseInsensitive: true, by: 'name'}))
             .toEqual([{name: 'a B'}, {name: 'aA'}, {name: 'AA'}, {name: 'B'}, {name: 'B 1'}, {name: 'c'}]);
-        expect(sortList(stringArr3, {onKey: 'name'}))
+        expect(sortList(stringArr3, {by: 'name'}))
             .toEqual([{name: '-0A'}, {name: '0 B'}, {name: '1A'}, {name: '9'}, {name: 'B 32'}, {name: 'z 1'}]);
-        expect(sortList(stringArr3, {caseInsensitive: true, onKey: 'name'}))
+        expect(sortList(stringArr3, {caseInsensitive: true, by: 'name'}))
             .toEqual([{name: '-0A'}, {name: '0 B'}, {name: '1A'}, {name: '9'}, {name: 'B 32'}, {name: 'z 1'}]);
     });
 
@@ -130,13 +130,13 @@ describe('Util sortList()', () => {
         const numberArr3 = [{count: NaN}, {count: -1}, {count: 18}, {count: 13}, {count: Infinity}, {count: 0}];
         const numberArr4 = [{count: 1000.92}, {count: 5}, {count: -40}, {count: Infinity}, {count: 13}, {count: -0}];
 
-        expect(sortList(numberArr1, {descending: true, onKey: 'count'}))
+        expect(sortList(numberArr1, {descending: true, by: 'count'}))
             .toEqual([{count: 9}, {count: 8}, {count: 4}, {count: 3}, {count: 1}, {count: 0}]);
-        expect(sortList(numberArr2, {descending: true, onKey: 'count'}))
+        expect(sortList(numberArr2, {descending: true, by: 'count'}))
             .toEqual([{count: 90}, {count: 18}, {count: 13}, {count: 0.1}, {count: 0}, {count: -1}]);
-        expect(sortList(numberArr3, {descending: true, onKey: 'count'}))
+        expect(sortList(numberArr3, {descending: true, by: 'count'}))
             .toEqual([{count: NaN}, {count: Infinity}, {count: 18}, {count: 13}, {count: 0}, {count: -1}]);
-        expect(sortList(numberArr4, {descending: true, onKey: 'count'}))
+        expect(sortList(numberArr4, {descending: true, by: 'count'}))
             .toEqual([{count: Infinity}, {count: 1000.92}, {count: 13}, {count: 5}, {count: -0}, {count: -40}]);
     });
 
@@ -147,13 +147,13 @@ describe('Util sortList()', () => {
         const numberArr3 = [{count: NaN}, {count: -1}, {count: 18}, {count: 13}, {count: Infinity}, {count: 0}];
         const numberArr4 = [{count: 1000.92}, {count: 5}, {count: -40}, {count: Infinity}, {count: 13}, {count: -0}];
 
-        expect(sortList(numberArr1, {onKey: 'count'}))
+        expect(sortList(numberArr1, {by: 'count'}))
             .toEqual([{count: 0}, {count: 1}, {count: 3}, {count: 4}, {count: 8}, {count: 9}]);
-        expect(sortList(numberArr2, {onKey: 'count'}))
+        expect(sortList(numberArr2, {by: 'count'}))
             .toEqual([{count: -1}, {count: 0}, {count: 0.1}, {count: 13}, {count: 18}, {count: 90}]);
-        expect(sortList(numberArr3, {onKey: 'count'}))
+        expect(sortList(numberArr3, {by: 'count'}))
             .toEqual([{count: NaN}, {count: -1}, {count: 0}, {count: 13}, {count: 18}, {count: Infinity}]);
-        expect(sortList(numberArr4, {onKey: 'count'}))
+        expect(sortList(numberArr4, {by: 'count'}))
             .toEqual([{count: -40}, {count: -0}, {count: 5}, {count: 13}, {count: 1000.92}, {count: Infinity}]);
     });
 
@@ -162,13 +162,13 @@ describe('Util sortList()', () => {
         const objectArray = [{name: 'Ta'}, {count: 1}];
         const arrayArray = [[{name: 'Ta'}], [{count: 1}]];
 
-        expect(() => sortList(objectArray, {onKey: 'name'}))
+        expect(() => sortList(objectArray, {by: 'name'}))
             .toThrowError('getObjectDeepKeyValue: "name" is undefined');
-        expect(() => sortList(objectArray, {onKey: 'count'}))
+        expect(() => sortList(objectArray, {by: 'count'}))
             .toThrowError('getObjectDeepKeyValue: "count" is undefined');
-        expect(() => sortList(arrayArray, {onKey: '0.name'}))
+        expect(() => sortList(arrayArray, {by: '0.name'}))
             .toThrowError('getObjectDeepKeyValue: "name" is undefined');
-        expect(() => sortList(arrayArray, {onKey: '0.count'}))
+        expect(() => sortList(arrayArray, {by: '0.count'}))
             .toThrowError('getObjectDeepKeyValue: "count" is undefined');
     });
 });

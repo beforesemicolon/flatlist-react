@@ -1,6 +1,6 @@
 import React, {Component, createRef, CSSProperties} from 'react';
 import {bool, element, func, node, oneOf, oneOfType} from 'prop-types';
-import {isFunction} from '../utils/isType';
+import {isFunction} from '../___utils/isType';
 import DefaultLoadIndicator from './DefaultLoadIndicator';
 
 export interface InfiniteLoaderProps {

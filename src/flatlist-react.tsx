@@ -1,17 +1,15 @@
 import {array, arrayOf, bool, element, func, node, number, object, oneOf, oneOfType, shape, string} from 'prop-types';
-import React, {forwardRef, ForwardRefExoticComponent, memo, Ref} from 'react';
-import DefaultBlank from './subComponents/DefaultBlank';
-import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './subComponents/DisplayHandler';
-import InfiniteLoader, {InfiniteLoaderProps} from './subComponents/InfiniteLoader';
-import convertListToArray from './utils/convertListToArray';
-import filterList from './utils/filterList';
-import groupList, {GroupOptionsInterface} from './utils/groupList';
-import {isBoolean, isFunction} from './utils/isType';
-import limitList from './utils/limitList';
-import searchList, {SearchOptionsInterface} from './utils/searchList';
-import sortList, {SortOptionsInterface} from './utils/sortList';
-
-type renderFunc = (item: any, key: number | string) => JSX.Element;
+import React, {forwardRef, memo, Ref} from 'react';
+import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './___subComponents/DisplayHandler';
+import InfiniteLoader, {InfiniteLoaderProps} from './___subComponents/InfiniteLoader';
+import {handleRenderItem, renderBlank, renderFunc, ForwardRefExoticComponentExtended} from './___subComponents/PlainList';
+import convertListToArray from './___utils/convertListToArray';
+import filterList from './___utils/filterList';
+import groupList, {GroupOptionsInterface} from './___utils/groupList';
+import {isBoolean, isFunction} from './___utils/isType';
+import limitList from './___utils/limitList';
+import searchList, {SearchOptionsInterface} from './___utils/searchList';
+import sortList, {SortOptionsInterface} from './___utils/sortList';
 
 interface GroupInterface extends GroupOptionsInterface {
     separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
@@ -71,11 +69,6 @@ interface Props<T> {
     loadMoreItems: null | InfiniteLoaderProps['loadMore'];
     paginationLoadingIndicator: InfiniteLoaderProps['loadingIndicator'];
     paginationLoadingIndicatorPosition: InfiniteLoaderProps['loadingIndicatorPosition'];
-}
-
-// this interface is to deal with the fact that ForwardRefExoticComponent does not have the propTypes
-interface ForwardRefExoticComponentExtended extends ForwardRefExoticComponent<Props<{} | []>> {
-    propTypes: object;
 }
 
 const propTypes = {
@@ -337,19 +330,6 @@ const defaultProps = {
     sortGroupDesc: false,
     wrapperHtmlTag: ''
 };
-
-const handleRenderItem = (renderItem: Props<{} | []>['renderItem']): renderFunc => (item: any, key: number | string) => {
-    if (isFunction(renderItem)) {
-        return (renderItem as (item: any, idx: number | string) => JSX.Element)(item, key);
-    }
-
-    const comp = renderItem as JSX.Element;
-    return (<comp.type {...comp.props} key={key} item={item} />);
-};
-
-const renderBlank = (renderWhenEmpty: Props<{} | []>['renderWhenEmpty']): JSX.Element => (
-    renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank
-);
 
 const renderGroupedList = (
     list: Props<{} | []>['list'],

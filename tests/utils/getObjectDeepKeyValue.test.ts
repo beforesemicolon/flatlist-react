@@ -19,10 +19,12 @@ describe('Util: getObjectDeepKeyValue()', () => {
             }
         ],
         name: 'John Doe',
+        map: new Map([['one', 1], ['two', 2]]),
         personalInfo: {
             age: 28,
             height: '5\'11',
-            weight: '200lb'
+            weight: '200lb',
+            years: new Set(['1999', '2000', '2001', '2018'])
         }
     };
     const testingArray: TestingObjectInterface[] = [];
@@ -37,9 +39,9 @@ describe('Util: getObjectDeepKeyValue()', () => {
         const objectKey3: string = 'personalInfo';
 
         expect.assertions(3);
-        expect(getObjectDeepKeyValue(objectKey1, testingObject)).toEqual(testingObject[objectKey1]);
-        expect(getObjectDeepKeyValue(objectKey2, testingObject)).toEqual(testingObject[objectKey2]);
-        expect(getObjectDeepKeyValue(objectKey3, testingObject)).toEqual(testingObject[objectKey3]);
+        expect(getObjectDeepKeyValue(testingObject, objectKey1)).toEqual(testingObject[objectKey1]);
+        expect(getObjectDeepKeyValue(testingObject, objectKey2)).toEqual(testingObject[objectKey2]);
+        expect(getObjectDeepKeyValue(testingObject, objectKey3)).toEqual(testingObject[objectKey3]);
     });
 
     it('Should get one level deep key values in an array', () => {
@@ -47,32 +49,40 @@ describe('Util: getObjectDeepKeyValue()', () => {
 
         expect.assertions(1);
 
-        expect(getObjectDeepKeyValue(arrKey, testingArray)).toEqual(testingArray[arrKey]);
+        expect(getObjectDeepKeyValue(testingArray, arrKey)).toEqual(testingArray[arrKey]);
     });
 
     it('Should get several levels deep key values in an object', () => {
         const objectKey1: string = 'children.0.name';
         const objectKey2: string = 'children.1.age';
         const objectKey3: string = 'personalInfo.weight';
+        const objectKey4: string = 'personalInfo.years.1';
+        const objectKey5: string = 'map.one';
 
-        expect.assertions(3);
-        expect(getObjectDeepKeyValue(objectKey1, testingObject)).toEqual(testingObject.children[0].name);
-        expect(getObjectDeepKeyValue(objectKey2, testingObject)).toEqual(testingObject.children[1].age);
-        expect(getObjectDeepKeyValue(objectKey3, testingObject)).toEqual(testingObject.personalInfo.weight);
+        expect.assertions(5);
+        expect(getObjectDeepKeyValue(testingObject, objectKey1)).toEqual(testingObject.children[0].name);
+        expect(getObjectDeepKeyValue(testingObject, objectKey2)).toEqual(testingObject.children[1].age);
+        expect(getObjectDeepKeyValue(testingObject, objectKey3)).toEqual(testingObject.personalInfo.weight);
+        expect(getObjectDeepKeyValue(testingObject, objectKey4)).toEqual('2000');
+        expect(getObjectDeepKeyValue(testingObject, objectKey5)).toEqual(1);
     });
 
     it('Should get several levels deep key values in an array', () => {
         const arrKey1: string = '0.children.0.name';
         const arrKey2: string = '0.children.1.age';
         const arrKey3: string = '0.personalInfo.weight';
+        const arrKey4: string = '0.personalInfo.years.1';
+        const arrKey5: string = '0.map.one';
 
-        expect.assertions(3);
-        expect(getObjectDeepKeyValue(arrKey1, testingArray)).toEqual(testingArray[0].children[0].name);
-        expect(getObjectDeepKeyValue(arrKey2, testingArray)).toEqual(testingArray[0].children[1].age);
-        expect(getObjectDeepKeyValue(arrKey3, testingArray)).toEqual(testingArray[0].personalInfo.weight);
+        expect.assertions(5);
+        expect(getObjectDeepKeyValue(testingArray, arrKey1)).toEqual(testingArray[0].children[0].name);
+        expect(getObjectDeepKeyValue(testingArray, arrKey2)).toEqual(testingArray[0].children[1].age);
+        expect(getObjectDeepKeyValue(testingArray, arrKey3)).toEqual(testingArray[0].personalInfo.weight);
+        expect(getObjectDeepKeyValue(testingArray, arrKey4)).toEqual('2000');
+        expect(getObjectDeepKeyValue(testingArray, arrKey5)).toEqual(1);
     });
 
-    it('Should throw an error when key does not exists', () => {
+    it('Should be undefined when key does not exists', () => {
         const objectKey1: string = 'children.0.nothing'; // nothing does not exists
         const objectKey2: string = 'children.2.age'; // 2 does not exists
         const objectKey3: string = 'personalInfo.dominance'; // dominance does not exists
@@ -81,46 +91,33 @@ describe('Util: getObjectDeepKeyValue()', () => {
         const arrKey3: string = '0.test.weight'; // test does not exists
 
         expect.assertions(6);
-        expect(() => getObjectDeepKeyValue(objectKey1, testingObject))
-            .toThrowError(`getObjectDeepKeyValue: "nothing" is undefined.`);
-        expect(() => getObjectDeepKeyValue(objectKey2, testingObject))
-            .toThrowError(`getObjectDeepKeyValue: "2" is undefined.`);
-        expect(() => getObjectDeepKeyValue(objectKey3, testingObject))
-            .toThrowError(`getObjectDeepKeyValue: "dominance" is undefined.`);
-        expect(() => getObjectDeepKeyValue(arrKey1, testingArray))
-            .toThrowError(`getObjectDeepKeyValue: "error" is undefined.`);
-        expect(() => getObjectDeepKeyValue(arrKey2, testingArray))
-            .toThrowError(`getObjectDeepKeyValue: "3" is undefined.`);
-        expect(() => getObjectDeepKeyValue(arrKey3, testingArray))
-            .toThrowError(`getObjectDeepKeyValue: "test" is undefined.`);
+        expect(getObjectDeepKeyValue(testingObject, objectKey1)).toBeUndefined();
+        expect(getObjectDeepKeyValue(testingObject, objectKey2)).toBeUndefined();
+        expect(getObjectDeepKeyValue(testingObject, objectKey3)).toBeUndefined();
+        expect(getObjectDeepKeyValue(testingArray, arrKey1)).toBeUndefined();
+        expect(getObjectDeepKeyValue(testingArray, arrKey2)).toBeUndefined();
+        expect(getObjectDeepKeyValue(testingArray, arrKey3)).toBeUndefined();
     });
 
-    it('Should throw an error when not OBJECT or ARRAY is passed as hey-stack', () => {
+    it('Should be undefined when not OBJECT or ARRAY is passed as hey-stack', () => {
         expect.assertions(3);
 
-        // @ts-ignore
-        expect(() => getObjectDeepKeyValue('children', ''))
-            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
-        // @ts-ignore
-        expect(() => getObjectDeepKeyValue('children', () => {
-        }))
-            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
-        // @ts-ignore
-        expect(() => getObjectDeepKeyValue('children', new Map()))
-            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
+        expect(getObjectDeepKeyValue('', 'children')).toBeUndefined();
+        expect(getObjectDeepKeyValue(() => {}, 'children')).toBeUndefined();
+        expect(getObjectDeepKeyValue(new Map(), 'children')).toBeUndefined();
     });
 
     it('Should throw an error when not STRING is passed as key', () => {
         expect.assertions(3);
 
         // @ts-ignore
-        expect(() => getObjectDeepKeyValue([], testingObject))
-            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
+        expect(() => getObjectDeepKeyValue([testingObject, ]))
+            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a dot separated values string');
         // @ts-ignore
-        expect(() => getObjectDeepKeyValue(1, testingArray))
-            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
+        expect(() => getObjectDeepKeyValue(testingArray, 1))
+            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a dot separated values string');
         // @ts-ignore
-        expect(() => getObjectDeepKeyValue({}, testingObject))
-            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a string or "objectOrArray" is not an object or array.');
+        expect(() => getObjectDeepKeyValue({testingObject, }))
+            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a dot separated values string');
     });
 });

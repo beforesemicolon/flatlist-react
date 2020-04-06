@@ -39,7 +39,7 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
             .reduce((prevList: GroupedItemsObjectInterface<T>, item: T, idx: number) => {
                 const groupLabel: any = isFunction(groupBy)
                     ? (groupBy as (item: any, idx: number) => string)(item, idx)
-                    : getObjectDeepKeyValue(groupBy as string, item);
+                    : getObjectDeepKeyValue(item, groupBy as string);
 
                 if (!prevList[groupLabel]) {
                     prevList[groupLabel] = [];

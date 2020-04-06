@@ -16,8 +16,8 @@ const defaultSortOptions: SortOptionsInterface = {
 const compareKeys = (first: any, second: any,
     {by = '', caseInsensitive = false, descending = false}: SortOptionsInterface) => {
     if (by) {
-        first = (isObject(first) || isArray(first)) ? getObjectDeepKeyValue((by as string), first) : first;
-        second = (isObject(second) || isArray(second)) ? getObjectDeepKeyValue((by as string), second) : second;
+        first = (isObject(first) || isArray(first)) ? getObjectDeepKeyValue(first, (by as string)) : first;
+        second = (isObject(second) || isArray(second)) ? getObjectDeepKeyValue(second, (by as string)) : second;
     }
 
     if (caseInsensitive) {

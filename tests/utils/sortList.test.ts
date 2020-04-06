@@ -239,18 +239,14 @@ describe('Util sortList()', () => {
         ])
     });
 
-    it('Should throw error for object or array arrays if key is no found', () => {
+    it('Should not sort if key is no found', () => {
         expect.assertions(4);
         const objectArray = [{name: 'Ta'}, {count: 1}];
         const arrayArray = [[{name: 'Ta'}], [{count: 1}]];
 
-        expect(() => sortList(objectArray, {by: 'name'}))
-            .toThrowError('getObjectDeepKeyValue: "name" is undefined');
-        expect(() => sortList(objectArray, {by: 'count'}))
-            .toThrowError('getObjectDeepKeyValue: "count" is undefined');
-        expect(() => sortList(arrayArray, {by: '0.name'}))
-            .toThrowError('getObjectDeepKeyValue: "name" is undefined');
-        expect(() => sortList(arrayArray, {by: '0.count'}))
-            .toThrowError('getObjectDeepKeyValue: "count" is undefined');
+        expect(sortList(objectArray, {by: 'name'})).toEqual(objectArray);
+        expect(sortList(objectArray, {by: 'count'})).toEqual(objectArray);
+        expect(sortList(arrayArray, {by: '0.name'})).toEqual(arrayArray);
+        expect(sortList(arrayArray, {by: '0.count'})).toEqual(arrayArray);
     });
 });

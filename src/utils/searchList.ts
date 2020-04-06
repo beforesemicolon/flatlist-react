@@ -23,7 +23,7 @@ const defaultSearchOptions = {
 
 const defaultFilterByFn = (item: any, term: string | string[], caseInsensitive = false, by = '0') => {
     const keyValue = (isObject(item) || isArray(item))
-        ? getObjectDeepKeyValue(by as string, item)
+        ? getObjectDeepKeyValue(item, by as string)
         : item;
 
     const value = caseInsensitive ? `${keyValue}`.toLowerCase() : `${keyValue}`;

@@ -14,6 +14,10 @@ export const isString = (x: any): boolean => getType(x) === types.STRING || x in
 
 export const isArray = (x: any): boolean => getType(x) === types.ARRAY;
 
+export const isSet = (x: any): boolean => getType(x) === types.SET;
+
+export const isMap = (x: any): boolean => getType(x) === types.MAP;
+
 export const isNil = (x: any): boolean => (x === null || getType(x) === types.UNDEFINED);
 
 export const isEmpty = (x: any): boolean => (
@@ -38,5 +42,7 @@ export default {
     isNilOrEmpty,
     isNumber,
     isObject,
-    isString
+    isString,
+    isSet,
+    isMap
 };

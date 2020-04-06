@@ -4,7 +4,7 @@ import {isArray, isFunction, isObject, isString} from './isType';
 const filterList = <T>(list: T[], by: ((item: T, idx: number) => boolean) | string = ''): T[] => {
     return list.filter((item: T, idx: number) => {
         if (isString(by) && (isObject(item) || isArray(item))) {
-            return getObjectDeepKeyValue(by as string, item as T);
+            return getObjectDeepKeyValue(item as T, by as string);
         }
 
         if (isFunction(by)) {

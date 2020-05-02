@@ -1,4 +1,4 @@
-import searchList from '../../src/utils/searchList';
+import searchList from '../../src/___utils/searchList';
 
 describe('Util: searchList()', () => {
    describe('Non Primitive Array', () => {

@@ -1,5 +1,5 @@
 /* tslint:disable only-arrow-functions no-empty quotemark */
-import getType, {types} from '../../src/utils/getType';
+import getType, {types} from '../../src/___utils/getType';
 
 describe('Util: getType()', () => {
     const data: { [t: string]: any[] } = {};

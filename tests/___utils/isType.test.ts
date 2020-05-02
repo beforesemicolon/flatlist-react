@@ -10,7 +10,7 @@ import {
     isObjectLiteral,
     isNil,
     isEmpty
-} from '../../src/utils/isType';
+} from '../../src/___utils/isType';
 
 describe('Util: isType()', () => {
     const data: { [t: string]: any[] } = {};

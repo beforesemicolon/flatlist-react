@@ -1,17 +1,16 @@
 import {array, arrayOf, bool, element, func, node, number, object, oneOf, oneOfType, shape, string} from 'prop-types';
-import React, {forwardRef, ForwardRefExoticComponent, memo, Ref} from 'react';
-import DefaultBlank from './subComponents/DefaultBlank';
-import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './subComponents/DisplayHandler';
-import InfiniteLoader, {InfiniteLoaderProps} from './subComponents/InfiniteLoader';
-import convertListToArray from './utils/convertListToArray';
-import filterList from './utils/filterList';
-import groupList, {GroupOptionsInterface} from './utils/groupList';
-import {isBoolean, isFunction} from './utils/isType';
-import limitList from './utils/limitList';
-import searchList, {SearchOptionsInterface} from './utils/searchList';
-import sortList, {SortOptionsInterface} from './utils/sortList';
-
-type renderFunc = (item: any, key: number | string) => JSX.Element;
+import React, {forwardRef, memo} from 'react';
+import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './___subComponents/DisplayHandler';
+import InfiniteLoader, {InfiniteLoaderProps} from './___subComponents/InfiniteLoader';
+import convertListToArray from './___utils/convertListToArray';
+import filterList from './___utils/filterList';
+import arePropsEqual from './___utils/arePropsEqual';
+import groupList, {GroupOptionsInterface} from './___utils/groupList';
+import {isBoolean, isFunction, isString} from './___utils/isType';
+import limitList from './___utils/limitList';
+import searchList, {SearchOptionsInterface} from './___utils/searchList';
+import sortList, {SortOptionsInterface} from './___utils/sortList';
+import {handleRenderItem, renderBlank, renderFunc} from './___subComponents/uiFunctions';
 
 interface GroupInterface extends GroupOptionsInterface {
     separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
@@ -34,6 +33,7 @@ interface Props<T> {
     limit: number;
     reversed: boolean;
     wrapperHtmlTag: string;
+    __forwarededRef: object;
     // shorthands
     group: GroupInterface;
     search: SearchOptionsInterface<T>;
@@ -71,11 +71,6 @@ interface Props<T> {
     loadMoreItems: null | InfiniteLoaderProps['loadMore'];
     paginationLoadingIndicator: InfiniteLoaderProps['loadingIndicator'];
     paginationLoadingIndicatorPosition: InfiniteLoaderProps['loadingIndicatorPosition'];
-}
-
-// this interface is to deal with the fact that ForwardRefExoticComponent does not have the propTypes
-interface ForwardRefExoticComponentExtended extends ForwardRefExoticComponent<Props<{} | []>> {
-    propTypes: object;
 }
 
 const propTypes = {
@@ -234,6 +229,10 @@ const propTypes = {
      */
     showGroupSeparatorAtTheBottom: bool,
     /**
+     * a flag to indicate whether to sort insensitive or not
+     */
+    sortCaseInsensitive: bool,
+    /**
      * a flag to indicate that the list should be sorted (uses default sort configuration)
      */
     sort: oneOfType([bool, shape({
@@ -272,7 +271,9 @@ const propTypes = {
     /**
      * a optional html tag to use to wrap the list items
      */
-    wrapperHtmlTag: string
+    wrapperHtmlTag: string,
+    // eslint-disable-next-line react/forbid-prop-types
+    __forwarededRef: object
 };
 
 const defaultProps = {
@@ -335,21 +336,9 @@ const defaultProps = {
     sortDesc: false,
     sortGroupBy: '',
     sortGroupDesc: false,
-    wrapperHtmlTag: ''
+    wrapperHtmlTag: '',
+    __forwarededRef: {}
 };
-
-const handleRenderItem = (renderItem: Props<{} | []>['renderItem']): renderFunc => (item: any, key: number | string) => {
-    if (isFunction(renderItem)) {
-        return (renderItem as (item: any, idx: number | string) => JSX.Element)(item, key);
-    }
-
-    const comp = renderItem as JSX.Element;
-    return (<comp.type {...comp.props} key={key} item={item} />);
-};
-
-const renderBlank = (renderWhenEmpty: Props<{} | []>['renderWhenEmpty']): JSX.Element => (
-    renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank
-);
 
 const renderGroupedList = (
     list: Props<{} | []>['list'],
@@ -424,7 +413,7 @@ const renderGroupedList = (
         }, []);
 };
 
-const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
+const FlatList = (props: Props<{} | []>) => {
     const {
         list, limit, reversed, renderWhenEmpty, wrapperHtmlTag, renderItem, // render/list related props
         filterBy, // filter props
@@ -434,7 +423,7 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
         pagination, // pagination props
-        ...tagProps // props to be added to the wrapper container if wrapperHtmlTag is specified
+        __forwarededRef, ...tagProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
 
     let renderList = convertListToArray(list);
@@ -491,7 +480,7 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
                     : renderBlank(renderWhenEmpty)
             }
             <DisplayHandler
-                {...{ display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
+                {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
                 showGroupSeparatorAtTheBottom={group.separatorAtTheBottom || showGroupSeparatorAtTheBottom}
             />
             {(loadMoreItems || pagination.loadMore)
@@ -506,7 +495,7 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
         </>
     );
 
-    const WrapperElement = `${wrapperHtmlTag}`;
+    const WrapperElement = `${isString(wrapperHtmlTag) && wrapperHtmlTag ? wrapperHtmlTag : ''}`;
 
     return (
         <>
@@ -514,15 +503,19 @@ const FlatList = forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
                 WrapperElement
                     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                     // @ts-ignore
-                    ? <WrapperElement ref={ref} {...tagProps}>{content}</WrapperElement>
+                    ? <WrapperElement ref={__forwarededRef} {...tagProps}>{content}</WrapperElement>
                     : content
             }
         </>
     );
-}) as ForwardRefExoticComponentExtended;
+};
+
+// const FlatList = forwardRef() as ForwardRefExoticComponentExtended;
 
 FlatList.propTypes = propTypes;
 
 FlatList.defaultProps = defaultProps;
 
-export default memo(FlatList);
+export default memo(forwardRef((props: Props<{} | []>, ref: any) => (
+    <FlatList {...props} __forwarededRef={ref} />
+)), arePropsEqual);

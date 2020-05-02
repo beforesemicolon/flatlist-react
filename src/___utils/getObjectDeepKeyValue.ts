@@ -18,7 +18,7 @@ const getObjectDeepKeyValue = (value: any, dotSeparatedKeys: string) => {
             const key = keys[i];
             if (convertedValue[key] === undefined) {
                 console.error(`Key "${key}" was not found in`, value);
-                convertedValue = undefined;
+                convertedValue = null;
                 break;
             }
 

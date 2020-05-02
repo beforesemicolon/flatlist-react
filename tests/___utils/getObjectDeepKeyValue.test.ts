@@ -102,9 +102,9 @@ describe('Util: getObjectDeepKeyValue()', () => {
     it('Should be undefined when not OBJECT or ARRAY is passed as hey-stack', () => {
         expect.assertions(3);
 
-        expect(getObjectDeepKeyValue('', 'children')).toBeUndefined();
-        expect(getObjectDeepKeyValue(() => {}, 'children')).toBeUndefined();
-        expect(getObjectDeepKeyValue(new Map(), 'children')).toBeUndefined();
+        expect(getObjectDeepKeyValue('', 'children')).toBeNull();
+        expect(getObjectDeepKeyValue(() => {}, 'children')).toBeNull();
+        expect(getObjectDeepKeyValue(new Map(), 'children')).toBeNull();
     });
 
     it('Should throw an error when not STRING is passed as key', () => {

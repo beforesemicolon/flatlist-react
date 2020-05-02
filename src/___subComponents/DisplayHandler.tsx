@@ -1,5 +1,5 @@
-import React, {Component, createRef, Fragment} from 'react';
-import {bool, string, shape} from 'prop-types';
+import {bool, shape, string} from 'prop-types';
+import React, {Component, createRef} from 'react';
 
 export interface DisplayInterface {
     row: boolean;
@@ -31,12 +31,12 @@ const propTypes = {
         row: bool,
         rowGap: string
     }),
-    displayGrid: bool.isRequired,
-    displayRow: bool.isRequired,
-    gridGap: string.isRequired,
-    minColumnWidth: string.isRequired,
-    rowGap: string.isRequired,
-    showGroupSeparatorAtTheBottom: bool.isRequired
+    displayGrid: bool,
+    displayRow: bool,
+    gridGap: string,
+    minColumnWidth: string,
+    rowGap: string,
+    showGroupSeparatorAtTheBottom: bool
 };
 
 const defaultProps = {
@@ -46,7 +46,13 @@ const defaultProps = {
         gridMinColumnWidth: '200px',
         row: false,
         rowGap: '20px'
-    }
+    },
+    displayGrid: false,
+    displayRow: false,
+    gridGap: '20px',
+    minColumnWidth: '200px',
+    rowGap: '20px',
+    showGroupSeparatorAtTheBottom: false
 };
 
 class DisplayHandler extends Component<DisplayHandlerProps, State> {
@@ -156,7 +162,7 @@ class DisplayHandler extends Component<DisplayHandlerProps, State> {
         }
     }
 
-    render() {
+    render(): JSX.Element {
         const {parentComponent} = this.state;
         return (
             <>

@@ -2,6 +2,7 @@ import React, {forwardRef, Ref, ForwardRefExoticComponent} from 'react';
 import convertListToArray from '../___utils/convertListToArray';
 import {isFunction} from '../___utils/isType';
 import DefaultBlank from './DefaultBlank';
+import DisplayHandler, {DisplayHandlerProps} from './DisplayHandler';
 
 export type renderFunc = (item: any, key: number | string) => JSX.Element;
 
@@ -10,7 +11,7 @@ export interface ForwardRefExoticComponentExtended extends ForwardRefExoticCompo
     propTypes: object;
 }
 
-interface Props<T> {
+interface Props<T> extends DisplayHandlerProps {
     list: T[];
     renderItem: JSX.Element | renderFunc;
     renderWhenEmpty: null | (() => JSX.Element);
@@ -32,7 +33,11 @@ export const renderBlank = (renderWhenEmpty: Props<{} | []>['renderWhenEmpty']):
 );
 
 export default forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
-    const {list, renderItem, renderWhenEmpty, reversed, wrapperHtmlTag, ...tagProps} = props;
+    const {
+        list, renderItem, renderWhenEmpty, reversed, wrapperHtmlTag,
+        display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth,
+        ...tagProps
+    } = props;
     let renderList = convertListToArray(list);
 
     if (renderList.length === 0) {
@@ -53,6 +58,7 @@ export default forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
                     ? renderList.map(renderThisItem)
                     : renderBlank(renderWhenEmpty)
             }
+            <DisplayHandler {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}} />
         </>
     );
 

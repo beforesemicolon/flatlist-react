@@ -82,7 +82,7 @@ describe('Util: getObjectDeepKeyValue()', () => {
         expect(getObjectDeepKeyValue(testingArray, arrKey5)).toEqual(1);
     });
 
-    it('Should be undefined when key does not exists', () => {
+    it('Should return null when key does not exists', () => {
         const objectKey1: string = 'children.0.nothing'; // nothing does not exists
         const objectKey2: string = 'children.2.age'; // 2 does not exists
         const objectKey3: string = 'personalInfo.dominance'; // dominance does not exists
@@ -91,12 +91,12 @@ describe('Util: getObjectDeepKeyValue()', () => {
         const arrKey3: string = '0.test.weight'; // test does not exists
 
         expect.assertions(6);
-        expect(getObjectDeepKeyValue(testingObject, objectKey1)).toBeUndefined();
-        expect(getObjectDeepKeyValue(testingObject, objectKey2)).toBeUndefined();
-        expect(getObjectDeepKeyValue(testingObject, objectKey3)).toBeUndefined();
-        expect(getObjectDeepKeyValue(testingArray, arrKey1)).toBeUndefined();
-        expect(getObjectDeepKeyValue(testingArray, arrKey2)).toBeUndefined();
-        expect(getObjectDeepKeyValue(testingArray, arrKey3)).toBeUndefined();
+        expect(getObjectDeepKeyValue(testingObject, objectKey1)).toBe(null);
+        expect(getObjectDeepKeyValue(testingObject, objectKey2)).toBe(null);
+        expect(getObjectDeepKeyValue(testingObject, objectKey3)).toBe(null);
+        expect(getObjectDeepKeyValue(testingArray, arrKey1)).toBe(null);
+        expect(getObjectDeepKeyValue(testingArray, arrKey2)).toBe(null);
+        expect(getObjectDeepKeyValue(testingArray, arrKey3)).toBe(null);
     });
 
     it('Should be undefined when not OBJECT or ARRAY is passed as hey-stack', () => {

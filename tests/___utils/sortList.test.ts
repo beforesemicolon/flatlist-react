@@ -239,14 +239,12 @@ describe('Util sortList()', () => {
         ])
     });
 
-    it('Should not sort if key is no found', () => {
-        expect.assertions(4);
+    it('Should keep the same for object or array arrays if key is no found', () => {
+        expect.assertions(2);
         const objectArray = [{name: 'Ta'}, {count: 1}];
         const arrayArray = [[{name: 'Ta'}], [{count: 1}]];
 
-        expect(sortList(objectArray, {by: 'name'})).toEqual(objectArray);
-        expect(sortList(objectArray, {by: 'count'})).toEqual(objectArray);
-        expect(sortList(arrayArray, {by: '0.name'})).toEqual(arrayArray);
-        expect(sortList(arrayArray, {by: '0.count'})).toEqual(arrayArray);
+        expect(sortList(objectArray, {by: 'name'})).toEqual([{name: 'Ta'}, {count: 1}]);
+        expect(sortList(arrayArray, {by: '0.count'})).toEqual([[{name: 'Ta'}], [{count: 1}]]);
     });
 });

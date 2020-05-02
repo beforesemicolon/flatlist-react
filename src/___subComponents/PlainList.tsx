@@ -1,6 +1,5 @@
 import {array, func, node, object, oneOfType, string} from 'prop-types';
 import React, {forwardRef, memo, Ref} from 'react';
-import arePropsEqual from '../___utils/arePropsEqual';
 import convertListToArray from '../___utils/convertListToArray';
 import {isString} from '../___utils/isType';
 import DefaultBlank from './DefaultBlank';
@@ -14,8 +13,6 @@ interface Props<T> extends DisplayHandlerProps {
     wrapperHtmlTag: string;
     __forwarededRef: object;
 }
-
-// const List = PlainList() as ForwardRefExoticComponentExtended;
 
 const PlainList = (props: Props<DisplayHandlerProps | []>) => {
     const {
@@ -83,4 +80,4 @@ PlainList.defaultProps = {
 
 export default memo(forwardRef((props: Props<DisplayHandlerProps | []>, ref: Ref<HTMLElement>) => (
     <PlainList __forwarededRef={ref} {...props} />
-)), arePropsEqual);
+)));

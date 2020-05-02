@@ -1,16 +1,16 @@
 import {array, arrayOf, bool, element, func, node, number, object, oneOf, oneOfType, shape, string} from 'prop-types';
-import React, {forwardRef, memo} from 'react';
+import React, {forwardRef, memo, useEffect, useRef} from 'react';
 import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './___subComponents/DisplayHandler';
 import InfiniteLoader, {InfiniteLoaderProps} from './___subComponents/InfiniteLoader';
+import ScrollToTopButton from './___subComponents/ScrollToTopButton';
+import {btnPosition, handleRenderItem, renderBlank, renderFunc} from './___subComponents/uiFunctions';
 import convertListToArray from './___utils/convertListToArray';
 import filterList from './___utils/filterList';
-import arePropsEqual from './___utils/arePropsEqual';
 import groupList, {GroupOptionsInterface} from './___utils/groupList';
 import {isBoolean, isFunction, isString} from './___utils/isType';
 import limitList from './___utils/limitList';
 import searchList, {SearchOptionsInterface} from './___utils/searchList';
 import sortList, {SortOptionsInterface} from './___utils/sortList';
-import {handleRenderItem, renderBlank, renderFunc} from './___subComponents/uiFunctions';
 
 interface GroupInterface extends GroupOptionsInterface {
     separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
@@ -40,6 +40,7 @@ interface Props<T> {
     display: DisplayInterface;
     sort: boolean | SortInterface;
     pagination: InfiniteLoaderProps;
+    scrollToTop: boolean;
     // sorting
     sortBy: SortInterface['by'];
     sortCaseInsensitive: SortInterface['caseInsensitive'];
@@ -71,6 +72,11 @@ interface Props<T> {
     loadMoreItems: null | InfiniteLoaderProps['loadMore'];
     paginationLoadingIndicator: InfiniteLoaderProps['loadingIndicator'];
     paginationLoadingIndicatorPosition: InfiniteLoaderProps['loadingIndicatorPosition'];
+    // scrollToTop
+    scrollToTopButton: JSX.Element | (() => JSX.Element);
+    scrollToTopOffset: number;
+    scrollToTopPadding: number;
+    scrollToTopPosition: string;
 }
 
 const propTypes = {
@@ -187,6 +193,19 @@ const propTypes = {
      * the spacing in between rows when display row is activated
      */
     rowGap: string,
+    /**
+     * a button to be used as scroll to top
+     */
+    scrollToTopButton: oneOfType([node, element, func]),
+    /**
+     * a button to be used as scroll to top
+     */
+    scrollToTopOffset: number,
+    /**
+     * a button to be used as scroll to top
+     */
+    scrollToTopPadding: number,
+    scrollToTopPosition: oneOf(['top right', 'top left', 'bottom right', 'bottom left']),
     /**
      * a search shorthand configuration
      */
@@ -317,6 +336,10 @@ const defaultProps = {
     renderWhenEmpty: null,
     reversed: false,
     rowGap: '',
+    scrollToTopButton: null,
+    scrollToTopOffset: 50,
+    scrollToTopPadding: 20,
+    scrollToTopPosition: 'bottom right',
     search: {
         by: '',
         caseInsensitive: false,
@@ -422,6 +445,7 @@ const FlatList = (props: Props<{} | []>) => {
         search, searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, searchableMinCharactersCount, // search props
         display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
+        scrollToTopButton, scrollToTopOffset, scrollToTopPadding, scrollToTopPosition,
         pagination, // pagination props
         __forwarededRef, ...tagProps // props to be added to the wrapper container if wrapperHtmlTag is specified
     } = props;
@@ -431,6 +455,36 @@ const FlatList = (props: Props<{} | []>) => {
     if (renderList.length === 0) {
         return renderBlank(renderWhenEmpty);
     }
+
+    const cont = useRef();
+    // eslint-disable-next-line consistent-return
+    useEffect(() => {
+        const {current}: any = (__forwarededRef || cont);
+
+        if (wrapperHtmlTag && current) {
+            const btn = current.querySelector('.___to-top-btn');
+            const positionBtn = btnPosition(current, btn);
+            const pos = scrollToTopPosition.split(' ');
+            const updateBtnPosition = () => positionBtn(pos[0], pos[1], scrollToTopPadding, scrollToTopOffset);
+            // eslint-disable-next-line no-undef
+            window.addEventListener('resize', updateBtnPosition);
+            current.addEventListener('scroll', updateBtnPosition);
+
+            btn.addEventListener('click', () => {
+                current.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            setTimeout(() => updateBtnPosition(), 250);
+
+            return () => {
+                // eslint-disable-next-line no-undef
+                window.removeEventListener('resize', updateBtnPosition);
+            };
+        }
+    }, []);
 
     const renderThisItem = handleRenderItem(renderItem);
 
@@ -492,6 +546,7 @@ const FlatList = (props: Props<{} | []>) => {
                     loadingIndicatorPosition={paginationLoadingIndicatorPosition || pagination.loadingIndicatorPosition}
                 />
             )}
+            {wrapperHtmlTag && <ScrollToTopButton button={scrollToTopButton} />}
         </>
     );
 
@@ -503,14 +558,12 @@ const FlatList = (props: Props<{} | []>) => {
                 WrapperElement
                     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                     // @ts-ignore
-                    ? <WrapperElement ref={__forwarededRef} {...tagProps}>{content}</WrapperElement>
+                    ? <WrapperElement ref={__forwarededRef || cont} {...tagProps}>{content}</WrapperElement>
                     : content
             }
         </>
     );
 };
-
-// const FlatList = forwardRef() as ForwardRefExoticComponentExtended;
 
 FlatList.propTypes = propTypes;
 
@@ -518,4 +571,4 @@ FlatList.defaultProps = defaultProps;
 
 export default memo(forwardRef((props: Props<{} | []>, ref: any) => (
     <FlatList {...props} __forwarededRef={ref} />
-)), arePropsEqual);
+)));

@@ -1,20 +1,19 @@
 import {array, func, node, object, oneOfType, string} from 'prop-types';
-import React, {forwardRef, memo, Ref} from 'react';
+import React, {forwardRef, Ref} from 'react';
 import convertListToArray from '../___utils/convertListToArray';
 import {isString} from '../___utils/isType';
 import DefaultBlank from './DefaultBlank';
-import {DisplayHandlerProps} from './DisplayHandler';
 import {handleRenderItem, renderBlank, renderFunc} from './uiFunctions';
 
-interface Props<T> extends DisplayHandlerProps {
-    list: T[];
+interface Props {
+    list: [];
     renderItem: JSX.Element | renderFunc;
     renderWhenEmpty: null | (() => JSX.Element);
     wrapperHtmlTag: string;
     __forwarededRef: object;
 }
 
-const PlainList = (props: Props<DisplayHandlerProps | []>) => {
+const PlainList = (props: Props) => {
     const {
         list, renderItem, renderWhenEmpty, wrapperHtmlTag, __forwarededRef,
         ...tagProps
@@ -78,6 +77,6 @@ PlainList.defaultProps = {
     __forwarededRef: {}
 };
 
-export default memo(forwardRef((props: Props<DisplayHandlerProps | []>, ref: Ref<HTMLElement>) => (
+export default forwardRef((props: Props, ref: Ref<HTMLElement>) => (
     <PlainList __forwarededRef={ref} {...props} />
-)));
+));

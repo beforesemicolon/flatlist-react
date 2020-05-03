@@ -20,6 +20,9 @@ module.exports = {
 		'no-restricted-globals': [1],
 		'@typescript-eslint/indent': [2, 4],
 		'react/jsx-indent': [2, 4],
+		'react/jsx-tag-spacing': [0],
+		'@typescript-eslint/ban-ts-ignore': [0],
+		'import/prefer-default-export': [0],
 		'react/sort-comp': [0],
 		"react/destructuring-assignment": [1, "always", { "ignoreClassFields": true }],
 		'react/static-property-placement': [1, 'property assignment', {

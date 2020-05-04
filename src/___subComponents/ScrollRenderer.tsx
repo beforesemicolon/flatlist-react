@@ -1,5 +1,5 @@
 import {any, arrayOf, element, func, node, oneOfType} from 'prop-types';
-import React, {createRef, useEffect, useLayoutEffect, useState} from 'react';
+import React, {createRef, useEffect, useLayoutEffect, useState, Ref} from 'react';
 import convertListToArray from '../___utils/convertListToArray';
 import {handleRenderGroupSeparator, handleRenderItem, renderFunc} from './uiFunctions';
 
@@ -14,7 +14,7 @@ const ScrollRenderer = (props: Props) => {
     const [render, setRender] = useState({renderList: [], index: 0, prevScrollPosition: 0});
     const [mounted, setMounted] = useState(false);
     const dataList = convertListToArray(list);
-    const containerRef: any = createRef();
+    const containerRef: Ref<HTMLElement> = createRef();
     let adding = false;
 
     const renderThisItem = handleRenderItem(renderItem, handleRenderGroupSeparator(groupSeparator));
@@ -55,12 +55,10 @@ const ScrollRenderer = (props: Props) => {
     }, [list]);
 
     useEffect(() => { // when mounted
-        const span: any = containerRef.current;
-        const container = span.parentNode;
         setMounted(true);
 
         return () => { // when unmounted
-            container.removeEventListener('scroll', onScroll, true);
+            (containerRef as any).current.parentNode.removeEventListener('scroll', onScroll, true);
         };
     }, []);
 

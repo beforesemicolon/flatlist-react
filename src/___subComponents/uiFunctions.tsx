@@ -55,7 +55,6 @@ export const handleRenderItem = (
 };
 
 export const btnPosition = (container: HTMLElement, btn: HTMLElement) => {
-    // eslint-disable-next-line no-undef
     const z = window.getComputedStyle(container).zIndex;
     btn.style.position = 'fixed';
     btn.style.zIndex = `${z === 'auto' ? 1 : Number(z) + 1}`;
@@ -78,7 +77,6 @@ export const btnPosition = (container: HTMLElement, btn: HTMLElement) => {
             x = ((left + width) - padding) - btn.offsetWidth;
         }
 
-        // eslint-disable-next-line no-undef
         window.requestAnimationFrame(() => {
             const dist = Number((container.scrollHeight - container.offsetHeight).toFixed(0));
             offset = Math.min(offset, dist);

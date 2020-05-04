@@ -2,6 +2,10 @@ module.exports = {
 	extends: ['airbnb', 'plugin:@typescript-eslint/recommended'],
 	parser: '@typescript-eslint/parser',
 	plugins: ['@typescript-eslint', 'prettier'],
+	env: {
+		browser: true,
+		es6: true
+	},
 	settings: {
 		'import/parsers': {
 			'@typescript-eslint/parser': ['.ts', '.tsx'],

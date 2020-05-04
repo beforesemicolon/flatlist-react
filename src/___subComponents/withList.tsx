@@ -124,8 +124,6 @@ const withList = (List: any) => {
                 }, []);
         }
 
-        console.log('-- renderList', renderList);
-
         return <List {...props} list={renderList}/>;
     };
 

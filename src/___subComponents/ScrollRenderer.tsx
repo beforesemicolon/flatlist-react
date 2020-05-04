@@ -11,20 +11,22 @@ interface Props {
 
 const ScrollRenderer = (props: Props) => {
     const {list, renderItem, groupSeparator} = props;
-    const [renderList, setRenderList] = useState([]);
-    const [index, setIndex] = useState(0);
-    const [prevScrollPos, setPrevScrollPos] = useState(0);
+    const [render, setRender] = useState({renderList: [], index: 0, prevScrollPosition: 0});
+    const [mounted, setMounted] = useState(false);
     const dataList = convertListToArray(list);
     const containerRef: any = createRef();
     let adding = false;
 
     const renderThisItem = handleRenderItem(renderItem, handleRenderGroupSeparator(groupSeparator));
 
-    const addItem = () => {
-        if (!adding && index < dataList.length) {
+    const addItem = (prevScrollPosition = render.prevScrollPosition) => {
+        if (!adding && render.index < dataList.length) {
             adding = true;
-            setRenderList([...renderList, dataList[index]] as any);
-            setIndex(index + 1);
+            setRender({
+                prevScrollPosition,
+                renderList: [...render.renderList, dataList[render.index]] as any,
+                index: render.index + 1
+            });
         }
     };
 
@@ -33,20 +35,29 @@ const ScrollRenderer = (props: Props) => {
 
         if (
             // make sure it is scrolling down
-            cont.scrollTop > prevScrollPos && (
+            cont.scrollTop > render.prevScrollPosition && (
                 // maintain an offset equal to container height
                 (cont.scrollTop + cont.offsetHeight) > (cont.scrollHeight - cont.offsetHeight)
             )
         ) {
-            addItem();
+            addItem(cont.scrollTop);
         }
-
-        setPrevScrollPos(cont.scrollTop);
     };
 
     useEffect(() => {
+        if (mounted) { // reset list on list change
+            setRender({
+                renderList: [],
+                index: 0,
+                prevScrollPosition: 0
+            });
+        }
+    }, [list]);
+
+    useEffect(() => { // when mounted
         const span: any = containerRef.current;
         const container = span.parentNode;
+        setMounted(true);
 
         return () => { // when unmounted
             container.removeEventListener('scroll', onScroll, true);
@@ -62,7 +73,7 @@ const ScrollRenderer = (props: Props) => {
             adding = false;
         }
 
-        if (index > 0 && dataList.length === renderList.length) {
+        if (render.index > 0 && dataList.length === render.renderList.length) {
             container.removeEventListener('scroll', onScroll, true);
         } else {
             container.addEventListener('scroll', onScroll, true);
@@ -71,11 +82,11 @@ const ScrollRenderer = (props: Props) => {
         return () => { // when unmounted
             container.removeEventListener('scroll', onScroll, true);
         };
-    }, [index]);
+    }, [render.index]);
 
     return (
         <>
-            {renderList.map(renderThisItem)}
+            {render.renderList.map(renderThisItem)}
             <span ref={containerRef} style={{display: 'none'}}/>
         </>
     );

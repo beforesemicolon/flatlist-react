@@ -57,24 +57,25 @@ const groupList = <T>(list: T[], options: GroupOptionsInterface = defaultGroupOp
 
         return {groupLabels, groupLists: handleGroupReverse(Object.values(groupedList), options.reversed)};
     } if (limit && isNumber(limit) && (limit > 0)) {
-        const groupLists = list.reduce((groupedList: any[], item: T, idx: number) => {
-            groupedList[groupedList.length - 1].push(item);
+        let groupLabel = 1;
+        const groupLists: GroupedItemsObjectInterface<T> = list
+            .reduce((prevList: GroupedItemsObjectInterface<T>, item: T) => {
+                if (!prevList[groupLabel]) {
+                    prevList[groupLabel] = [];
+                }
 
-            const itemNumber: number = idx + 1;
+                prevList[groupLabel].push(item);
 
-            if (
-                itemNumber < list.length // make sure separator is not added at the end
-                && (itemNumber % (limit || 0)) === 0
-            ) {
-                groupedList.push([]);
-            }
+                if (prevList[groupLabel].length === limit) {
+                    groupLabel += 1;
+                }
 
-            return groupedList;
-        }, [[]]);
+                return prevList;
+            }, {});
 
-        groupLabels = Array(groupLists.length).fill(0).map((x, i) => (i + 1));
+        groupLabels = Array.from(new Set(Object.keys(groupLists)));
 
-        return {groupLabels, groupLists: handleGroupReverse(groupLists, options.reversed)};
+        return {groupLabels, groupLists: handleGroupReverse(Object.values(groupLists), options.reversed)};
     }
 
     return {groupLabels, groupLists: handleGroupReverse([list], options.reversed)};

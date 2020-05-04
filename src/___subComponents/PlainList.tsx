@@ -1,39 +1,38 @@
-import {array, func, node, object, oneOfType, string} from 'prop-types';
-import React, {forwardRef, memo, Ref} from 'react';
+import {array, bool, func, node, object, oneOfType, string} from 'prop-types';
+import React, {forwardRef, Ref} from 'react';
 import convertListToArray from '../___utils/convertListToArray';
 import {isString} from '../___utils/isType';
 import DefaultBlank from './DefaultBlank';
-import {DisplayHandlerProps} from './DisplayHandler';
+import ScrollRenderer from './ScrollRenderer';
 import {handleRenderItem, renderBlank, renderFunc} from './uiFunctions';
 
-interface Props<T> extends DisplayHandlerProps {
-    list: T[];
+interface Props {
+    list: [];
     renderItem: JSX.Element | renderFunc;
     renderWhenEmpty: null | (() => JSX.Element);
     wrapperHtmlTag: string;
+    renderScroll: boolean;
     __forwarededRef: object;
 }
 
-const PlainList = (props: Props<DisplayHandlerProps | []>) => {
+const PlainList = (props: Props) => {
     const {
-        list, renderItem, renderWhenEmpty, wrapperHtmlTag, __forwarededRef,
+        list, renderItem, renderWhenEmpty, renderScroll, wrapperHtmlTag, __forwarededRef,
         ...tagProps
     } = props;
-    const renderList = convertListToArray(list);
+    const dataList = convertListToArray(list);
 
-    if (renderList.length === 0) {
+    if (dataList.length === 0) {
         return renderBlank(renderWhenEmpty);
     }
-
-    const renderThisItem = handleRenderItem(renderItem);
 
     const WrapperElement = `${isString(wrapperHtmlTag) && wrapperHtmlTag ? wrapperHtmlTag : ''}`;
     const content = (
         <>
             {
-                renderList.length > 0
-                    ? renderList.map(renderThisItem)
-                    : renderBlank(renderWhenEmpty)
+                renderScroll
+                    ? <ScrollRenderer list={dataList} renderItem={renderItem}/>
+                    : dataList.map(handleRenderItem(renderItem))
             }
         </>
     );
@@ -42,7 +41,6 @@ const PlainList = (props: Props<DisplayHandlerProps | []>) => {
         <>
             {
                 WrapperElement
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                     // @ts-ignore
                     ? <WrapperElement {...tagProps} ref={__forwarededRef}>{content}</WrapperElement>
                     : content
@@ -69,15 +67,17 @@ PlainList.propTypes = {
      */
     wrapperHtmlTag: string,
     // eslint-disable-next-line react/forbid-prop-types
-    __forwarededRef: object
+    __forwarededRef: object,
+    renderScroll: bool
 };
 
 PlainList.defaultProps = {
     wrapperHtmlTag: '',
     renderWhenEmpty: DefaultBlank,
-    __forwarededRef: {}
+    renderScroll: false,
+    __forwarededRef: {current: null}
 };
 
-export default memo(forwardRef((props: Props<DisplayHandlerProps | []>, ref: Ref<HTMLElement>) => (
+export default forwardRef((props: Props, ref: Ref<HTMLElement>) => (
     <PlainList __forwarededRef={ref} {...props} />
-)));
+));

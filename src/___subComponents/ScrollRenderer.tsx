@@ -1,20 +1,24 @@
-import {any, arrayOf, func} from 'prop-types';
+import {any, arrayOf, element, func, node, oneOfType} from 'prop-types';
 import React, {createRef, useEffect, useLayoutEffect, useState} from 'react';
 import convertListToArray from '../___utils/convertListToArray';
-import {handleRenderItem, renderFunc} from './uiFunctions';
+import {handleRenderGroupSeparator, handleRenderItem, renderFunc} from './uiFunctions';
 
 interface Props {
     list: any[];
     renderItem: JSX.Element | renderFunc;
+    groupSeparator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
 }
 
 const ScrollRenderer = (props: Props) => {
+    const {list, renderItem, groupSeparator} = props;
     const [renderList, setRenderList] = useState([]);
     const [index, setIndex] = useState(0);
-    const {list, renderItem} = props;
+    const [prevScrollPos, setPrevScrollPos] = useState(0);
     const dataList = convertListToArray(list);
     const containerRef: any = createRef();
     let adding = false;
+
+    const renderThisItem = handleRenderItem(renderItem, handleRenderGroupSeparator(groupSeparator));
 
     const addItem = () => {
         if (!adding && index < dataList.length) {
@@ -24,12 +28,28 @@ const ScrollRenderer = (props: Props) => {
         }
     };
 
+    const onScroll = (e: Event) => {
+        const cont: any = e.currentTarget || e.target;
+
+        if (
+            // make sure it is scrolling down
+            cont.scrollTop > prevScrollPos && (
+                // maintain an offset equal to container height
+                (cont.scrollTop + cont.offsetHeight) > (cont.scrollHeight - cont.offsetHeight)
+            )
+        ) {
+            addItem();
+        }
+
+        setPrevScrollPos(cont.scrollTop);
+    };
+
     useEffect(() => {
         const span: any = containerRef.current;
         const container = span.parentNode;
 
         return () => { // when unmounted
-            container.removeEventListener('scroll', addItem, true);
+            container.removeEventListener('scroll', onScroll, true);
         };
     }, []);
 
@@ -43,19 +63,19 @@ const ScrollRenderer = (props: Props) => {
         }
 
         if (index > 0 && dataList.length === renderList.length) {
-            container.removeEventListener('scroll', addItem, true);
+            container.removeEventListener('scroll', onScroll, true);
         } else {
-            container.addEventListener('scroll', addItem, true);
+            container.addEventListener('scroll', onScroll, true);
         }
 
         return () => { // when unmounted
-            container.removeEventListener('scroll', addItem, true);
+            container.removeEventListener('scroll', onScroll, true);
         };
     }, [index]);
 
     return (
         <>
-            {renderList.map(handleRenderItem(renderItem))}
+            {renderList.map(renderThisItem)}
             <span ref={containerRef} style={{display: 'none'}}/>
         </>
     );
@@ -63,7 +83,12 @@ const ScrollRenderer = (props: Props) => {
 
 ScrollRenderer.propTypes = {
     list: arrayOf(any).isRequired,
-    renderItem: func.isRequired
+    renderItem: func.isRequired,
+    groupSeparator: oneOfType([node, func, element])
+};
+
+ScrollRenderer.defaultProps = {
+    groupSeparator: null
 };
 
 export default ScrollRenderer;

@@ -1,4 +1,4 @@
-import {array, func, node, object, oneOfType, string, bool} from 'prop-types';
+import {array, bool, func, node, object, oneOfType, string} from 'prop-types';
 import React, {forwardRef, Ref} from 'react';
 import convertListToArray from '../___utils/convertListToArray';
 import {isString} from '../___utils/isType';

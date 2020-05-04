@@ -1,16 +1,15 @@
 import {array, arrayOf, bool, element, func, node, number, object, oneOf, oneOfType, shape, string} from 'prop-types';
-import React, {forwardRef, memo, useEffect, useRef} from 'react';
+import React, {forwardRef, memo} from 'react';
 import DisplayHandler, {DisplayHandlerProps, DisplayInterface} from './___subComponents/DisplayHandler';
 import InfiniteLoader, {InfiniteLoaderProps} from './___subComponents/InfiniteLoader';
+import ScrollRenderer from './___subComponents/ScrollRenderer';
 import ScrollToTopButton from './___subComponents/ScrollToTopButton';
-import {btnPosition, handleRenderItem, renderBlank, renderFunc} from './___subComponents/uiFunctions';
-import convertListToArray from './___utils/convertListToArray';
-import filterList from './___utils/filterList';
-import groupList, {GroupOptionsInterface} from './___utils/groupList';
-import {isBoolean, isFunction, isString} from './___utils/isType';
-import limitList from './___utils/limitList';
-import searchList, {SearchOptionsInterface} from './___utils/searchList';
-import sortList, {SortOptionsInterface} from './___utils/sortList';
+import {handleRenderGroupSeparator, handleRenderItem, renderBlank, renderFunc} from './___subComponents/uiFunctions';
+import withList from './___subComponents/withList';
+import {GroupOptionsInterface} from './___utils/groupList';
+import {isString} from './___utils/isType';
+import {SearchOptionsInterface} from './___utils/searchList';
+import {SortOptionsInterface} from './___utils/sortList';
 
 interface GroupInterface extends GroupOptionsInterface {
     separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
@@ -30,6 +29,7 @@ interface Props<T> {
     list: T[];
     renderItem: JSX.Element | renderFunc;
     renderWhenEmpty: null | (() => JSX.Element);
+    renderScroll: boolean;
     limit: number;
     reversed: boolean;
     wrapperHtmlTag: string;
@@ -79,7 +79,67 @@ interface Props<T> {
     scrollToTopPosition: string;
 }
 
-const propTypes = {
+const FlatList = (props: Props<{} | []>) => {
+    const {
+        list, limit, reversed, renderWhenEmpty, wrapperHtmlTag, renderItem, // render/list related props
+        filterBy, // filter props
+        group, groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
+        sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
+        search, searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, searchableMinCharactersCount, // search props
+        display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
+        hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
+        renderScroll, scrollToTop, scrollToTopButton, scrollToTopOffset, scrollToTopPadding, scrollToTopPosition,
+        pagination, // pagination props
+        __forwarededRef, ...tagProps // props to be added to the wrapper container if wrapperHtmlTag is specified
+    } = props;
+
+    const renderThisItem = handleRenderItem(
+        renderItem,
+        handleRenderGroupSeparator(group.separator || groupSeparator)
+    );
+
+    const content = (
+        <>
+            {
+                list.length > 0
+                    ? renderScroll
+                        ? <ScrollRenderer list={list} renderItem={renderItem} groupSeparator={group.separator || groupSeparator}/>
+                        : list.map(renderThisItem)
+                    : renderBlank(renderWhenEmpty)
+            }
+            <DisplayHandler
+                {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
+                showGroupSeparatorAtTheBottom={group.separatorAtTheBottom || showGroupSeparatorAtTheBottom}
+            />
+            {(loadMoreItems || pagination.loadMore)
+            && (
+                <InfiniteLoader
+                    hasMore={hasMoreItems || pagination.hasMore}
+                    loadMore={loadMoreItems || pagination.loadMore}
+                    loadingIndicator={paginationLoadingIndicator || pagination.loadingIndicator}
+                    loadingIndicatorPosition={paginationLoadingIndicatorPosition || pagination.loadingIndicatorPosition}
+                />
+            )}
+            {(scrollToTop || scrollToTopButton) && <ScrollToTopButton button={scrollToTopButton}/>}
+        </>
+    );
+
+    const WrapperElement = `${isString(wrapperHtmlTag) && wrapperHtmlTag ? wrapperHtmlTag : ''}`;
+
+    return (
+        <>
+            {
+                WrapperElement
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                    // @ts-ignore
+                    ? <WrapperElement ref={__forwarededRef} {...tagProps}>{content}</WrapperElement>
+                    : content
+            }
+        </>
+    );
+};
+
+FlatList.propTypes = {
     /**
      * display shorthand configuration
      */
@@ -189,6 +249,7 @@ const propTypes = {
      * a flag to read the given list backwards(in reverse)
      */
     reversed: bool,
+    renderScroll: bool,
     /**
      * the spacing in between rows when display row is activated
      */
@@ -295,7 +356,7 @@ const propTypes = {
     __forwarededRef: object
 };
 
-const defaultProps = {
+FlatList.defaultProps = {
     display: {
         grid: false,
         gridGap: '',
@@ -336,6 +397,7 @@ const defaultProps = {
     renderWhenEmpty: null,
     reversed: false,
     rowGap: '',
+    renderScroll: false,
     scrollToTopButton: null,
     scrollToTopOffset: 50,
     scrollToTopPadding: 20,
@@ -363,212 +425,6 @@ const defaultProps = {
     __forwarededRef: {}
 };
 
-const renderGroupedList = (
-    list: Props<{} | []>['list'],
-    renderItem: renderFunc,
-    {
-        group,
-        groupBy,
-        groupOf,
-        groupReversed,
-        groupSeparator,
-        sortGroupBy,
-        sort,
-        sortCaseInsensitive,
-        showGroupSeparatorAtTheBottom,
-        sortGroupDesc
-    }: Props<{} | []>
-) => {
-    // make sure group always has the defaults
-    group = {
-        ...defaultProps.group,
-        ...group
-    };
-
-    const groupingOptions: GroupOptionsInterface = {
-        by: group.by || groupBy,
-        limit: group.limit || groupOf,
-        reversed: group.reversed || groupReversed
-    };
-
-    const {groupLists, groupLabels} = groupList(list, groupingOptions);
-
-    return groupLists
-        .reduce((groupedList, aGroup, idx: number) => {
-            const customSeparator = group.separator || groupSeparator;
-            const separatorKey = `separator-${idx}`;
-            let separator = (<hr key={separatorKey} className="___list-separator" />);
-
-            if (customSeparator) {
-                if (isFunction(customSeparator)) {
-                    separator = (customSeparator as (g: any, idx: number, label: string) => JSX.Element)(aGroup, idx, groupLabels[idx]);
-                } else {
-                    separator = customSeparator as JSX.Element;
-                }
-
-                separator = (
-                    <separator.type
-                        {...separator.props}
-                        key={separatorKey}
-                        className={`${separator.props.className || ''} ___list-separator`.trim()}
-                    />
-                );
-            }
-
-            if (group.sortBy || sortGroupBy || (sort as SortInterface).groupBy) {
-                aGroup = sortList(aGroup, {
-                    caseInsensitive: group.sortCaseInsensitive
-                        || sortCaseInsensitive || (sort as SortInterface).groupCaseInsensitive,
-                    descending: group.sortDescending
-                        || sortGroupDesc || (sort as SortInterface).groupDescending,
-                    by: group.sortBy || sortGroupBy || (sort as SortInterface).groupBy
-                });
-            }
-
-            const groupedItems = aGroup
-                .map((item: any, i: number) => renderItem(item, `${idx}-${i}`));
-
-            if (group.separatorAtTheBottom || showGroupSeparatorAtTheBottom) {
-                return groupedList.concat(...groupedItems, separator);
-            }
-
-            return groupedList.concat(separator, ...groupedItems);
-        }, []);
-};
-
-const FlatList = (props: Props<{} | []>) => {
-    const {
-        list, limit, reversed, renderWhenEmpty, wrapperHtmlTag, renderItem, // render/list related props
-        filterBy, // filter props
-        group, groupBy, groupSeparator, groupOf, showGroupSeparatorAtTheBottom, groupReversed, // group props
-        sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, // sort props
-        search, searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, searchableMinCharactersCount, // search props
-        display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
-        hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
-        scrollToTopButton, scrollToTopOffset, scrollToTopPadding, scrollToTopPosition,
-        pagination, // pagination props
-        __forwarededRef, ...tagProps // props to be added to the wrapper container if wrapperHtmlTag is specified
-    } = props;
-
-    let renderList = convertListToArray(list);
-
-    if (renderList.length === 0) {
-        return renderBlank(renderWhenEmpty);
-    }
-
-    const cont = useRef();
-    // eslint-disable-next-line consistent-return
-    useEffect(() => {
-        const {current}: any = (__forwarededRef || cont);
-
-        if (wrapperHtmlTag && current) {
-            const btn = current.querySelector('.___to-top-btn');
-            const positionBtn = btnPosition(current, btn);
-            const pos = scrollToTopPosition.split(' ');
-            const updateBtnPosition = () => positionBtn(pos[0], pos[1], scrollToTopPadding, scrollToTopOffset);
-            // eslint-disable-next-line no-undef
-            window.addEventListener('resize', updateBtnPosition);
-            current.addEventListener('scroll', updateBtnPosition);
-
-            btn.addEventListener('click', () => {
-                current.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-
-            setTimeout(() => updateBtnPosition(), 250);
-
-            return () => {
-                // eslint-disable-next-line no-undef
-                window.removeEventListener('resize', updateBtnPosition);
-            };
-        }
-    }, []);
-
-    const renderThisItem = handleRenderItem(renderItem);
-
-    if (reversed) {
-        renderList = renderList.reverse();
-    }
-
-    if (limit !== null) {
-        renderList = limitList(renderList, limit);
-    }
-
-    if (filterBy) {
-        renderList = filterList(renderList, filterBy);
-    }
-
-    if (searchTerm || search.term) {
-        // make sure search always has the defaults
-        const searchWithDefaults = {
-            ...(defaultProps && defaultProps.search),
-            ...search
-        };
-
-        renderList = searchList(renderList, {
-            by: searchWithDefaults.by || searchBy || '0',
-            caseInsensitive: searchWithDefaults.caseInsensitive || searchCaseInsensitive,
-            everyWord: searchWithDefaults.everyWord || searchOnEveryWord,
-            term: searchWithDefaults.term || searchTerm,
-            minCharactersCount: searchWithDefaults.searchableMinCharactersCount || searchableMinCharactersCount || 3
-        });
-    }
-
-    if ((sort as SortInterface).by || sortBy || (isBoolean(sort) && sort)) {
-        renderList = sortList(renderList, {
-            caseInsensitive: (sort as SortInterface).caseInsensitive || sortCaseInsensitive,
-            descending: (sort as SortInterface).descending || sortDesc,
-            by: (sort as SortInterface).by || sortBy
-        });
-    }
-
-    const content = (
-        <>
-            {
-                renderList.length > 0
-                    ? (group.by || group.limit || groupBy || groupOf)
-                        ? renderGroupedList(renderList, renderThisItem, props)
-                        : renderList.map(renderThisItem)
-                    : renderBlank(renderWhenEmpty)
-            }
-            <DisplayHandler
-                {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}
-                showGroupSeparatorAtTheBottom={group.separatorAtTheBottom || showGroupSeparatorAtTheBottom}
-            />
-            {(loadMoreItems || pagination.loadMore)
-            && (
-                <InfiniteLoader
-                    hasMore={hasMoreItems || pagination.hasMore}
-                    loadMore={loadMoreItems || pagination.loadMore}
-                    loadingIndicator={paginationLoadingIndicator || pagination.loadingIndicator}
-                    loadingIndicatorPosition={paginationLoadingIndicatorPosition || pagination.loadingIndicatorPosition}
-                />
-            )}
-            {wrapperHtmlTag && <ScrollToTopButton button={scrollToTopButton} />}
-        </>
-    );
-
-    const WrapperElement = `${isString(wrapperHtmlTag) && wrapperHtmlTag ? wrapperHtmlTag : ''}`;
-
-    return (
-        <>
-            {
-                WrapperElement
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-                    // @ts-ignore
-                    ? <WrapperElement ref={__forwarededRef || cont} {...tagProps}>{content}</WrapperElement>
-                    : content
-            }
-        </>
-    );
-};
-
-FlatList.propTypes = propTypes;
-
-FlatList.defaultProps = defaultProps;
-
-export default memo(forwardRef((props: Props<{} | []>, ref: any) => (
-    <FlatList {...props} __forwarededRef={ref} />
-)));
+export default memo(withList(forwardRef((props: Props<{} | []>, ref: any) => (
+    <FlatList {...props} __forwarededRef={ref}/>
+))));

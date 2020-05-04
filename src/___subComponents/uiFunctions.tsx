@@ -1,6 +1,6 @@
 import React from 'react';
+import {isArray, isFunction} from '../___utils/isType';
 import DefaultBlank from './DefaultBlank';
-import {isFunction} from '../___utils/isType';
 
 export type renderFunc = (item: any, key: number | string) => JSX.Element | null;
 
@@ -8,9 +8,42 @@ export const renderBlank = (renderWhenEmpty: null | (() => JSX.Element)): JSX.El
     renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank
 );
 
-export const handleRenderItem = (renderItem: JSX.Element | renderFunc): renderFunc => (item: any, key: number | string) => {
+export const handleRenderGroupSeparator = (customSeparator: any) => (sep: any, idx: number | string) => {
+    const [cls, groupLabel, group] = sep;
+    const separatorKey = `separator-${idx}`;
+    let separator = (<hr key={separatorKey} className={cls}/>);
+
+    if (customSeparator) {
+        if (isFunction(customSeparator)) {
+            separator = customSeparator(group, idx, groupLabel);
+        } else {
+            separator = customSeparator;
+        }
+
+        separator = (
+            <separator.type
+                {...separator.props}
+                key={separatorKey}
+                className={`${separator.props.className || ''} ${cls}`.trim()}
+            />
+        );
+    }
+
+    return separator;
+};
+
+export const handleRenderItem = (
+    renderItem: JSX.Element | renderFunc,
+    renderSeparator: null | ((s: string, i: number | string) => JSX.Element) = null
+): renderFunc => (item: any, key: number | string) => {
     if (!renderItem) {
         return null;
+    }
+
+    if (isArray(item) && item[0] === '___list-separator') {
+        return renderSeparator
+            ? (renderSeparator as (s: string, i: number | string) => JSX.Element)(item, key)
+            : null;
     }
 
     if (isFunction(renderItem)) {
@@ -18,7 +51,7 @@ export const handleRenderItem = (renderItem: JSX.Element | renderFunc): renderFu
     }
 
     const comp = renderItem as JSX.Element;
-    return (<comp.type {...comp.props} key={key} item={item} />);
+    return (<comp.type {...comp.props} key={key} item={item}/>);
 };
 
 export const btnPosition = (container: HTMLElement, btn: HTMLElement) => {

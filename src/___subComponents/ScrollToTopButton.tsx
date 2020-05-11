@@ -1,23 +1,24 @@
 import {element, func, node, number, oneOf, oneOfType} from 'prop-types';
-import React, {createRef, Ref, useEffect} from 'react';
+import React, {createRef, Ref, useEffect, useState} from 'react';
 import {isFunction} from '../___utils/isType';
 import {btnPosition} from './uiFunctions';
 
 const ScrollToTopButton = (props: any) => {
     const anchor: Ref<HTMLElement> = createRef();
-    const {button, scrollToTopPosition, scrollToTopPadding, scrollToTopOffset} = props;
+    const {button, position, padding, offset} = props;
     const btn = isFunction(button) ? button() : button;
+    const [mounted, setMounted] = useState(false);
 
     // eslint-disable-next-line consistent-return
     useEffect(() => {
         const buttonElement = (anchor as any).current.nextElementSibling;
         const container = (anchor as any).current.parentNode;
-        (anchor as any).current.remove();
-
         const positionBtn = btnPosition(container, buttonElement);
-        const pos = scrollToTopPosition.split(' ');
-        const updateBtnPosition = () => positionBtn(pos[0], pos[1], scrollToTopPadding, scrollToTopOffset);
+        const pos = position.split(' ');
+        const updateBtnPosition = () => positionBtn(pos[0], pos[1], padding, offset);
+
         window.addEventListener('resize', updateBtnPosition);
+
         container.addEventListener('scroll', updateBtnPosition);
 
         buttonElement.addEventListener('click', () => {
@@ -29,6 +30,7 @@ const ScrollToTopButton = (props: any) => {
 
         setTimeout(() => updateBtnPosition(), 250);
 
+        setMounted(true);
         return () => {
             window.removeEventListener('resize', updateBtnPosition);
         };
@@ -36,7 +38,7 @@ const ScrollToTopButton = (props: any) => {
 
     return (
         <>
-            <span ref={anchor} style={{display: 'none'}}/>
+            {!mounted && <span ref={anchor} style={{display: 'none'}}/>}
             {button ? btn : <button type="button">To Top</button>}
         </>
     );
@@ -44,16 +46,16 @@ const ScrollToTopButton = (props: any) => {
 
 ScrollToTopButton.propTypes = {
     button: oneOfType([node, element, func]),
-    scrollToTopPosition: oneOf(['top right', 'top left', 'bottom right', 'bottom left']),
-    scrollToTopPadding: number,
-    scrollToTopOffset: number
+    position: oneOf(['top right', 'top left', 'bottom right', 'bottom left']),
+    padding: number,
+    offset: number
 };
 
 ScrollToTopButton.defaultProps = {
     button: null,
-    scrollToTopPadding: 20,
-    scrollToTopOffset: 50,
-    scrollToTopPosition: 'bottom right'
+    padding: 20,
+    offset: 50,
+    position: 'bottom right'
 };
 
 export default ScrollToTopButton;

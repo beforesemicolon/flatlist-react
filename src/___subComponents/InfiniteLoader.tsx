@@ -59,7 +59,7 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
             });
         } else {
             console.warn('FlatList: it was not possible to get container\'s ref. '
-          + 'Infinite scrolling pagination will not be possible');
+                + 'Infinite scrolling pagination will not be possible');
         }
     }
 
@@ -98,7 +98,7 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
         }
 
         return 0;
-    }
+    };
 
     setupScrollingContainerEventsListener = (removeEvent = false) => {
         const {scrollingContainer} = this.state;
@@ -112,7 +112,7 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
                 }
             });
         }
-    }
+    };
 
     // show or hide loading indicators based on scroll position
     // calls the "loadMore" function when is needed
@@ -123,17 +123,18 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
 
         const {scrollingContainer, loadIndicatorContainer} = this.state;
         if (scrollingContainer && loadIndicatorContainer) {
-            const {scrollTop, offsetTop, clientHeight} = scrollingContainer;
+            const {scrollTop, offsetTop, offsetHeight} = scrollingContainer;
             this.lastScrollTop = scrollTop;
+            console.log('-- set lastScrollTop', scrollTop);
 
             const loaderPosition = (loadIndicatorContainer.offsetTop - scrollTop);
-            const startingPoint = offsetTop + clientHeight;
+            const startingPoint = offsetTop + offsetHeight;
 
             if (loaderPosition <= startingPoint) {
                 this.setState({loading: true}, this.props.loadMore as (() => void));
             }
         }
-    }
+    };
 
     render(): JSX.Element {
         const {loading} = this.state;
@@ -155,7 +156,7 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
                     hasMore
                     && (loadingIndicator
                         ? (isFunction(loadingIndicator) ? (loadingIndicator as () => JSX.Element)() : loadingIndicator)
-                        : DefaultLoadIndicator)
+                        : <DefaultLoadIndicator/>)
                 }
             </div>
         );

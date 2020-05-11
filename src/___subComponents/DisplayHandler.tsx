@@ -1,5 +1,5 @@
 import {bool, shape, string} from 'prop-types';
-import React, {Component, createRef} from 'react';
+import React, {createRef, useEffect, useState} from 'react';
 
 export interface DisplayInterface {
     row: boolean;
@@ -19,10 +19,6 @@ export interface DisplayHandlerProps {
     display: DisplayInterface;
 }
 
-interface State {
-    parentComponent: HTMLElement | null;
-}
-
 const propTypes = {
     display: shape({
         grid: bool,
@@ -35,8 +31,7 @@ const propTypes = {
     displayRow: bool,
     gridGap: string,
     minColumnWidth: string,
-    rowGap: string,
-    showGroupSeparatorAtTheBottom: bool
+    rowGap: string
 };
 
 const defaultProps = {
@@ -51,127 +46,116 @@ const defaultProps = {
     displayRow: false,
     gridGap: '20px',
     minColumnWidth: '200px',
-    rowGap: '20px',
-    showGroupSeparatorAtTheBottom: false
+    rowGap: '20px'
 };
 
-class DisplayHandler extends Component<DisplayHandlerProps, State> {
-    childSpanRef = createRef<HTMLSpanElement>();
+const DisplayHandler = (props: DisplayHandlerProps) => {
+    const {displayGrid, displayRow, display, gridGap, minColumnWidth, rowGap} = props;
+    const childSpanRef: any = createRef();
+    const [combo, setParentComponent]: any = useState(null);
 
-    state: State = {
-        parentComponent: null
+    const styleParentGrid = (styleTag: HTMLStyleElement, container: HTMLElement): void => {
+        if (displayGrid || display.grid) {
+            const gap = display.gridGap || gridGap || defaultProps.display.gridGap;
+            const column = display.gridMinColumnWidth || minColumnWidth || defaultProps.display.gridMinColumnWidth;
+            const styleString = `
+                [data-cont="${container.dataset.cont}"] {
+                    display: grid;
+                    grid-gap: ${gap};
+                    gap: ${gap};
+                    grid-template-columns: repeat(auto-fill, minmax(${column}, 1fr));
+                    grid-template-rows: auto;
+                    align-items: stretch;
+                }
+                
+                [data-cont="${container.dataset.cont}"] .__infinite-loader,
+                [data-cont="${container.dataset.cont}"] .___scroll-renderer-anchor,
+                [data-cont="${container.dataset.cont}"] .___list-separator {
+                    grid-column: 1/-1;
+                }
+            `;
+
+            styleTag.innerHTML = styleString;
+        } else {
+            styleTag.innerHTML = '';
+        }
     };
 
-    static propTypes = propTypes;
+    const styleParentRow = (styleTag: HTMLStyleElement, container: HTMLElement): void => {
+        if (displayRow || display.row) {
+            const gap = display.rowGap || rowGap || defaultProps.display.rowGap;
 
-    static defaultProps = defaultProps;
+            const styleString = `
+                [data-cont="${container.dataset.cont}"] {
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                [data-cont="${container.dataset.cont}"] > *:not(.__infinite-loader) {
+                    display: block;
+                    flex: 1;
+                    width: 100%;
+                    margin-bottom: ${gap};
+                }
+            `;
 
-    componentDidMount(): void {
-        const {current}: any = this.childSpanRef;
+            styleTag.innerHTML = styleString;
+        } else {
+            styleTag.innerHTML = '';
+        }
+    };
+
+    const handleDisplayHandlerProps = (container: HTMLElement, style: HTMLStyleElement): void => {
+        if (container) {
+            if (display.grid || displayGrid) {
+                styleParentGrid(style, container);
+            } else if (display.row || displayRow) {
+                styleParentRow(style, container);
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (combo) {
+            handleDisplayHandlerProps(combo[0], combo[1]);
+        }
+    });
+
+    useEffect(() => {
+        const {current}: any = childSpanRef;
+        let container: any = null;
+        let style: any = null;
 
         if (current) {
-            this.setState({parentComponent: current.parentNode}, this.handleDisplayHandlerProps);
+            const id = `__container-${new Date().getTime()}`;
+            container = current.parentNode;
+            container.setAttribute('data-cont', id);
+            style = document.createElement('STYLE');
+            style.id = id;
+            document.head.appendChild(style);
+            setParentComponent([container, style]);
+            handleDisplayHandlerProps(container, style);
         } else {
             console.warn('FlatList: it was not possible to get container\'s ref. Styling will not be possible');
         }
-    }
 
-    componentDidUpdate(prevProps: Readonly<DisplayHandlerProps>): void {
-        this.handleDisplayHandlerProps();
-    }
-
-    handleDisplayHandlerProps(): void {
-        const {parentComponent} = this.state;
-        if (parentComponent) {
-            const {displayGrid, displayRow, display} = this.props;
-
-            if (display.grid || displayGrid) {
-                this.styleParentGrid(parentComponent);
-            } else if (display.row || displayRow) {
-                this.styleParentRow(parentComponent);
+        return () => {
+            if (style) {
+                style.remove();
             }
-        }
-    }
+        };
+    }, []);
 
-    styleParentGrid(parentComponent: HTMLElement): void {
-        const {display, displayGrid} = this.props;
+    return (
+        <>
+            {/* following span is only used here to get the parent of this items since they are wrapped */}
+            {/* in fragment which is not rendered on the dom  */}
+            {!combo && <span ref={childSpanRef} style={{display: 'none'}}/>}
+        </>
+    );
+};
 
-        const infiniteLoader = parentComponent.querySelector<HTMLElement>('.__infinite-loader');
-
-        if (displayGrid || display.grid) {
-            let {gridGap, minColumnWidth} = this.props;
-
-            gridGap = display.gridGap || gridGap || defaultProps.display.gridGap;
-            minColumnWidth = display.gridMinColumnWidth || minColumnWidth || defaultProps.display.gridMinColumnWidth;
-
-            parentComponent.style.display = 'grid';
-            parentComponent.style.gridGap = gridGap;
-            parentComponent.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minColumnWidth}, 1fr))`;
-            parentComponent.style.gridTemplateRows = 'auto';
-            parentComponent.style.alignItems = 'stretch';
-            parentComponent.querySelectorAll<HTMLElement>('.___list-separator')
-                .forEach((item: HTMLElement) => {
-                    item.style.gridColumn = '1 / -1';
-                });
-
-            if (infiniteLoader) {
-                infiniteLoader.style.gridColumn = '1 / -1';
-            }
-        } else {
-            parentComponent.style.removeProperty('display');
-            parentComponent.style.removeProperty('grid-gap');
-            parentComponent.style.removeProperty('grid-template-columns');
-            parentComponent.style.removeProperty('grid-template-rows');
-            parentComponent.style.removeProperty('align-items');
-            parentComponent.querySelectorAll<HTMLElement>('.___list-separator')
-                .forEach((item: HTMLElement) => {
-                    item.style.removeProperty('grid-column');
-                });
-
-            if (infiniteLoader) {
-                infiniteLoader.style.removeProperty('grid-column');
-            }
-        }
-    }
-
-    styleParentRow(parentComponent: HTMLElement): void {
-        const {displayRow, display, showGroupSeparatorAtTheBottom} = this.props;
-
-        if (displayRow || display.row) {
-            let {rowGap} = this.props;
-
-            rowGap = display.rowGap || rowGap || defaultProps.display.rowGap;
-
-            parentComponent.style.display = 'block';
-            [].forEach.call(parentComponent.children, (item: HTMLElement) => {
-                if (!item.classList.contains('__infinite-loader')) {
-                    item.style.display = 'block';
-                    const nextEl = item.nextElementSibling;
-
-                    if (!showGroupSeparatorAtTheBottom || !nextEl || !nextEl.classList.contains('___list-separator')) {
-                        item.style.margin = `0 0 ${rowGap}`;
-                    }
-                }
-            });
-        } else {
-            parentComponent.style.removeProperty('display');
-            [].forEach.call(parentComponent.children, (item: HTMLElement) => {
-                item.style.removeProperty('display');
-                item.style.removeProperty('margin');
-            });
-        }
-    }
-
-    render(): JSX.Element {
-        const {parentComponent} = this.state;
-        return (
-            <>
-                {/* following span is only used here to get the parent of this items since they are wrapped */}
-                {/* in fragment which is not rendered on the dom  */}
-                {!parentComponent && <span ref={this.childSpanRef} style={{display: 'none'}} />}
-            </>
-        );
-    }
-}
+DisplayHandler.propTypes = propTypes;
+DisplayHandler.defaultProps = defaultProps;
 
 export default DisplayHandler;

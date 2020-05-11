@@ -1,5 +1,6 @@
-import {isNumber, isObject, isFunction, isString, isBoolean, isNilOrEmpty} from './isType';
 import getObjectDeepKeyValue from './getObjectDeepKeyValue';
+import {isBoolean, isFunction, isNilOrEmpty, isNumber, isString} from './isType';
+import reverseList from './reverseList';
 
 export interface GroupOptionsInterface {
     by?: string | ((item: any, idx: number) => string | number) ;
@@ -19,7 +20,7 @@ interface GroupedItemsObjectInterface<T> {
 
 const handleGroupReverse = <T>(groupedLists: T[][], reverse = false) => {
     if (reverse && isBoolean(reverse)) {
-        return groupedLists.map((group) => group.reverse());
+        return groupedLists.map((group) => reverseList(group));
     }
 
     return groupedLists;

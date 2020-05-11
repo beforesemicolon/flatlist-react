@@ -22,25 +22,25 @@ const ScrollRenderer = (props: Props) => {
     const addItem = (prevScrollPosition = render.prevScrollPosition) => {
         if (!adding && render.index < dataList.length) {
             adding = true;
+            // @ts-ignore
+            const count = getComputedStyle(containerRef.current.parentNode as HTMLElement).display === 'grid' ? 10 : 1;
             setRender({
                 prevScrollPosition,
-                renderList: [...render.renderList, dataList[render.index]] as any,
-                index: render.index + 1
+                renderList: [...render.renderList, ...dataList.slice(render.index, render.index + count)] as any,
+                index: render.index + count
             });
         }
     };
 
-    const onScroll = (e: Event) => {
-        const cont: any = e.currentTarget || e.target;
+    const onScroll = () => {
+        const span: any = containerRef.current;
+        const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
+        const anchorPos = span.offsetTop - span.parentNode.scrollTop;
 
         if (
-            // make sure it is scrolling down
-            cont.scrollTop > render.prevScrollPosition && (
-                // maintain an offset equal to container height
-                (cont.scrollTop + cont.offsetHeight) > (cont.scrollHeight - cont.offsetHeight)
-            )
+            anchorPos <= (startingPoint + span.parentNode.offsetHeight)
         ) {
-            addItem(cont.scrollTop);
+            addItem(span.parentNode.scrollTop);
         }
     };
 
@@ -58,34 +58,35 @@ const ScrollRenderer = (props: Props) => {
         setMounted(true);
 
         return () => { // when unmounted
-            (containerRef as any).current.parentNode.removeEventListener('scroll', onScroll, true);
+            if (containerRef.current) {
+                (containerRef as any).current.parentNode.removeEventListener('scroll', onScroll, true);
+            }
         };
     }, []);
 
     useLayoutEffect(() => {
         const span: any = containerRef.current;
-        const container = span.parentNode;
         // populate double the container height of items
-        if (container.scrollHeight <= (container.offsetHeight * 2)) {
+        if (span.parentNode.scrollHeight <= (span.parentNode.offsetHeight * 2)) {
             addItem();
-            adding = false;
         }
 
         if (render.index > 0 && dataList.length === render.renderList.length) {
-            container.removeEventListener('scroll', onScroll, true);
+            span.parentNode.removeEventListener('scroll', onScroll, true);
         } else {
-            container.addEventListener('scroll', onScroll, true);
+            span.parentNode.addEventListener('scroll', onScroll, true);
         }
 
+        adding = false;
         return () => { // when unmounted
-            container.removeEventListener('scroll', onScroll, true);
+            span.parentNode.removeEventListener('scroll', onScroll, true);
         };
     }, [render.index]);
 
     return (
         <>
             {render.renderList.map(renderThisItem)}
-            <span ref={containerRef} style={{display: 'none'}}/>
+            <span ref={containerRef} style={{visibility: 'hidden', height: 1}} className="___scroll-renderer-anchor"/>
         </>
     );
 };

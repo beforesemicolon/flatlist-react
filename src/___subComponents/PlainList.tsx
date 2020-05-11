@@ -7,12 +7,13 @@ import ScrollRenderer from './ScrollRenderer';
 import {handleRenderItem, renderBlank, renderFunc} from './uiFunctions';
 
 interface Props {
-    list: [];
+    list: any[];
     renderItem: JSX.Element | renderFunc;
-    renderWhenEmpty: null | (() => JSX.Element);
-    wrapperHtmlTag: string;
-    renderScroll: boolean;
-    __forwarededRef: object;
+    renderWhenEmpty?: null | (() => JSX.Element);
+    wrapperHtmlTag?: string;
+    renderScroll?: boolean;
+    __forwarededRef?: Ref<HTMLElement>;
+    [key: string]: any;
 }
 
 const PlainList = (props: Props) => {

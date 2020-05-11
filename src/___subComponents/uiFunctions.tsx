@@ -1,41 +1,43 @@
-import React from 'react';
+import React, {cloneElement} from 'react';
 import {isArray, isFunction} from '../___utils/isType';
 import DefaultBlank from './DefaultBlank';
 
 export type renderFunc = (item: any, key: number | string) => JSX.Element | null;
 
-export const renderBlank = (renderWhenEmpty: null | (() => JSX.Element)): JSX.Element => (
-    renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank
+export const renderBlank = (renderWhenEmpty: null | (() => JSX.Element) = null): JSX.Element => (
+    renderWhenEmpty && isFunction(renderWhenEmpty) ? renderWhenEmpty() : DefaultBlank()
 );
 
-export const handleRenderGroupSeparator = (customSeparator: any) => (sep: any, idx: number | string) => {
+export const handleRenderGroupSeparator = (CustomSeparator: any) => (sep: any, idx: number | string): JSX.Element => {
     const [cls, groupLabel, group] = sep;
     const separatorKey = `separator-${idx}`;
-    let separator = (<hr key={separatorKey} className={cls}/>);
 
-    if (customSeparator) {
-        if (isFunction(customSeparator)) {
-            separator = customSeparator(group, idx, groupLabel);
-        } else {
-            separator = customSeparator;
+    if (CustomSeparator) {
+        if (isFunction(CustomSeparator)) {
+            const Sep = CustomSeparator(group, idx, groupLabel);
+            return (
+                <div key={separatorKey} className={cls}>
+                    <Sep.type {...Sep.props}/>
+                </div>
+            );
         }
 
-        separator = (
-            <separator.type
-                {...separator.props}
-                key={separatorKey}
-                className={`${separator.props.className || ''} ${cls}`.trim()}
-            />
+        return (
+            <div key={separatorKey} className={cls}>
+                {cloneElement(CustomSeparator, {groupLabel, group})}
+            </div>
         );
     }
 
-    return separator;
+    return (
+        <hr key={separatorKey} className={cls}/>
+    );
 };
 
 export const handleRenderItem = (
-    renderItem: JSX.Element | renderFunc,
+    renderItem: JSX.Element | renderFunc | null,
     renderSeparator: null | ((s: string, i: number | string) => JSX.Element) = null
-): renderFunc => (item: any, key: number | string) => {
+): renderFunc => (item: any, key: number | string): JSX.Element | null => {
     if (!renderItem) {
         return null;
     }
@@ -60,7 +62,7 @@ export const btnPosition = (container: HTMLElement, btn: HTMLElement) => {
     btn.style.zIndex = `${z === 'auto' ? 1 : Number(z) + 1}`;
     btn.style.visibility = 'hidden';
 
-    return (vertical: string, horizontal: string, padding = 0, offset = 50) => {
+    return (vertical: string, horizontal: string, padding = 20, offset = 50) => {
         const {top, left, width, height}: DOMRect = container.getBoundingClientRect();
         let x = 0;
         let y = 0;

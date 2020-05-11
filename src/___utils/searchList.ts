@@ -8,6 +8,7 @@ type termCb = (item: any, term: string, idx: number) => boolean;
 export interface SearchOptionsInterface<T> {
     term?: string;
     everyWord?: boolean;
+    onEveryWord?: boolean;
     caseInsensitive?: boolean;
     minCharactersCount?: number;
     by?: string | Array<string | {by: string; caseInsensitive?: boolean}> | termCb;

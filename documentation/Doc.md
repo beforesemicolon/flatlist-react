@@ -23,7 +23,7 @@ There are available **shorthands props** just in case you want to make batch upd
 There are several grouping props, you can confirm in the grouping session, but there is also a
 `group` prop which takes all these props at once.
 
-```tsx
+```jsx
 // PeopleList.jsx
 return (
     <ul>
@@ -42,7 +42,7 @@ return (
 
 ```
 **VS**
-```tsx
+```jsx
 // PeopleList.jsx
 return (
     <ul>
@@ -91,7 +91,7 @@ const person = {
 }
 ```
 ... you can specify props like:
-```tsx
+```jsx
 // PeopleList.jsx
 return (
     <ul>
@@ -120,7 +120,7 @@ It support only the following props:
 
 It is the ideal component to render small simple lists like dropDown, selection options or any other
 list you dont plan to do anything besides rendering them and leave it.
-```tsx
+```jsx
 import FlatList, {PlainList} from 'flatlist-react'
 
 <PlainList
@@ -157,7 +157,7 @@ people = [
 
 Now inside your component file, we create a function `renderPerson` that will be passed to `renderItem`:
 
-```tsx
+```jsx
 // PeopleList.jsx
 import FlatList from 'flatlist-react';
 
@@ -186,7 +186,7 @@ return (
 
 The `list` prop can also be empty and you can use `renderWhenEmpty` prop to tell **FlatList** what to render when the list is empty, like so:
 
-```tsx
+```jsx
 // PeopleList.jsx
 import FlatList from 'flatlist-react';
 
@@ -222,7 +222,7 @@ return (
 `limit` is a great prop if you have a list, for example, of 20 but only intend to show 10. It
 also takes an interval representing a slice (works like js slice) of the list you intend to show, for example:
 
-```tsx
+```jsx
 // hard limit
 <FlatList
   list={this.props.people}
@@ -259,7 +259,7 @@ javascript 'reverse' method on Array because:
 1. it will reverse an Array, Object, Map or Set list;
 2. it does not reverse a list in place.
 
-```tsx
+```jsx
 <FlatList
   list={[2,4,5]}
   renderItem={(item, k) => <span key={k}>{item}</span>}
@@ -282,7 +282,7 @@ FlatList, by default, will not wrap your items in a container. It will take your
 If you want to wrap your list in a container you can user
 `wrapperHtmlTag` to specify which tag to use so then you can treat FlatList as a normal html tag and set any html props that you would normally set.
 
-```tsx
+```jsx
 <FlatList
   list={[2,4,5]}
   renderItem={(item, k) => <span key={k}>{item}</span>}
@@ -320,7 +320,7 @@ end it will fetch some more while showing the loading indicator.
 
 It is also good to use on lists which user normally dont reach the end anyways specially if you are letting them search, or filter the list.
 
-```tsx
+```jsx
 <PlainList
   list={[1,2,3,...10000000]}
   renderItem={(item, k) => <span key={k}>{item}</span>}
@@ -351,7 +351,7 @@ indicator is no longer visible.
 If for some reason after the initial load the user applies a filter or do a search and the visible list becomes shorter,
 `loadMoreItems` will be called as well. `loadMoreItems` will be called whenever the loading incator is visible in the container
 as long as there are more items.
-```tsx
+```jsx
 state = {
     hasMoreItems: false,
     offset: 0,
@@ -411,7 +411,7 @@ fetchData = () => {
 The default loading indicator is super simple so it is a good idea to change it for something that will go well with your
 application and further inform the user of whats going on. `paginationLoadingIndicator` let's you specify a component
 to show while items are being fetched.
-```tsx
+```jsx
 ...
 <FlatList
   list={this.state.myApiData}
@@ -439,7 +439,7 @@ to show while items are being fetched.
 You can also specify where you want the loading indicator to show at the bottom. By default it will show at the **"left"** but,
 you can also specify **"center"** or **"right"**.
 
-```tsx
+```jsx
 ...
 <FlatList
   list={this.state.myApiData}
@@ -472,7 +472,7 @@ To filter the list you can specify `filterBy` prop that takes either a string or
 ###### string | (item, index) => boolean
 The string represents the key in the list which value is evaluated to **truthy** or **falsy** to be included or not.
 
-```tsx
+```jsx
 <FlatList
   list={[{age: 2},{age: 0},{age: ''},{age: null},{age: undefined}]}
   renderItem={(item, k) => <span key={k}>{item.age}</span>}
@@ -485,7 +485,7 @@ The string represents the key in the list which value is evaluated to **truthy**
 
 ```
 If you pass a function, it will be called with the item and the index and the function must return **true** or **false** to include the item or not.
-```tsx
+```jsx
 <FlatList
   list={[{age: 2},{age: 0},{age: ''},{age: null},{age: undefined}]}
   renderItem={(item, k) => <span key={k}>{item.age}</span>}
@@ -505,7 +505,7 @@ Searching with FlatList is powerful and you have full control of your search. Yo
 
 Let's take the following setup:
 
-```tsx
+```jsx
 state = {
   searchTerm: ''
 }
@@ -521,7 +521,7 @@ If the list is a list of strings or numbers, you just need to provide `searchTer
 The search is done case sensitive, needs to be at least 3 characters long and the whole string is used in a match.
 
 You can change these defaults with props in this session.
-```tsx
+```jsx
 <input value={this.state.searchTerm} onChange={this.onSearchInput}/>
 
 <FlatList
@@ -542,7 +542,7 @@ You can change these defaults with props in this session.
 ### searchBy
 ###### string | [string | {key: string, caseInsensitive: boolean}] | (item, index) => boolean
 The `searchBy` prop is a rich prop. It can be a string, an array of strings, an array of object options or a function.
-```tsx
+```jsx
 // single key search
 <FlatList
   list={this.props.people}
@@ -562,7 +562,7 @@ The `searchBy` prop is a rich prop. It can be a string, an array of strings, an 
   />
 
 ```
-```tsx
+```jsx
 // multiple keys search
 <FlatList
   list={this.props.people}
@@ -582,7 +582,7 @@ The `searchBy` prop is a rich prop. It can be a string, an array of strings, an 
   />
 ```
 If you truly want to control the matching yourself, `searchBy` as a function is your best option. The function will be called for every item in the list and you must return **true** or **false**.
-```tsx
+```jsx
 handleSearchMatch = (item) => (
   item.firstName.toLowerCase === this.state.searchTerm.toLowerCase
 );
@@ -608,7 +608,7 @@ handleSearchMatch = (item) => (
 ###### boolean
 The above example could use this option instead. It pretty much ignores the casing of the texts and try to do a match. By default the search is case sensitive.
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -631,7 +631,7 @@ The above example could use this option instead. It pretty much ignores the casi
 
 Let's say you decided that `lastName` still needs to be case sensitive when searching. You can change that option in place as follows:
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -659,7 +659,7 @@ This will make sure you do case insensitive search on "firstName" but keep the s
 
 By default FlatList will wait for at least **3 characters** before start the search. You can change this by providing `searchMinCharactersCount` prop. Searching the entire List can be intensive so we recommend sticking with the default depending on your situation.
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -717,7 +717,7 @@ const list = [
 
 So searching for "John Joe" is like you are searching for "John" and "Joe" in the same string separately. Every word is treated as a "searchTerm" and the item will be included if at least one matches.
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -751,7 +751,7 @@ The `sort` prop can either be a boolean or an object shorthand for sorting.
 
 In case you have a flat list of strings or numbers you may just use it as a boolean since there is no keys to sort the list by.
 
-```tsx
+```jsx
 <FlatList
   list={[4, 8, 1, 8, 0]}
   renderItem={(n, i) => <span key={i}>{n}</span>}
@@ -772,7 +772,7 @@ In case you have a flat list of strings or numbers you may just use it as a bool
 The `sortBy` prop is a rich prop. It can be a string, an array of strings or object options or a function.
 
 Let's say we want to sort our people list by age.
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -795,7 +795,7 @@ Let's say we want to sort our people list by age.
 By default the sorting is case sensitive and this is the prop to change that all together.
 
 Let's say this time we want to sort our people list by first and last name:
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -816,7 +816,7 @@ Let's say this time we want to sort our people list by first and last name:
 
 In case you want case-insensitive just for the "lastName" you could specify your options like so:
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -840,7 +840,7 @@ In case you want case-insensitive just for the "lastName" you could specify your
 
 By default all sort results will be in ascending order and this prop can be applied on every key as well as individual one, as so:
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -875,7 +875,7 @@ allows you to do. It lets you create equal size groups.
 
 You can combine `groupOf` and `groupBy` to limit the size you group your list by.
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -900,7 +900,7 @@ must return a string representing the label to represent the group by, a group l
 
 Taking our people array in consideration, lets group people by their last name:
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -927,7 +927,7 @@ When you specify a `groupOf` the label will the order of the groups. If you spec
 the group label will be the value of the field you provide or the string you return in case `groupBy` is
 a function. Let's illustrate that:
 
-```tsx
+```jsx
 groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{groupLabel}</div>;
 
 <FlatList
@@ -957,7 +957,7 @@ groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{g
 */
 ```
 Now using a `groupBy` as a string representing the key in the person object:
-```tsx
+```jsx
 groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{groupLabel}</div>;
 
 <FlatList
@@ -987,7 +987,7 @@ groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{g
 */
 ```
 Now using a `groupBy` as a function but we will group by age now:
-```tsx
+```jsx
 groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{groupLabel}</div>;
 
 <FlatList
@@ -1022,7 +1022,7 @@ groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{g
 All separators are put on top of their respective group. You will have separator 1 then group 1 then separator 2, etc.
 If you wish to change this behavior just specify `groupSeparatorAtTheBottom` for the inverse.
 
-```tsx
+```jsx
 groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{groupLabel}</div>;
 
 <FlatList
@@ -1055,7 +1055,7 @@ groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{g
 ### groupReversed
 ###### boolean
 You also have the option to reverte each group the same way you would reverse an entire list.
-```tsx
+```jsx
 groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{groupLabel}</div>;
 
 <FlatList
@@ -1084,7 +1084,7 @@ groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{g
 The `groupSorted` prop works like the `sort` prop. It is great if you have a list os strings or numbers which you
 can't specify the keys to sort by.
 
-```tsx
+```jsx
 groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{groupLabel}</div>;
 
 <FlatList
@@ -1115,7 +1115,7 @@ groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{g
 Same as `sortBy`, `groupSortedBy` will be applied just at the group level.
 
 The below example will be sorted on "firstName" and "lastName" both ascending(default).
-```tsx
+```jsx
 groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{groupLabel}</div>;
 
 <FlatList
@@ -1147,7 +1147,7 @@ groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{g
 In this example we are sorting the groups descending but only for the "firstName". We are specifying "descending"
 false for "lastName".
 
-```tsx
+```jsx
 groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{groupLabel}</div>;
 
 <FlatList
@@ -1183,7 +1183,7 @@ Similarly to `sortCaseInsensitive`, you can change thi case sensitiveness at the
 In this example we are sorting the groups case insensitive but only for the "firstName". We are specifying "caseInsensitive"
 false for "lastName".
 
-```tsx
+```jsx
 groupSeparator = (group, idx, groupLabel) => <div className="group-separator">{groupLabel}</div>;
 
 <FlatList
@@ -1223,7 +1223,7 @@ grow with time and soon orgnainizing the list will become much much simpler.
 The `displayGrid` prop will put your list into a responsive grid layout with columns being minimum 200px
 and gap of 20px. You can change these defaults with props in this session.
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -1242,7 +1242,7 @@ and gap of 20px. You can change these defaults with props in this session.
 ### minColumnWidth
 ###### string
 The `minColumnWidth` should be a string with number and unit just like CSS, for example "100px", "50%".
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -1263,7 +1263,7 @@ The `minColumnWidth` should be a string with number and unit just like CSS, for 
 ### gridGap
 ###### string
 The `gridGap` should be a string with number and unit just like CSS, for example "100px", "50%".
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -1287,7 +1287,7 @@ The `gridGap` should be a string with number and unit just like CSS, for example
 ###### boolean
 The `displayRow` prop will force all items to be 100% of the container and be stacked.
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -1306,7 +1306,7 @@ The `displayRow` prop will force all items to be 100% of the container and be st
 ### rowGap
 ###### string
 The `rowGap` prop will add spacing in between the stacked rows.
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -1331,7 +1331,7 @@ Scrolling to top was a requested feature and goes well with rendering list speci
 By default a simple button will be shown at the bottom right after user has scrolled 50px from the top. The button is 
 positioned 20px from the corner but all these are options you can customize at your liking.
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -1343,7 +1343,7 @@ positioned 20px from the corner but all these are options you can customize at y
 ###### ComponentLike | () => JSX.Element
 If you don't like the super simple default button you can pass yours using `scrollToTopButton` prop.
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -1364,7 +1364,7 @@ If you don't like the super simple default button you can pass yours using `scro
 ###### number
 The offset is how far you want the user to scroll to start showing the button. The default is **50px**
 
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -1386,7 +1386,7 @@ The offset is how far you want the user to scroll to start showing the button. T
 ### scrollToTopPadding
 ###### number
 The padding is how far from the corner the button should be positioned. The default is **20px**
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}
@@ -1411,7 +1411,7 @@ The padding is how far from the corner the button should be positioned. The defa
 ###### string
 The position is where you want the button to be placed. The default is **"bottom right"** but you can also specify 
 **"bottom left"**, **"top left"** and **"top right"**
-```tsx
+```jsx
 <FlatList
   list={this.props.people}
   renderItem={this.renderPerson}

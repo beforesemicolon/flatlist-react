@@ -125,7 +125,6 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
         if (scrollingContainer && loadIndicatorContainer) {
             const {scrollTop, offsetTop, offsetHeight} = scrollingContainer;
             this.lastScrollTop = scrollTop;
-            console.log('-- set lastScrollTop', scrollTop);
 
             const loaderPosition = (loadIndicatorContainer.offsetTop - scrollTop);
             const startingPoint = offsetTop + offsetHeight;

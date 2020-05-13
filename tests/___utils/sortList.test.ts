@@ -179,7 +179,7 @@ describe('Util sortList()', () => {
         ])
 
         expect(sortList(objectArray, {
-            by: ['name', {by: 'other', descending: true}],
+            by: ['name', {key: 'other', descending: true}],
             descending: false,
             caseInsensitive: false,
         })).toEqual([
@@ -191,7 +191,7 @@ describe('Util sortList()', () => {
         ])
 
         expect(sortList(objectArray, {
-            by: ['name', {by: 'age', descending: true}],
+            by: ['name', {key: 'age', descending: true}],
             descending: false,
             caseInsensitive: false,
         })).toEqual([
@@ -227,7 +227,7 @@ describe('Util sortList()', () => {
         ])
 
         expect(sortList(objectArray, {
-            by: [{by: 'age', descending: false}, 'other'],
+            by: [{key: 'age', descending: false}, 'other'],
             descending: true,
             caseInsensitive: false,
         })).toEqual([

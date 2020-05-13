@@ -1,81 +1,32 @@
-# FlatList React
+<h1
+style="
+color: #666;
+background-color: #f2f2f2;
+padding: 10px 20px;
+">
+FlatList React
+</h1>
 
-A helpful utility component to handle lists in react like a champ. It handles filtering, sorting,
-grouping, searching, styling and more.
+A helpful react utility component intended to simplify handling rendering list with ease.
+It can handle `grouping`, `sorting`, `filtering`, `searching`, `sorting`, `paginating`, `styling` with very simple props.
 
-## Table of Content
-- [Table of Content](https://github.com/ECorreia45/flatlist-react/tree/documentation#table-of-content)
-- [Installing](https://github.com/ECorreia45/flatlist-react/tree/documentation#installing)
-- [Documentation (How to use it)](https://github.com/ECorreia45/flatlist-react/tree/documentation#documentation-how-to-use-it)
-    * [Rendering list](https://github.com/ECorreia45/flatlist-react/tree/documentation#rendering-list)
-        * [list prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#list-prop)
-        * [renderItem prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#renderitem-prop)
-        * [wrapperHtmlTag prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#wrapperhtmltag-prop)
-        * [renderWhenEmpty prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#renderwhenempty-prop)
-        * [limit prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#limit-prop)
-        * [reversed prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#reversed-prop)
-    * [Paginating list (Infinite Loader)](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginating-list-infinite-loader)
-        * [hasMoreItems prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#hasmoreitems-prop)
-        * [loadMoreItems prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#loadmoreitems-prop)
-        * [paginationLoadingIndicator prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginationloadingindicator-prop)
-        * [paginationLoadingIndicatorPosition prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginationloadingindicatorposition-prop)
-        * [pagination prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginate-prop)
-    * [Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string)
-    * [Filtering Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#filtering-items)
-        * [filterBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop)
-    * [Searching Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#searching-items)
-        * [searchableMinCharactersCount prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchableMinCharactersCount-prop)
-        * [searchTerm prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchterm-prop)
-        * [searchBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchby-prop)
-        * [searchOnEveryWord prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchoneveryword-prop)
-        * [searchCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchcaseinsensitive-prop)
-        * [search prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#search-prop)
-    * [Sorting Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#sorting-items)
-        * [sort prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sort-prop)
-        * [sortBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortby-prop)
-        * [sortDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortdesc-prop)
-        * [sortGroupBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupdesc-prop)
-        * [sortGroupDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupdesc-prop)
-        * [sortCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortcaseinsensitive-prop)
-    * [Grouping Items](https://github.com/ECorreia45/flatlist-react/tree/documentation#grouping-items)
-        * [groupReversed prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupreversed-prop)
-        * [groupBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupby-prop)
-        * [groupOf prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupof-prop)
-        * [Custom Group Separator](https://github.com/ECorreia45/flatlist-react/tree/documentation#custom-group-separator)
-        * [groupSeparator prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupseparator-prop)
-        * [showGroupSeparatorAtTheBottom prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#showgroupseparatoratthebottom-prop)
-        * [group prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#group-prop)
-    * [Styling (Grid and Row)](https://github.com/ECorreia45/flatlist-react/tree/documentation#styling-grid-and-row)
-        * [displayGrid prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#displaygrid-prop)
-        * [gridGap prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#gridgap-prop)
-        * [minColumnWidth prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#mincolumnwidth-prop)
-        * [displayRow prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#displayrow-prop)
-        * [rowGap prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#rowgap-prop)
-        * [display prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#display-prop)
-- [Author](https://github.com/ECorreia45/flatlist-react/tree/documentation#author)
+---
 
-## Installing
+###### Dear React Native Developer
+This is not intended for React-Native usage. Although some features will still work, others will just break your application. Use at your own risk.
 
-This is a react utility component and that means it will only work on your react project/environment. 
+### Install
 
-In your React project run the following command:
+Make sure you are running **react** and **react-dom** version **16.8.0+**.
 
 ```npm install flatlist-react```
 
-## Documentation (How to use it)
+### Quick Start
 
-This utility component was built with ease of use in mind so please report or contribute anything that could be
-improved in later releases.
+Take in consideration the following list passed to component `PeopleList`:
 
-Please feel free to suggest features as well by getting in touch with **Elson Correia**.
-
-#### Rendering list
-
-The component has two required props, `list` and `renderItem`.
-
-We will use the following object as an example for this documentation. This will be the list we will pass to it.
-
-```js
+```ts
+// App.jsx
 people = [
     {firstName: 'Elson', lastName: 'Correia', info: {age: 24}},
     {firstName: 'John', lastName: 'Doe', info: {age: 18}},
@@ -87,612 +38,79 @@ people = [
     {firstName: 'Bruno', lastName: 'Gonzales', info: {age: 25}},
     {firstName: 'Alonzo', lastName: 'Correia', info: {age: 44}}
   ]
+
+  <PeopleList people={people}/>
 ```
 
 Now inside your component file, we create a function `renderPerson` that will be passed to `renderItem`:
 
-```jsx
+```tsx
+// PeopleList.jsx
 import FlatList from 'flatlist-react';
 
 ...
 
 renderPerson = (person, idx) => {
   return (
-      <li key={`${person.firstName}-${idx}`}>
+      <li key={idx}>
         <b>{person.firstName} {person.lastName}</b> (<span>{person.info.age}</span>)
       </li>
   );
 }
 
+...
 
 return (
     <ul>
-        <FlatList list={this.props.people} renderItem={this.renderPerson}/>
+        <FlatList
+          list={this.props.people}
+          renderItem={this.renderPerson}/>
     </ul>
 )
-
 ```
-##### list prop
-`list` should be an array or object. `Object`s,`Set`s and `Map`s will be translated to an array of their values where
-`WeakMap`s and `WeakSet`s will always be an empty array.
 
-The list can be empty as long as it is an empty array or object.
+**FlatList** has **two required props**, `list` and `renderItem`. `list` can be an **Object**, **Array**, **Map** or **Set** and it will make sure to extract the values.
 
-##### renderItem prop
-`renderItem` prop takes either a function that should return a component or a component itself like `renderItem={<ItemComponent/>}`. 
-If you pass a function, it will be called for every item on the list with the "item" as the first argument and index of 
-the item as second argument. Use this function to do everything related to rendering the item component.
-If you pass a component, it will render it for every item in the `list` while injecting `item` prop into 
-it and you can use that to access the "item" prop in your component.
+The `list` prop can also be empty and you can use `renderWhenEmpty` prop to tell **FlatList** what to render when the list is empty, like so:
 
-In our example above we are simply returning a `li` tag with person's full name and age using function for renderItem. 
-The same can be done as:
+```tsx
+// PeopleList.jsx
+import FlatList from 'flatlist-react';
 
-```jsx
+...
 
-const Person = ({item}) => ( 
-  <li>
-    <b>{item.firstName} {item.lastName}</b> (<span>{item.info.age}</span>)
-  </li>
-)
+blank = () => (
+    <div>
+      List has no items yet!
+    </li>
+);
 
 ...
 
 return (
     <ul>
-        <FlatList list={this.props.people} renderItem={<Person/>}/>
-    </ul>
-)
-
-```
-
-##### wrapperHtmlTag prop
-By default, your list items will not be wrapped in any `HTML` tag but if you want to specify a wrapper tag you can use
-`wrapperHtmlTag` which will allow you to treat `FlatList` as an `HTML` tag and set any attribute a html tag can support.
-
-For example:
-
-```jsx
-listRef = createRef();
-
-return (
-    <ul className="list-items" ref={this.listRef} onMouseOver={this.handleMouseOver}>
-        <FlatList list={this.props.people} renderItem={<Person/>}/>
+        <FlatList
+          list={this.props.people}
+          renderItem={this.renderPerson}
+          renderWhenEmpty={blank} // pass a component or a function that returns a component/html
+          />
     </ul>
 )
 ```
 
-The above can also be written as and will generate the same result:
-
-```jsx
-listRef = createRef();
-
-return (
-    <FlatList list={this.props.people} renderItem={<Person/>} wrapperHtmlTag="ul"
-              className="list-items" ref={this.listRef} onMouseOver={this.handleMouseOver}/>
-)
-```
-
-##### renderWhenEmpty prop
-
-You are required to pass an array/object to the `list` prop, it does not mean that the array/object needs to contain anything. 
-Because when doing so nothing will be displayed, there is another prop called `renderWhenEmpty` that you can use to tell the
-component what to display when list has no items. This is ideal for blanks, telling the user the filtering or search 
-ended up leaving the list empty.
-
-`renderWhenEmpty` must be a function that returns a component. The function is not called with any arguments.
-
-```jsx
-...
-
-renderBlank = () => {
-    return <p>Nothing to display yet...</p>;
-}
-
-...
-
-return (
-    <ul>
-        <FlatList 
-            list={this.props.people} 
-            renderItem={this.renderPerson}
-            renderWhenEmpty={this.renderBlank}
-            />
-    </ul>
-)
-```
-In the above example `renderWhenEmpty` is taking a function that simply returns a `<p/>` saying `"Nothing to display yet..."`.
-Function here can be useful in cases you have different blank message to show, for example, if user typed a search
-keyword you could check that and say `"Nothing matched your search"` or if the user applied a filter you can show another
-one saying `"Nothing matched your filtering criteria"`. We will see those examples when we reach filtering session on
-this documentation.
-
-##### limit prop
-This prop will make sure that the number of items to render is up to a number you indicate here. There is also 
-[groupOf](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupof-prop) 
-if you want to limit the size of the groups.
-
-##### reversed prop
-This simply reverse the provided list. Instead of reading the list from first to last item it will do the reverse. There is also 
-[groupReversed](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupreversed-prop) 
-if you want the same effect on the individual groups.
-
-#### Paginating list (Infinite Loader)
-You don't have to start with a full list from the beginning. Flatlist allows you to specify that the list you gave
-is not complete and a handler to call when user scrolled to the end of the list. You can specify a loading indicator
-component to show while you are fetching the next page of the list. This feature works really well with api. Let's take
-the following situation:
-
-```jsx
-
-state={
-    hasMorePeople: false,
-    nextOffset: 0
-}
-
-componentDidMount() {
-    this.fetchPeople();
-}
-
-fetchPeople() {
-    this.api.getPeople({perPage: 10, offset: this.state.nextOffset})
-        .then(res => {
-            this.setState(prevState => ({
-                            people: [...prevState.people, ...res.data], 
-                            nextOffset: res.data.pagination.nextOffset,
-                            hasMorePeople: res.data.pagination.max > prevState.people.length
-                        }));
-        });
-}
-
-render() {
-    const {people} = this.state;
-    return (
-        <ul>
-            <FlatList 
-                list={people} 
-                renderItem={this.renderPerson}
-                />
-        </ul>
-    );
-}
-
-```
-
-##### hasMoreItems prop
-`hasMoreItems` is the prop to communicate with FlatList that the `list` you provided is not complete. This prop by itself
-will not do anything until you provide `loadMoreItems` prop. This is a boolean representing whether you are done paginating
-or not.
-
-##### loadMoreItems prop
-`loadMoreItems` is the function to call when user has scrolled to the end of the list. FlatList will wait till the user
-reached the bottom to call this handler as long as `hasMoreItems` is true. Otherwise it will remove the loader all
-together. This function does not need to return anything. In our example above, we would do as so:
-
-```jsx
-...
-render() {
-    const {people, hasMorePeople} = this.state;
-    return (
-        <ul>
-            <FlatList 
-                list={people} 
-                renderItem={this.renderPerson}
-                hasMoreItems={hasMorePeople}
-                loadMoreItems={this.fetchPeople}
-                />
-        </ul>
-    );
-}
-```
-
-##### paginationLoadingIndicator prop
-The default `paginationLoadingIndicator` is pretty basic(for now) and you might feel the need to change it to your
-liking and this is the prop to use. This prop can be a component/element or a function that return a component/element.
-
-##### paginationLoadingIndicatorPosition prop
-By default, the loading indicator will be positioned on the left. You can use `paginationLoadingIndicatorPosition` to
-position the loading indicator whether or the `center`, `right` or `left`(default).
-
-```jsx
-...
-render() {
-    const {people, hasMorePeople} = this.state;
-    return (
-        <ul>
-            <FlatList 
-                list={people} 
-                renderItem={this.renderPerson}
-                hasMoreItems={hasMorePeople}
-                loadMoreItems={this.fetchPeople}
-                paginationLoadingIndicator={<Loader/>}
-                paginationLoadingIndicatorPosition="center"
-                />
-        </ul>
-    );
-}
-```
-##### pagination prop
-The `pagination` prop is the pagination shorthand. It does everything specified above but it is a object configuration
-with the following format
-* `hasMore` (same as [hasMoreItems prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#hasmoreitems-prop))
-* `loadMore` (same as [loadMoreItems prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#loadmoreitems-prop))
-* `loadingIndicator` (same as [paginationLoadingIndicator prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginationloadingindicator-prop))
-* `loadingIndicatorPosition` (same as [paginationLoadingIndicatorPosition prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#paginationloadingindicatorposition-prop))
-
-So we could write the above example as:
-
-```jsx
-...
-render() {
-    const {people, hasMorePeople} = this.state;
-    return (
-        <ul>
-            <FlatList 
-                list={people} 
-                renderItem={this.renderPerson}
-                pagination={{
-                    hasMore={hasMorePeople}
-                    loadMore={this.fetchPeople}
-                    loadingIndicator={<Loader/>}
-                    loadingIndicatorPosition="center"
-                }}
-                />
-        </ul>
-    );
-}
-```
-
-### Note
-
-```
-Reversing a list or group will happen before any sorting. If you don't see the effect of your reverse is because
-your sorting order will overwrite the reversing of the list or groups. When sorting, the list or groups will still be 
-read in reverse order but the output may not match the reverse result. If you think that reverting the list might make
-the sorting faster, it is a great combo of props to use.
-```
-
-#### Dot Notation for string
-The FlatList component takes some props like `filterBy`, `sortBy` and `groupBy` which can be strings and you can use
-[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string)
-to deep match a key in an object. for example, I can pass `info.age` to group or sort our list of people by
-age. If i had an array of children in info i could say `info.children.0.age` where `0`(zero) is the index of the array.
-
-This is to make it easy to reach deep into your objects without having to change them to work with filtering, sorting or
-grouping. All these props also take functions for power, read more below.
-
-#### Filtering Items
-To filter the list you can use the `filterBy` prop which narrows down your list to be more specific.
-
-##### filterBy prop
-`filterBy` can be a string or a function. The function must return true or false where false means the item will be 
-not displayed. The function is called with two arguments, the item and its index. If you pass a string, you can use 
-[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string). 
-
-```jsx
-...
-
-return (
-    <ul>
-        <FlatList 
-            list={this.props.people} 
-            renderItem={this.renderPerson}
-            filterBy="info.age"
-            />
-    </ul>
-)
-```
-The above filter will only remove `Marcus Correia` from the view since his age is zero and `filterBy` will check for
-`truthy`, `falsy` values in that key. 
-
-For more power we can use a function to include only people above 20 years old and lastName is Correia like this.
-
-```jsx
-handleFilter = (person, index) => {
-    return person.info.age >= 20 && person.lastName === 'Correia';
-}
-...
-
-return (
-    <ul>
-        <FlatList 
-            list={this.props.people} 
-            renderItem={this.renderPerson}
-            filterBy={this.handleFilter}
-            />
-    </ul>
-)
-```
-
-#### Searching Items
-FlatList allows you to search the list with full control on your search using the props `searchTerm`, `searchBy`,
-`searchCaseInsensitive`, `searchableMinCharactersCount` and `searchOnEveryWord`. You can also use the short-hand version by simply using the
-[`search` prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#search-prop). The search prop will 
-allow to pass an object with search configuration.
-
-##### searchableMinCharactersCount prop
-By default the search only starts when the `searchTerm` is at least 3 characters long but you can change this by specifying
-the `searchableMinCharactersCount` as you want. Setting this prop to `0` will be automatically changed to 3 since
-`0` is not a valid minimum.
-
-##### searchTerm prop
-The `searchTerm` prop is your way of telling FlatList that you want it to handle the search. This prop by itself does
-not do anything. For primitive arrays you dont need to initialize the search by provide the `searchBy` prop, otherwise
-you need to provide the key where to search from.
-
-##### searchBy prop
-The `searchBy` can either be a string (`searchBy="lastName"`), an array containing string representing the key 
-(`searchBy={["lastName", "info.age"]}`), an object like `{by: "key.name", caseInsensitive: true}` or a function similar to 
-[`filterBy`](https://github.com/ECorreia45/flatlist-react/tree/documentation#filterby-prop). 
-
-The function must return true or false where false means the item will not be displayed. The function is called with two arguments, 
-the item and its index. If you pass a string know that it should represent the key you want to search on. You can use
-[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string) here.
-
-```jsx
-state = {
-    searchTerm: ''
-}
-
-handleSearchInput = (event) => {
-    this.setState({searchTerm: event.target.value});
-}
-
-...
-
-return (
-    <>
-        <input value={this.state.searchTerm} onChange={this.handleSearchInput}/>
-        <ul>
-            <FlatList 
-                list={this.props.people}
-                renderItem={this.renderPerson}
-                searchTerm={this.state.searchTerm}
-                searchBy={["firstName", {by: "lastName", caseInsensitive: false}]}
-                searchCaseInsensitive // will only apply to "firstName"
-                />
-        </ul>
-    </>
-)
-```
-
-##### searchOnEveryWord prop
-This prop will allow you to look into every word type to find a match. By default the whole `searchTerm` is used to find
-a match. For example `person in blue` will not match `people in blue` but with the `searchOnEveryWord` prop it will
-because it will try to find `person` and not find then try `blue` which will match.
-
-##### searchCaseInsensitive prop
-This prop will make sure that no matter the casing of the `searchTerm` it will try to find a match. So words like 
-`people` and `People` will match each other.
-
-##### search prop
-The `search` prop allows you to do pass an object configuration for search containing the following options:
-* `term` (same as [searchTerm prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchterm-prop))
-* `by` (same as [searchBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchby-prop))
-* `caseInsensitive` (same as [searchCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchcaseinsensitive-prop))
-* `everyWord` (same as [searchOnEveryWord prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#searchoneveryword-prop))
-
-#### Sorting Items
-There are two ways to sort the list. You can sort the entire list by using props `sort` and `sortBy` or sort the groups
-by using prop `sortGroupBy`. You also can control the direction of the sort by using props `sortDesc` and `sortGroupDesc`.
-By default, everything is sorted ascending.
-
-##### sort prop
-`sort` prop simple tells FlatList to sort items and this works great for list that contains **string** or **numbers**.
-It has no effect on list of **arrays** or **objects**.
-
-Below example will sort the numbers from -1(negative one) to 7(seven):
-
-```jsx
-...
-
-return (
-    <ul>
-        <FlatList 
-            list={[3, 7, -1, 2, 0]} 
-            renderItem={(number, index) => <li><b>{index + 1}</b> - {number}</li>}
-            sort
-            />
-    </ul>
-)
-```
-
-The `sort` prop is also a shorthand for all sorting related props, meaning it allows you to do pass an object 
-configuration for sorting containing the following options:
-* `by` (same as [sortBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortby-prop))
-* `descending` (same as [sortDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortdesc-prop))
-* `caseInsensitive` (same as [sortCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortcaseinsensitive-prop))
-* `groupBy` (same as [sortGroupBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupby-prop))
-* `groupDescending` (same as [sortGroupDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupdesc-prop))
-* `groupCaseInsensitive` (same as [sortCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortcaseinsensitive-prop))
-
-##### sortBy prop
-`sortBy` should be a string representing the key (`sortBy="firstName"`) and can use 
-[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string),
-a array of strings (`sortBy=["firstName", "lastName"]`) or an array of object of options for each key like. 
-`sortBy={[{by: "firstName", descending: true}, {by: "lastName", descending: false, caseInsensitive: true}]}`
-This is great when the lists that are not made of **string** or **numbers**.
-
-##### sortDesc prop
-`sortDesc` will affect the whole list and changes sorting from ascending to descending.
-
-```jsx
-...
-
-return (
-    <ul>
-        <FlatList 
-            list={this.props.people} 
-            renderItem={this.renderPerson}
-            sortBy={["firstName", {by: "lastName", descending: false, caseInsensitive: true}]}
-            sortDesc // will only affect "firstName" since "lastName" is set to false
-            />
-    </ul>
-)
-```
-
-##### sortGroupBy prop
-`sortGroupBy` is the equivalent of [sortBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortby-prop) 
-but for groups. It helps you use a different sorting criteria withing the group.
-
-##### sortGroupDesc prop
-`sortGroupDesc` is similar to `sortDesc` but will only affect groups. This should be used along with grouping props.
-
-##### sortCaseInsensitive prop
-`sortCaseInsensitive` is another sorting control that simply forces FlatList to ignore casing. This is great for 
-when you don't care about exact match on casing and can be used with searching.
-
-#### Grouping Items
-Grouping is a powerful feature and by default FlatList will add a `<hr/>` in between groups but you can override this
-as well by using `groupSeparator` props. You can control list grouping with props `groupBy` and `groupOf`.
-
-##### groupReversed prop
-`groupReversed` will have the save effect as `reversed` but on a group level. It will read/display your group in reversed
-order unless there is some group level sorting. Any group level sorting will overwrite reversing.
-
-##### groupBy prop
-`groupBy` can either be a string using 
-[Dot Notation for string](https://github.com/ECorreia45/flatlist-react/tree/documentation#dot-notation-for-string) 
-or a function for more control. The function will be called with
-two arguments, the item and its index on the list and should return a string to identify the group.
-
-
-The example below will group everybody with same last name.
-
-```jsx
-...
-
-return (
-    <ul>
-        <FlatList 
-            list={this.props.people} 
-            renderItem={this.renderPerson}
-            groupBy="lastName"
-            />
-    </ul>
-)
-```
-The example below will create two groups, one for those under 30(thirty) and another for those over 30(thirty)
-```jsx
-...
-
-return (
-    <ul>
-        <FlatList 
-            list={this.props.people} 
-            renderItem={this.renderPerson}
-            groupBy={(item, index) => item.info.age > 30 ? 'over' : 'under' }
-            />
-    </ul>
-)
-```
-
-##### groupOf prop
-`groupOf` prop is a simple one and it takes a number. This is great when you want to make groups of certain count of
-items.
-The example below will create three groups containing three members each.
-```jsx
-...
-
-return (
-    <ul>
-        <FlatList 
-            list={this.props.people} 
-            renderItem={this.renderPerson}
-            groupOf={3}
-            />
-    </ul>
-)
-```
-
-All the group examples so far render separated by a `<hr/>` in the DOM and it should be nice to provide a label so we
-know whats going on and for that we should look into our custom group separator on the next session.
-
-##### Custom Group Separator
-To create your own group separator you should use `groupSeparator` prop and If you don't want any separator at all you
-can simply pass `null` like this `groupSeparator={null}`. 
-
-##### groupSeparator prop
-`groupSeparator` should be a element or a function that returns an element. When you use a function, the function is
-called with the group array and the index of the group. 
-
-##### showGroupSeparatorAtTheBottom prop
-By default, group separators show up at the top of each group on the DOM. To change that use `showGroupSeparatorAtTheBottom`
-flag to make it appear on the bottom of the groups.
-
-The example below will create two groups, one for those under 30(thirty) and another for those over 30(thirty) in
-descending order and it will also render the label to identify each group by using the third paramater passed to 
-`groupSeparator` callback.
-```jsx
-...
-
-return (
-    <ul>
-        <FlatList 
-            list={this.props.people} 
-            renderItem={this.renderPerson}
-            groupBy={(person, index) => person.info.age > 30 ? 'Over' : 'Under' }
-            sortDesc
-            sortGroupDesc
-            groupSeparator={(group, index, groupLabel) => (<h3>{groupLabel}</h3>)}
-            />
-    </ul>
-)
-```
-
-##### group prop
-The `group` prop allows you to do pass an object configuration for grouping containing the following options:
-* `by` (same as [groupBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupby-prop))
-* `limit` (same as [groupOf prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupof-prop))
-* `reversed` (same as [groupReversed prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupreversed-prop))
-* `separator`: (same as [groupSeparator prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupseparator-prop))
-* `separatorAtTheBottom` (same as [showGroupSeparatorAtTheBottom prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#showgroupseparatoratthebottom-prop))
-* `sortBy` (same as [sortGroupBy prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupby-prop))
-* `sortDescending` (same as [sortGroupDesc prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortgroupdesc-prop))
-* `sortCaseInsensitive` (same as [sortCaseInsensitive prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#sortcaseinsensitive-prop))
-
-#### Styling (Grid and Row)
-The component also lets you style how the list is display and you have 2(two) options, display everything in a 
-grid layout or rows like a table. By default no styling is applied and once you choose to go with these, some of your
-style may get overwritten.
-
-##### displayGrid prop
-`displayGrid` will turn your items container into a grid container and your items in grid items. By default every item
-will be spaced `20px` from each other with column width of `200px`. You can override these as you want as well. The 
-container will become responsive and adapt with browser resizing adjusting every item on the list.
-
-##### gridGap prop
-`gridGap` prop takes a string and allows you to determine how far apart the items stay from each other. This is the same as 
-[CSS grid-gap](https://developer.mozilla.org/en-US/docs/Web/CSS/gap)
-and you have to specify the unit, for example: `35px 10px`, `1vw`, `5% 20px`'
-
-##### minColumnWidth prop
-`minColumnWidth` prop takes a string and allows you to control the column minimum width when adapting to resizing. You
-must specify the unit, for example: `300px`, `20%`, `15vw`.
-
-##### displayRow prop
-`displayRow` will make the items and items container full width adding `20px` between items. You can override these 
-as you want as well.
-
-##### rowGap prop
-`rowGap` prop takes a string and allows you to control the spacing between items. The spacing is added to the bottom of
-every item. You must specify the unit, for example: `30px`, `1vh`.
-
-##### display prop
-The `display` prop allows you to do pass an object configuration for styling containing the following options:* `
-* `row`  (same as [displayRow prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupby-prop))
-* `rowGap`  (same as [rowGap prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupby-prop))
-* `grid` (same as [displayGrid prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupby-prop))
-* `gridGap` (same as [gridGap prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupby-prop))
-* `gridMinColumnWidth` (same as [minColumnWidth prop](https://github.com/ECorreia45/flatlist-react/tree/documentation#groupby-prop))
-
-### Note
-
-```
-Styling will only affect position and size of the items, you can choose to style your items however you like.
-```
-
-## Author
-
-[Elson Correia Portfolio](https://elsoncorreia.com/)
-
+`renderWhenEmpty` is a powerful prop that you can use to render things in case a user applied filters or searched and nothing matched. Please check the full documentation for great examples and more powerful props.
+
+### Full Documentation
+
+| Features        | Props / Components        |
+| :------------- | :------------- |
+| [Components](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#complementary)  | [PlainList](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#plainlist) |
+| [Rendering](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#rendering)      | [list](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#list), [renderItem](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#renderitem), [renderWhenEmpty](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#renderwhenempty), [wrapperHtmlTag](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#wrapperhtmltag), [limit](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#limit), [reversed](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#reversed) |
+| [Render Optimization](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#renderoptimization) | [renderOnScroll](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#renderonscroll) |
+| [Pagination (Infinite Scroll)](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#pagination)   | [hasMoreItems](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#hasmoreitems), [loadMoreItems](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#loadmoreitems), [paginationLoadingIndicator](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#paginationloadingindicator), [paginationLoadingIndicatorPosition](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#paginationloadingindicatorposition) |
+| [Filtering](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#filtering) | [filterBy](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#filterby) |
+| [Searching](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#searching) | [search](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#search) ([searchTerm](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#searchterm), [searchBy](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#searchby), [searchOnEveryWord](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#searchoneveryword), [searchMinCharactersCount](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#searchmincharacterscount), [searchCaseInsensitive](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#searchcaseinsensitive))    |
+| [Sorting](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#sorting)  | [sort](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#sort) ([sortBy](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#sortby), [sortCaseInsensitive](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#sortcaseinsensitive), [sortDescending](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#sortdescending))     |
+| [Grouping](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#grouping) | [group](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#group) ([groupOf](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#groupof), [groupBy](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#groupby), [groupSeparator](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#groupseparator), [groupSeparatorAtTheBottom](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#groupseparatoratthebottom), [groupReversed](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#groupreversed), [groupSorted](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#groupsorted), [groupSortedBy](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#groupsortedby), [groupSortedDescending](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#groupsorteddescendiing), [groupSortedCaseInsensitive](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#groupsortedcaseinsensitive)) |
+| [Styling](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#styling) | [display](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#display) ([displayGrid](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#displaygrid), [gridGap](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#gridgap), [minColumnWidth](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#mincolumnwidth), [displayRow](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#displayrow), [rowGap](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#rowgap))     |
+| [scrollToTop](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#scrolltotop) |[scrollToTopButton](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#scrolltotopbutton), [scrollToTopOffset](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#scrolltotopoffset), [scrollToTopPadding](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#scrolltotoppadding), [scrollToTopPosition](https://github.com/ECorreia45/flatlist-react/tree/documentation/documentation#scrolltotopposition) |

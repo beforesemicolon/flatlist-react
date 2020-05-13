@@ -46,6 +46,7 @@ describe('Util: getObjectDeepKeyValue()', () => {
 
     it('Should get one level deep key values in an array', () => {
         const arrKey: any = '0';
+        const arrKey2: any = '*';
 
         expect.assertions(1);
 
@@ -119,5 +120,14 @@ describe('Util: getObjectDeepKeyValue()', () => {
         // @ts-ignore
         expect(() => getObjectDeepKeyValue({testingObject, }))
             .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a dot separated values string');
+    });
+
+    it('Should get special key values', () => {
+        const k1: any = 'children.0';
+        const k2: any = '*keys';
+
+        // expect.assertions(1);
+
+        expect(getObjectDeepKeyValue(testingArray, k2)).toEqual([]);
     });
 });

@@ -2,7 +2,7 @@ import React, {forwardRef, memo} from 'react';
 import convertListToArray from '../___utils/convertListToArray';
 import filterList from '../___utils/filterList';
 import groupList from '../___utils/groupList';
-import {isBoolean, isNil} from '../___utils/isType';
+import {isBoolean, isNil, isArray} from '../___utils/isType';
 import limitList from '../___utils/limitList';
 import searchList from '../___utils/searchList';
 import sortList from '../___utils/sortList';
@@ -16,7 +16,7 @@ const withList = (List: any) => {
             list, limit, reversed, renderWhenEmpty, // render/list related props
             filterBy, // filter props
             group, groupBy, groupOf, showGroupSeparatorAtTheBottom, groupReversed, groupSeparatorAtTheBottom,
-            groupSortedCaseInsensitive, groupSortedDescending, groupSortedBy, // group props
+            groupSortedCaseInsensitive, groupSortedDescending, groupSorted, groupSortedBy, // group props
             sortBy, sortDesc, sort, sortCaseInsensitive, sortGroupBy, sortGroupDesc, sortGroupCaseInsensitive,
             sortDescending, // sort props
             search, searchBy, searchOnEveryWord, searchTerm, searchCaseInsensitive, searchableMinCharactersCount,
@@ -34,7 +34,8 @@ const withList = (List: any) => {
         }
 
         if (!isNil(limit)) {
-            renderList = limitList(renderList, limit);
+            const [from, to] = `${limit}`.split(',');
+            renderList = limitList(renderList, from, to);
         }
 
         if (filterBy) {
@@ -103,7 +104,7 @@ const withList = (List: any) => {
             renderList = gList.groupLists
                 .reduce((newGList: any, aGroup, idx: number) => {
                     if (
-                        groupSortedBy || groupOptions.sortedBy
+                        groupSorted || group.sorted || groupSortedBy || groupOptions.sortedBy
                         || groupOptions.sortBy || sortGroupBy || sortOptions.groupBy // deprecated
                     ) {
                         aGroup = sortList(aGroup, {

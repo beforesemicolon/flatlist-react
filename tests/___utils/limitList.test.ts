@@ -32,4 +32,19 @@ describe('Util: limitList()', () => {
         expect(newList2.length).toBe(1);
     });
 
+    it('Should return sliced list', () => {
+        expect.assertions(6);
+        const list = [1, 2, 3, 4, 5];
+        const newList1 = limitList(list, '2', 4);
+        const newList2 = limitList(list, 3, '');
+        const newList3 = limitList(list, 2, '-2');
+
+        expect(newList1.length).toBe(2);
+        expect(newList1).toEqual([3, 4]);
+        expect(newList2.length).toBe(2);
+        expect(newList2).toEqual([4, 5]);
+        expect(newList3.length).toBe(1);
+        expect(newList3).toEqual([3]);
+    });
+
 });

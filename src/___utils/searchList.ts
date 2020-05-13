@@ -11,7 +11,7 @@ export interface SearchOptionsInterface<T> {
     onEveryWord?: boolean;
     caseInsensitive?: boolean;
     minCharactersCount?: number;
-    by?: string | Array<string | {by: string; caseInsensitive?: boolean}> | termCb;
+    by?: string | Array<string | {key: string; caseInsensitive?: boolean}> | termCb;
 }
 
 const defaultSearchOptions = {
@@ -59,7 +59,7 @@ const getFilterByFn = <T>(term: string | string[], by: SearchOptionsInterface<T>
         return (item: T) => (by as []).some((key: any) => {
             const keyCaseInsensitive = isObject(key) && key.caseInsensitive !== undefined
                 ? key.caseInsensitive : caseInsensitive;
-            const keyBy = (isObject(key) ? key.by : key) || '0';
+            const keyBy = (isObject(key) ? key.key : key) || '0';
             return defaultFilterByFn(item, term, keyCaseInsensitive, keyBy);
         });
     }

@@ -1,9 +1,17 @@
-const limitList = <T>(list: T[], limit = 0): T[] => {
-    if (limit <= 0 || limit >= list.length) {
+import {isNumeric} from './isType';
+
+const limitList = <T>(list: T[], limit: string | number = 0, to: string | number | undefined = undefined): T[] => {
+    if (!limit || Number(limit) <= 0 || Number(limit) >= list.length) {
         return list;
     }
 
-    return list.slice(0, limit);
+    if (to === undefined) {
+        return list.slice(0, Number(limit));
+    }
+
+    return (to === '' || Number(to) === 0 || isNumeric(Number(to)))
+        ? list.slice(Number(limit))
+        : list.slice(Number(limit), Number(to));
 };
 
 export default limitList;

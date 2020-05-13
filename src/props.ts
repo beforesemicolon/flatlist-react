@@ -50,8 +50,8 @@ export interface Props<T> {
     list: T[];
     renderItem: JSX.Element | renderFunc;
     renderWhenEmpty: null | (() => JSX.Element);
-    renderScroll: boolean;
-    limit: number;
+    renderOnScroll: boolean;
+    limit: number | string;
     reversed: boolean;
     wrapperHtmlTag: string;
     // sorting
@@ -72,6 +72,9 @@ export interface Props<T> {
     groupSeparator: GroupInterface['separator'];
     groupBy: GroupInterface['by'];
     groupOf: GroupInterface['limit'];
+    groupSorted: boolean;
+    groupSortedDescending: GroupInterface['sortDescending'];
+    groupSortedCaseInsensitive: GroupInterface['sortCaseInsensitive'];
     // display
     display: DisplayInterface;
     displayRow: DisplayHandlerProps['displayRow'];
@@ -110,7 +113,7 @@ export const propTypes = {
     // RENDER
     list: oneOfType([array, object]).isRequired,
     renderItem: oneOfType([func, node]).isRequired,
-    limit: number,
+    limit: oneOfType([number, string]),
     renderWhenEmpty: func,
     reversed: bool,
     renderOnScroll: bool,
@@ -157,6 +160,13 @@ export const propTypes = {
     groupSeparator: oneOfType([node, func, element]),
     groupSeparatorAtTheBottom: bool,
     showGroupSeparatorAtTheBottom: deprecated(bool, 'groupSeparatorAtTheBottom'), // deprecated
+    groupSorted: bool,
+    groupSortedBy: oneOfType([
+        string,
+        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+    ]),
+    groupSortedDescending: bool,
+    groupSortedCaseInsensitive: bool,
     // PAGINATION
     // PAGINATE
     pagination: shape({
@@ -276,6 +286,7 @@ export const defaultProps = {
     groupReversed: false,
     groupSeparator: null,
     groupSeparatorAtTheBottom: false,
+    groupSorted: false,
     groupSortedBy: '',
     groupSortedDescending: false,
     groupSortedCaseInsensitive: false,
@@ -289,7 +300,7 @@ export const defaultProps = {
     },
     hasMoreItems: false,
     loadMoreItems: null,
-    paginationLoadingIndicator: undefined,
+    paginationLoadingIndicator: null,
     paginationLoadingIndicatorPosition: '',
     // SCROLL TO TOP
     scrollToTop: {

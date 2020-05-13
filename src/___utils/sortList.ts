@@ -2,7 +2,7 @@ import getObjectDeepKeyValue from './getObjectDeepKeyValue';
 import {isString, isObject, isArray, isNilOrEmpty} from './isType';
 
 export interface SortOptionsInterface {
-    by?: string | Array<string | { by: string; descending?: boolean; caseInsensitive?: boolean }>;
+    by?: string | Array<string | { key: string; descending?: boolean; caseInsensitive?: boolean }>;
     descending?: boolean;
     caseInsensitive?: boolean;
 }
@@ -43,7 +43,7 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
         if (isArray(options.by)) {
             for (let i = 0; i < (options.by as []).length; i += 1) {
                 const key = (options.by as [])[i];
-                const option = isObject(key) ? key : {...options, by: key};
+                const option = isObject(key) ? key : {...options, key};
                 const res = compareKeys(first, second, option as SortOptionsInterface);
 
                 if (res !== 0) {

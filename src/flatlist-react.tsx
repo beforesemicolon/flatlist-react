@@ -10,7 +10,7 @@ import {defaultProps, Props, propTypes, ScrollToTopInterface} from './props';
 
 const FlatList = (props: Props<{} | []>): JSX.Element => {
     const {
-        list, renderWhenEmpty, wrapperHtmlTag, renderItem, // render/list related props
+        list, renderWhenEmpty, wrapperHtmlTag, renderItem, renderOnScroll, // render/list related props
         group, groupSeparator, showGroupSeparatorAtTheBottom, // group props
         display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
@@ -33,7 +33,7 @@ const FlatList = (props: Props<{} | []>): JSX.Element => {
         <>
             {
                 list.length > 0
-                    ? (renderScroll && !(loadMoreItems || pagination.loadMore))
+                    ? (renderOnScroll && !(loadMoreItems || pagination.loadMore))
                         ? (
                             <ScrollRenderer
                                 list={list}
@@ -48,7 +48,7 @@ const FlatList = (props: Props<{} | []>): JSX.Element => {
                 (displayRow || displayGrid || display.grid || display.row)
                 && <DisplayHandler {...{display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth}}/>
             }
-            {((loadMoreItems || pagination.loadMore) && !renderScroll)
+            {((loadMoreItems || pagination.loadMore) && !renderOnScroll)
             && (
                 <InfiniteLoader
                     hasMore={hasMoreItems || pagination.hasMore}

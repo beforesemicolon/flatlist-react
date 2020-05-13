@@ -15,13 +15,20 @@ Make sure you are running **react** and **react-dom** version **16.8.0+**.
 
 ### Props Format
 
-FlatList has alternative ways to present your props in order to make things easier to change and quick to specify.
+FlatList has alternative ways to present your props in order to make things easier to change and quicker to specify.
 
 There are available **shorthands props** just in case you want to make batch updates or want to keep things nicely together:
-`group`, `sort`, `search`, `paginate`, `scrollToTop`, and `display`.
+- [`group`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#grouping)
+- [`sort`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#sorting)
+- [`search`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#searching)
+- [`paginate`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#pagination)
+- [`scrollToTop`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#scrolltotop)
+- [`display`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#styling).
 
-There are several grouping props, you can confirm in the grouping session, but there is also a
-`group` prop which takes all these props at once.
+For example:
+
+There are several props for [grouping](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#grouping) but there is also a
+`group` prop which takes all these props all at once.
 
 ```jsx
 // PeopleList.jsx
@@ -111,12 +118,12 @@ return (
 FlatList also offers internal components for usage to further help with your list rendering.
 ### PlainList
 `PlainList` is a simpler version of FlatList. It is an ideal option when all you want to do is render a list.
-It support only the following props:
-- list
-- renderItem
-- renderWhenEmpty
-- renderOnScroll
-- wrapperHtmlTag
+It supports only the following props:
+- [list](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#list-and-renderitem)
+- [renderItem](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#list-and-renderitem)
+- [renderWhenEmpty](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#renderwhenempty)
+- [renderOnScroll](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#renderonscroll)
+- [wrapperHtmlTag](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#wrapperhtmltag)
 
 It is the ideal component to render small simple lists like dropDown, selection options or any other
 list you dont plan to do anything besides rendering them and leave it.
@@ -267,9 +274,9 @@ javascript 'reverse' method on Array because:
   />
 
 /* outputs
-<span>5</item>
-<span>4</item>
-<span>2</item>
+<span>5</span>
+<span>4</span>
+<span>2</span>
 */
 
 ```
@@ -283,7 +290,7 @@ If you want to wrap your list in a container you can user
 `wrapperHtmlTag` to specify which tag to use so then you can treat FlatList as a normal html tag and set any html props that you would normally set.
 
 ```jsx
-<FlatList
+<PlainList
   list={[2,4,5]}
   renderItem={(item, k) => <span key={k}>{item}</span>}
   wrapperHtmlTag="div"
@@ -295,7 +302,7 @@ If you want to wrap your list in a container you can user
   />
 
 /* outputs
-<div id="my-container" style="background: blue;">
+<div id="my-container" style="background: blue">
   <span>5</item>
   <span>4</item>
   <span>2</item>
@@ -313,7 +320,7 @@ The `renderOnScroll` will render your list to fill the container and then stop. 
 further render the remainder items. This is great if creating a lot of dom elements takes time and you dont want the browser
 to become iresponsive while rendering a very large list. 
 
-It is different from pagination(Infinite Scrolling). With pagination you start with some items and when the user reaches the
+It is different from [pagination(Infinite Scrolling)](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#pagination). With pagination you start with some items and when the user reaches the
 end it will fetch some more while showing the loading indicator.
 
 `renderOnScroll` is great for when you have large list and rendering it all at once would take long and freeze the browser.
@@ -480,7 +487,7 @@ The string represents the key in the list which value is evaluated to **truthy**
   />
 
 /* outputs
-<span>2</item> // since only "2" is truthy
+<span>2</span> // since only "2" is truthy
 */
 
 ```
@@ -493,8 +500,8 @@ If you pass a function, it will be called with the item and the index and the fu
   />
 
 /* outputs
-<span>2</item>
-<span>0</item>
+<span>2</span>
+<span>0</span>
 */
 
 ```

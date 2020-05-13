@@ -14,10 +14,11 @@ const defaultSortOptions: SortOptionsInterface = {
 };
 
 const compareKeys = (first: any, second: any,
-    {by = '', caseInsensitive = false, descending = false}: SortOptionsInterface) => {
-    if (by) {
-        first = (isObject(first) || isArray(first)) ? getObjectDeepKeyValue(first, (by as string)) : first;
-        second = (isObject(second) || isArray(second)) ? getObjectDeepKeyValue(second, (by as string)) : second;
+    {key = '', caseInsensitive = false, descending = false}: any) => {
+    // console.log('-- compareKeys', key);
+    if (key) {
+        first = (isObject(first) || isArray(first)) ? getObjectDeepKeyValue(first, (key as string)) : first;
+        second = (isObject(second) || isArray(second)) ? getObjectDeepKeyValue(second, (key as string)) : second;
     }
 
     if (caseInsensitive) {
@@ -44,7 +45,8 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
             for (let i = 0; i < (options.by as []).length; i += 1) {
                 const key = (options.by as [])[i];
                 const option = isObject(key) ? key : {...options, key};
-                const res = compareKeys(first, second, option as SortOptionsInterface);
+                // console.log('-- option', key, isObject(key), option);
+                const res = compareKeys(first, second, option);
 
                 if (res !== 0) {
                     return res;
@@ -54,7 +56,7 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
             return 0;
         }
 
-        return compareKeys(first, second, options);
+        return compareKeys(first, second, {...options, key: options.by});
     });
 
     return listCopy;

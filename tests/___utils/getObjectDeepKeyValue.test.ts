@@ -121,13 +121,4 @@ describe('Util: getObjectDeepKeyValue()', () => {
         expect(() => getObjectDeepKeyValue({testingObject, }))
             .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a dot separated values string');
     });
-
-    it('Should get special key values', () => {
-        const k1: any = 'children.0';
-        const k2: any = '*keys';
-
-        // expect.assertions(1);
-
-        expect(getObjectDeepKeyValue(testingArray, k2)).toEqual([]);
-    });
 });

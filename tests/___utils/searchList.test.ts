@@ -123,7 +123,7 @@ describe('Util: searchList()', () => {
                })).toEqual([]);
 
                expect(searchList(objectArray, {
-                   by: ['name', {by: 'other', caseInsensitive: true}],
+                   by: ['name', {key: 'other', caseInsensitive: true}],
                    term: 'last',
                    everyWord: false,
                    caseInsensitive: false
@@ -132,7 +132,7 @@ describe('Util: searchList()', () => {
                ]);
 
                expect(searchList(objectArray, {
-                   by: ['name', {by: 'other', caseInsensitive: true}],
+                   by: ['name', {key: 'other', caseInsensitive: true}],
                    term: 'zer last',
                    everyWord: true,
                    caseInsensitive: false

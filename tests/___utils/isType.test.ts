@@ -30,7 +30,7 @@ describe('Util: isType()', () => {
         data.empty = ['', ``, [], {}, new Map(), new Set(), NaN];
         data.nilOrEmpty = [null, '', ``, [], {}, undefined, new Map(), new Set()];
         data.booleans = [true, false, 1 === 1, 10 > 5];
-        data.numbers = [1, -1, 9.3, NaN, (0 / 3), Infinity, 0];
+        data.numbers = [1, -1, 9.3, (0 / 3), Infinity, 0];
         data.numerics = [1, -1, 9.3, (0 / 3), 0];
         // @ts-ignore
         data.objects = [{}, new Object({}), Object.create(null), new ObjConstructor()];

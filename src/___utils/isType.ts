@@ -2,7 +2,7 @@ import getType, {types} from './getType';
 
 export const isBoolean = (x: any): boolean => getType(x) === types.BOOLEAN;
 
-export const isNumber = (x: any): boolean => getType(x) === types.NUMBER && isNaN(Number(x));
+export const isNumber = (x: any): boolean => getType(Number(x)) === types.NUMBER && !isNaN(Number(x));
 
 export const isNumeric = (x: any): boolean => isFinite(x) && isNumber(x);
 

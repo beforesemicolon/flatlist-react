@@ -17,7 +17,6 @@ const ScrollToTopButton = (props: Props) => {
     const btn = isFunction(button) ? (button as () => JSX.Element)() : button;
     const [mounted, setMounted] = useState(false);
 
-    // eslint-disable-next-line consistent-return
     useEffect(() => {
         const buttonElement = (anchor as any).current.nextElementSibling;
         const container = (anchor as any).current.parentNode;

@@ -1,4 +1,4 @@
-import {render, cleanup, fireEvent} from '@testing-library/react';
+import {render, cleanup, fireEvent, act} from '@testing-library/react';
 import React from 'react';
 import FlatList from '../src/flatlist-react';
 
@@ -128,6 +128,10 @@ describe('FlatList', () => {
         });
 
         it('on scroll', () => {
+            const raf = jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+                cb(1);
+                return 1;
+            });
             const container = document.createElement('div');
             container.id = 'container';
             Object.defineProperty(container, 'scrollHeight', {
@@ -158,22 +162,23 @@ describe('FlatList', () => {
             );
 
             // initial render
+            console.log('-- container', container.outerHTML);
             let items = getAllByText(/age-.*/);
 
             expect(asFragment()).toMatchSnapshot();
-            expect(items.length).toBe(4);
-            expect(items.map(i => i.textContent)).toEqual(['age-1', 'age-3', 'age-45', 'age-8']);
+            expect(items.length).toBe(5);
+            expect(items.map(i => i.textContent)).toEqual(['age-1', 'age-3', 'age-45', 'age-8', 'age-0']);
 
             // scroll render
-            fireEvent.scroll(container, {target: {scrollTop: 100}});
             fireEvent.scroll(container, {target: {scrollTop: 150}});
 
             items = getAllByText(/age-.*/);
 
             expect(container.scrollTop).toBe(150);
             expect(asFragment()).toMatchSnapshot();
-            expect(items.length).toBe(6);
-            expect(items.map(i => i.textContent)).toEqual(['age-1', 'age-3', 'age-45', 'age-8', 'age-0', 'age-20']);
+            expect(items.length).toBe(7);
+            expect(items.map(i => i.textContent)).toEqual(['age-1', 'age-3', 'age-45', 'age-8', 'age-0', 'age-20', 'age-10']);
+            raf.mockClear();
         });
     });
 

@@ -87,7 +87,7 @@ describe('uiFunctions', () => {
         it('Should set initial style', () => {
             expect(container.id).toBe('unique-id');
             expect(container.style.cssText).toBe('width: 200px; height: 200px;');
-            expect(btn.style.cssText).toBe('position: fixed; z-index: 1; visibility: hidden;');
+            expect(btn.style.cssText).toBe('position: absolute; z-index: 1; visibility: hidden;');
         });
 
         it('Should position btn top left', (done) => {
@@ -111,7 +111,7 @@ describe('uiFunctions', () => {
             const raf = (cb: any) => {
                 cb();
                 expect(btn.style.top).toBe('20px');
-                expect(btn.style.left).toBe('180px');
+                expect(btn.style.left).toBe('calc(100% - 20px)');
                 done();
                 return 0;
             };
@@ -127,7 +127,7 @@ describe('uiFunctions', () => {
         it('Should position btn bottom left', (done) => {
             const raf = (cb: any) => {
                 cb();
-                expect(btn.style.top).toBe('180px');
+                expect(btn.style.top).toBe('calc(100% - 20px)');
                 expect(btn.style.left).toBe('20px');
                 done();
                 return 0;
@@ -144,8 +144,8 @@ describe('uiFunctions', () => {
         it('Should position btn bottom right', (done) => {
             const raf = (cb: any) => {
                 cb();
-                expect(btn.style.top).toBe('180px');
-                expect(btn.style.left).toBe('180px');
+                expect(btn.style.top).toBe('calc(100% - 20px)');
+                expect(btn.style.left).toBe('calc(100% - 20px)');
                 done();
                 return 0;
             };

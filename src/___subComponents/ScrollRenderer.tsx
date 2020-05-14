@@ -67,16 +67,18 @@ const ScrollRenderer = (props: Props) => {
 
     useLayoutEffect(() => {
         const span: any = containerRef.current;
+        let container: any = null;
         if (span) {
+            container = span.parentNode;
             // populate double the container height of items
-            if (span.parentNode.scrollHeight <= (span.parentNode.offsetHeight * 2)) {
-                requestAnimationFrame(() => addItem(span.parentNode));
+            if (span.parentNode.scrollHeight <= (container.offsetHeight * 2)) {
+                requestAnimationFrame(() => addItem(container));
             }
 
             if (render.index > 0 && dataList.length === render.renderList.length) {
-                span.parentNode.removeEventListener('scroll', onScroll, true);
+                container.removeEventListener('scroll', onScroll, true);
             } else {
-                span.parentNode.addEventListener('scroll', onScroll, true);
+                container.addEventListener('scroll', onScroll, true);
             }
 
             adding = false;
@@ -84,7 +86,7 @@ const ScrollRenderer = (props: Props) => {
 
         return () => { // when unmounted
             if (span) {
-                span.parentNode.removeEventListener('scroll', onScroll, true);
+                container.removeEventListener('scroll', onScroll, true);
             }
         };
     }, [render.index]);

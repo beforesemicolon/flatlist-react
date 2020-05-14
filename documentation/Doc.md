@@ -1446,3 +1446,12 @@ The position is where you want the button to be placed. The default is **"bottom
   />
 ```
 
+### Thank You
+Please show your support, help make this better, suggest features, report bugs and even contribute to this 
+project.
+
+Share this project with your friends and colleages if you love it like I do.
+
+thank you!
+
+-- ec

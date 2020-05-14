@@ -19,11 +19,11 @@ const ScrollRenderer = (props: Props) => {
 
     const renderThisItem = handleRenderItem(renderItem, handleRenderGroupSeparator(groupSeparator));
 
-    const addItem = (prevScrollPosition = render.prevScrollPosition) => {
+    const addItem = (container: any, prevScrollPosition = render.prevScrollPosition) => {
         if (!adding && render.index < dataList.length) {
             adding = true;
             // @ts-ignore
-            const count = getComputedStyle(containerRef.current.parentNode as HTMLElement).display === 'grid' ? 10 : 1;
+            const count = getComputedStyle(container as HTMLElement).display === 'grid' ? 10 : 5;
             setRender({
                 prevScrollPosition,
                 renderList: [...render.renderList, ...dataList.slice(render.index, render.index + count)] as any,
@@ -34,13 +34,14 @@ const ScrollRenderer = (props: Props) => {
 
     const onScroll = () => {
         const span: any = containerRef.current;
-        const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
-        const anchorPos = span.offsetTop - span.parentNode.scrollTop;
 
-        if (
-            anchorPos <= (startingPoint + span.parentNode.offsetHeight)
-        ) {
-            addItem(span.parentNode.scrollTop);
+        if (span) {
+            const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
+            const anchorPos = span.offsetTop - span.parentNode.scrollTop;
+
+            if (anchorPos <= (startingPoint + (span.parentNode.offsetHeight * 2))) {
+                requestAnimationFrame(() => addItem(span.parentNode, span.parentNode.scrollTop));
+            }
         }
     };
 
@@ -66,20 +67,25 @@ const ScrollRenderer = (props: Props) => {
 
     useLayoutEffect(() => {
         const span: any = containerRef.current;
-        // populate double the container height of items
-        if (span.parentNode.scrollHeight <= (span.parentNode.offsetHeight * 2)) {
-            addItem();
+        if (span) {
+            // populate double the container height of items
+            if (span.parentNode.scrollHeight <= (span.parentNode.offsetHeight * 2)) {
+                requestAnimationFrame(() => addItem(span.parentNode));
+            }
+
+            if (render.index > 0 && dataList.length === render.renderList.length) {
+                span.parentNode.removeEventListener('scroll', onScroll, true);
+            } else {
+                span.parentNode.addEventListener('scroll', onScroll, true);
+            }
+
+            adding = false;
         }
 
-        if (render.index > 0 && dataList.length === render.renderList.length) {
-            span.parentNode.removeEventListener('scroll', onScroll, true);
-        } else {
-            span.parentNode.addEventListener('scroll', onScroll, true);
-        }
-
-        adding = false;
         return () => { // when unmounted
-            span.parentNode.removeEventListener('scroll', onScroll, true);
+            if (span) {
+                span.parentNode.removeEventListener('scroll', onScroll, true);
+            }
         };
     }, [render.index]);
 

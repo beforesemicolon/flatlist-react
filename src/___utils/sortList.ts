@@ -15,7 +15,6 @@ const defaultSortOptions: SortOptionsInterface = {
 
 const compareKeys = (first: any, second: any,
     {key = '', caseInsensitive = false, descending = false}: any) => {
-    // console.log('-- compareKeys', key);
     if (key) {
         first = (isObject(first) || isArray(first)) ? getObjectDeepKeyValue(first, (key as string)) : first;
         second = (isObject(second) || isArray(second)) ? getObjectDeepKeyValue(second, (key as string)) : second;
@@ -45,7 +44,6 @@ const sortList = <T>(list: T[], options: SortOptionsInterface = defaultSortOptio
             for (let i = 0; i < (options.by as []).length; i += 1) {
                 const key = (options.by as [])[i];
                 const option = isObject(key) ? key : {...options, key};
-                // console.log('-- option', key, isObject(key), option);
                 const res = compareKeys(first, second, option);
 
                 if (res !== 0) {

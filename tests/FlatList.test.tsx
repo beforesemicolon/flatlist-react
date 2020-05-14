@@ -152,7 +152,7 @@ describe('FlatList', () => {
                 <FlatList
                     list={list}
                     renderItem={renderItem}
-                    renderScroll
+                    renderOnScroll
                 />,
                 {container}
             );
@@ -525,7 +525,42 @@ describe('FlatList', () => {
             ]);
         });
 
-        it('by firstName and lastName', () => {
+        it('by firstName and lastName descending and case sensitive', () => {
+            const l1 = render(
+                <FlatList
+                    list={list}
+                    renderItem={renderNamedItem}
+                    sortBy={['firstName', 'lastName']}
+                    sortDescending
+                />
+            );
+            const l2 = render(
+                <FlatList
+                    list={list}
+                    renderItem={renderNamedItem}
+                    sort={{
+                        by: ['firstName', 'lastName'],
+                        descending: true
+                    }}
+                />
+            );
+
+            let items = [...l1.container.children as any];
+
+            expect(l1.container.outerHTML).toEqual(l2.container.outerHTML);
+            expect(items.map(i => i.textContent)).toEqual([
+                'april doe',
+                'anibal Doe',
+                'June doe',
+                'John Doe',
+                'April zune',
+                'April fools',
+                'Anibal Zombie',
+            ]);
+
+        });
+
+        it('by firstName and lastName ascending and case sensitive', () => {
             const l1 = render(
                 <FlatList
                     list={list}
@@ -555,38 +590,10 @@ describe('FlatList', () => {
                 'anibal Doe',
                 'april doe',
             ]);
+        });
 
-            l1.rerender(
-                <FlatList
-                    list={list}
-                    renderItem={renderNamedItem}
-                    sortBy={['firstName', 'lastName']}
-                    sortDescending
-                />
-            );
-            l2.rerender(
-                <FlatList
-                    list={list}
-                    renderItem={renderNamedItem}
-                    sort={{
-                        by: ['firstName', 'lastName'],
-                        descending: true
-                    }}
-                />
-            );
-
-            expect(l1.container.outerHTML).toEqual(l2.container.outerHTML);
-            expect(items.map(i => i.textContent)).toEqual([
-                'april doe',
-                'anibal Doe',
-                'June doe',
-                'John Doe',
-                'April zune',
-                'April fools',
-                'Anibal Zombie',
-            ]);
-
-            l1.rerender(
+        it('by firstName and lastName descending and case insensitive', () => {
+            const l1 = render(
                 <FlatList
                     list={list}
                     renderItem={renderNamedItem}
@@ -595,7 +602,7 @@ describe('FlatList', () => {
                     sortCaseInsensitive
                 />
             );
-            l2.rerender(
+            const l2 = render(
                 <FlatList
                     list={list}
                     renderItem={renderNamedItem}
@@ -607,6 +614,8 @@ describe('FlatList', () => {
                 />
             );
 
+            let items = [...l1.container.children as any];
+
             expect(l1.container.outerHTML).toEqual(l2.container.outerHTML);
             expect(items.map(i => i.textContent)).toEqual([
                 'June doe',
@@ -617,28 +626,32 @@ describe('FlatList', () => {
                 'Anibal Zombie',
                 'anibal Doe',
             ]);
+        });
 
-            l1.rerender(
+        it('by firstName (descending case insensitive) and lastName (ascending case sensitive)', () => {
+            const l1 =render(
                 <FlatList
                     list={list}
                     renderItem={renderNamedItem}
-                    sortBy={['firstName', {by: 'lastName', descending: false, caseInsensitive: false}]}
+                    sortBy={['firstName', {key: 'lastName', descending: false, caseInsensitive: false}]}
                     sortDescending
                     sortCaseInsensitive
                 />
             );
-            l2.rerender(
+            const l2 = render(
                 <FlatList
                     list={list}
                     renderItem={renderNamedItem}
                     sort={{
-                        by: ['firstName', {by: 'lastName', descending: false, caseInsensitive: false}],
+                        by: ['firstName', {key: 'lastName', descending: false, caseInsensitive: false}],
                         descending: true,
                         caseInsensitive: true
                     }}
                 />
             );
 
+            let items = [...l1.container.children as any];
+
             expect(l1.container.outerHTML).toEqual(l2.container.outerHTML);
             expect(items.map(i => i.textContent)).toEqual([
                 'June doe',
@@ -647,35 +660,39 @@ describe('FlatList', () => {
                 'April fools',
                 'April zune',
                 'anibal Doe',
-                'Anibal Zombie',
+                'Anibal Zombie'
             ]);
+        });
 
-            l1.rerender(
+        it('by lastName (ascending case sensitive) and firstName (ascending case sensitive)', () => {
+            const l1 = render(
                 <FlatList
                     list={list}
                     renderItem={renderNamedItem}
-                    sortBy={[{by: 'lastName', descending: false, caseInsensitive: false}, 'firstName']}
+                    sortBy={[{key: 'lastName', descending: true, caseInsensitive: false}, 'firstName']}
                 />
             );
-            l2.rerender(
+            const l2 = render(
                 <FlatList
                     list={list}
                     renderItem={renderNamedItem}
                     sort={{
-                        by: [{by: 'lastName', descending: false, caseInsensitive: false}, 'firstName']
+                        by: [{key: 'lastName', descending: true, caseInsensitive: false}, 'firstName']
                     }}
                 />
             );
 
+            let items = [...l1.container.children as any];
+
             expect(l1.container.outerHTML).toEqual(l2.container.outerHTML);
             expect(items.map(i => i.textContent)).toEqual([
-                'John Doe',
-                'anibal Doe',
-                'Anibal Zombie',
+                'April zune',
+                'April fools',
                 'June doe',
                 'april doe',
-                'April fools',
-                'April zune',
+                'Anibal Zombie',
+                'John Doe',
+                'anibal Doe'
             ]);
         });
     });

@@ -276,6 +276,7 @@ export const defaultProps = {
         separatorAtTheBottom: false,
         sortedBy: '',
         sortBy: '', // deprecated
+        sorted: false,
         sortedCaseInsensitive: false,
         sortCaseInsensitive: false, // deprecated
         sortedDescending: false,

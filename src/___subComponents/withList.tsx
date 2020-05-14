@@ -2,13 +2,13 @@ import React, {forwardRef, memo} from 'react';
 import convertListToArray from '../___utils/convertListToArray';
 import filterList from '../___utils/filterList';
 import groupList from '../___utils/groupList';
-import {isBoolean, isNil, isArray} from '../___utils/isType';
+import {isBoolean, isNil} from '../___utils/isType';
 import limitList from '../___utils/limitList';
+import reverseList from '../___utils/reverseList';
 import searchList from '../___utils/searchList';
 import sortList from '../___utils/sortList';
-import reverseList from '../___utils/reverseList';
-import {renderBlank} from './uiFunctions';
 import {defaultProps} from '../props';
+import {renderBlank} from './uiFunctions';
 
 const withList = (List: any) => {
     const DataList = (props: any) => {
@@ -104,7 +104,7 @@ const withList = (List: any) => {
             renderList = gList.groupLists
                 .reduce((newGList: any, aGroup, idx: number) => {
                     if (
-                        groupSorted || group.sorted || groupSortedBy || groupOptions.sortedBy
+                        groupSorted || groupOptions.sorted || groupSortedBy || groupOptions.sortedBy
                         || groupOptions.sortBy || sortGroupBy || sortOptions.groupBy // deprecated
                     ) {
                         aGroup = sortList(aGroup, {

@@ -1333,7 +1333,10 @@ The `rowGap` prop will add spacing in between the stacked rows.
 ```
 
 ## scrollToTop
-Scrolling to top was a requested feature and goes well with rendering list specially if it a long one. 
+Scrolling to top was a requested feature and goes well with rendering list specially if it a long one.
+
+You don't need to set this prop if you set `scrollToTopButton` prop. `scrollToTop` is only if you want to
+start with the default button.  
 
 By default a simple button will be shown at the bottom right after user has scrolled 50px from the top. The button is 
 positioned 20px from the corner but all these are options you can customize at your liking.
@@ -1349,6 +1352,7 @@ positioned 20px from the corner but all these are options you can customize at y
 ### scrollToTopButton
 ###### ComponentLike | () => JSX.Element
 If you don't like the super simple default button you can pass yours using `scrollToTopButton` prop.
+If you specify the `scrollToTopButton` you don't need to also set `scrollToTop` prop.
 
 ```jsx
 <FlatList

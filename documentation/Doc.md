@@ -1350,7 +1350,7 @@ positioned 20px from the corner but all these are options you can customize at y
 ```
 
 ### scrollToTopButton
-###### ComponentLike | () => JSX.Element
+###### JSX.Element | () => JSX.Element
 If you don't like the super simple default button you can pass yours using `scrollToTopButton` prop.
 If you specify the `scrollToTopButton` you don't need to also set `scrollToTop` prop.
 

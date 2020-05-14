@@ -16,7 +16,6 @@ const ScrollToTopButton = (props: Props) => {
     const {button, position, padding, offset, scrollingContainer} = props;
     const btn = isFunction(button) ? (button as () => JSX.Element)() : button;
     const [mounted, setMounted] = useState(false);
-    console.log('-- scrollingContainer', scrollingContainer);
 
     // eslint-disable-next-line consistent-return
     useEffect(() => {
@@ -50,6 +49,9 @@ const ScrollToTopButton = (props: Props) => {
 
         setMounted(true);
         return () => {
+            container.style.removeProperty('overflow');
+            container.style.removeProperty('position');
+            container.style.removeProperty('padding');
             window.removeEventListener('resize', updateBtnPosition);
         };
     }, []);

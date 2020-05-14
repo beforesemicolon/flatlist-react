@@ -1,5 +1,6 @@
 import {array, arrayOf, bool, element, func, node, number, object, oneOf, oneOfType, shape, string} from 'prop-types';
 import {Ref} from 'react';
+import warning from 'warning';
 import {DisplayHandlerProps, DisplayInterface} from './___subComponents/DisplayHandler';
 import {InfiniteLoaderProps} from './___subComponents/InfiniteLoader';
 import {renderFunc} from './___subComponents/uiFunctions';
@@ -7,20 +8,21 @@ import {GroupOptionsInterface} from './___utils/groupList';
 import {SearchOptionsInterface} from './___utils/searchList';
 import {SortOptionsInterface} from './___utils/sortList';
 
-function deprecated(propType: any, alternative: string) {
+function deprecated(propType: any, defaultVal: any, alternative: string) {
     return (props: any, propName: string, componentName: string, ...rest: any) => {
-        if (props[propName] != null) {
-            const message = `"${propName}" property of "${componentName}" has been deprecated. Please use "${alternative}" instead.`;
+        if (props[propName] !== defaultVal) {
+            const message = `"${propName}" prop of "${componentName}" has been deprecated. Please use "${alternative}" instead.`;
             // eslint-disable-next-line no-unused-expressions
-            if (!process || !process.env || process.env.JEST_WORKER_ID === undefined) {
-                console.warn(message);
+            const testing = process && process.env ? process.env.JEST_WORKER_ID !== undefined : false;
+
+            if (!testing) {
+                warning(false, message);
             }
         }
 
         return propType(props, propName, componentName, ...rest);
     };
 }
-
 export interface GroupInterface extends GroupOptionsInterface {
     of: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,7 +56,7 @@ export interface Props<T> {
     limit: number | string;
     reversed: boolean;
     wrapperHtmlTag: string;
-    // sorting
+    // sortingsortGroupBy
     sort: boolean | SortInterface;
     sortBy: SortInterface['by'];
     sortCaseInsensitive: SortInterface['caseInsensitive'];
@@ -107,141 +109,6 @@ export interface Props<T> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
 }
-
-export const propTypes = {
-    __forwarededRef: object,
-    // RENDER
-    list: oneOfType([array, object]).isRequired,
-    renderItem: oneOfType([func, node]).isRequired,
-    limit: oneOfType([number, string]),
-    renderWhenEmpty: func,
-    reversed: bool,
-    renderOnScroll: bool,
-    wrapperHtmlTag: string,
-    // DISPLAY
-    display: shape({
-        grid: bool,
-        gridColumnWidth: string,
-        gridGap: string,
-        row: bool,
-        rowGap: string
-    }),
-    displayGrid: bool,
-    displayRow: bool,
-    gridGap: string,
-    rowGap: string,
-    minColumnWidth: string,
-    // FILTER
-    filterBy: oneOfType([func, string]),
-    // GROUPS
-    group: shape({
-        by: oneOfType([func, string]),
-        limit: deprecated(number, 'group.of'), // deprecated
-        of: number,
-        reversed: bool,
-        separator: oneOfType([node, func, element]),
-        separatorAtTheBottom: bool,
-        sortedBy: oneOfType([
-            string,
-            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
-        ]),
-        sortBy: deprecated(oneOfType([
-            string,
-            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
-        ]), 'sortedBy'), // deprecated
-        sortedCaseInsensitive: bool,
-        sortCaseInsensitive: deprecated(bool, 'sortedCaseInsensitive'), // deprecated
-        sortedDescending: bool,
-        sortDescending: deprecated(bool, 'sortedDescending') // deprecated
-    }),
-    groupBy: oneOfType([func, string]),
-    groupOf: number,
-    groupReversed: bool,
-    groupSeparator: oneOfType([node, func, element]),
-    groupSeparatorAtTheBottom: bool,
-    showGroupSeparatorAtTheBottom: deprecated(bool, 'groupSeparatorAtTheBottom'), // deprecated
-    groupSorted: bool,
-    groupSortedBy: oneOfType([
-        string,
-        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
-    ]),
-    groupSortedDescending: bool,
-    groupSortedCaseInsensitive: bool,
-    // PAGINATION
-    // PAGINATE
-    pagination: shape({
-        hasMore: bool,
-        loadMore: func,
-        loadingIndicator: oneOfType([node, func, element]),
-        loadingIndicatorPosition: string
-    }),
-    hasMoreItems: bool,
-    loadMoreItems: func,
-    paginationLoadingIndicator: oneOfType([node, func, element]),
-    paginationLoadingIndicatorPosition: oneOf(['left', 'center', 'right', '']),
-    // SCROLL TO TOP
-    scrollToTop: oneOfType([
-        bool,
-        shape({
-            button: oneOfType([node, element, func]),
-            offset: number,
-            padding: number,
-            position: oneOf(['top right', 'top left', 'bottom right', 'bottom left'])
-        })
-    ]),
-    scrollToTopButton: oneOfType([node, element, func]),
-    scrollToTopOffset: number,
-    scrollToTopPadding: number,
-    scrollToTopPosition: oneOf(['top right', 'top left', 'bottom right', 'bottom left']),
-    // SEARCH
-    search: shape({
-        by: oneOfType([
-            func, string,
-            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool})]))
-        ]),
-        caseInsensitive: bool,
-        everyWord: deprecated(bool, 'search.onEveryWord'), // deprecated
-        onEveryWord: bool,
-        minCharactersCount: number,
-        term: string
-    }),
-    searchBy: oneOfType([
-        func, string,
-        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool})]))
-    ]),
-    searchCaseInsensitive: bool,
-    searchOnEveryWord: bool,
-    searchableMinCharactersCount: deprecated(number, 'searchMinCharactersCount'), // deprecated
-    searchMinCharactersCount: number,
-    searchTerm: string,
-    // SORT
-    sort: oneOfType([
-        bool,
-        shape({
-            by: oneOfType([
-                string,
-                arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
-            ]),
-            caseInsensitive: bool,
-            descending: bool,
-            groupBy: string,
-            groupCaseInsensitive: bool,
-            groupDescending: bool
-        })]),
-    sortBy: oneOfType([
-        string,
-        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
-    ]),
-    sortCaseInsensitive: bool,
-    sortDesc: bool,
-    sortDescending: bool,
-    sortGroupBy: deprecated(oneOfType([
-        string,
-        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
-    ]), 'groupSortedBy'), // deprecated
-    sortGroupDesc: deprecated(bool, 'groupSortedDescending'), // deprecated
-    sortGroupCaseInsensitive: deprecated(bool, 'Use "groupSeparatorAtTheBottom"') // deprecated
-};
 
 export const defaultProps = {
     __forwarededRef: {current: null},
@@ -345,4 +212,139 @@ export const defaultProps = {
     sortGroupBy: '', // deprecated
     sortGroupDesc: false, // deprecated
     sortGroupCaseInsensitive: false // deprecated
+};
+
+export const propTypes = {
+    __forwarededRef: object,
+    // RENDER
+    list: oneOfType([array, object]).isRequired,
+    renderItem: oneOfType([func, node]).isRequired,
+    limit: oneOfType([number, string]),
+    renderWhenEmpty: func,
+    reversed: bool,
+    renderOnScroll: bool,
+    wrapperHtmlTag: string,
+    // DISPLAY
+    display: shape({
+        grid: bool,
+        gridColumnWidth: string,
+        gridGap: string,
+        row: bool,
+        rowGap: string
+    }),
+    displayGrid: bool,
+    displayRow: bool,
+    gridGap: string,
+    rowGap: string,
+    minColumnWidth: string,
+    // FILTER
+    filterBy: oneOfType([func, string]),
+    // GROUPS
+    group: shape({
+        by: oneOfType([func, string]),
+        limit: deprecated(number, defaultProps.group.limit, 'group.of'), // deprecated
+        of: number,
+        reversed: bool,
+        separator: oneOfType([node, func, element]),
+        separatorAtTheBottom: bool,
+        sortedBy: oneOfType([
+            string,
+            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+        ]),
+        sortBy: deprecated(oneOfType([
+            string,
+            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+        ]), defaultProps.group.sortBy, 'sortedBy'), // deprecated
+        sortedCaseInsensitive: bool,
+        sortCaseInsensitive: deprecated(bool, defaultProps.group.sortCaseInsensitive, 'sortedCaseInsensitive'), // deprecated
+        sortedDescending: bool,
+        sortDescending: deprecated(bool, defaultProps.group.sortDescending, 'sortedDescending') // deprecated
+    }),
+    groupBy: oneOfType([func, string]),
+    groupOf: number,
+    groupReversed: bool,
+    groupSeparator: oneOfType([node, func, element]),
+    groupSeparatorAtTheBottom: bool,
+    showGroupSeparatorAtTheBottom: deprecated(bool, defaultProps.showGroupSeparatorAtTheBottom, 'groupSeparatorAtTheBottom'), // deprecated
+    groupSorted: bool,
+    groupSortedBy: oneOfType([
+        string,
+        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+    ]),
+    groupSortedDescending: bool,
+    groupSortedCaseInsensitive: bool,
+    // PAGINATION
+    // PAGINATE
+    pagination: shape({
+        hasMore: bool,
+        loadMore: func,
+        loadingIndicator: oneOfType([node, func, element]),
+        loadingIndicatorPosition: string
+    }),
+    hasMoreItems: bool,
+    loadMoreItems: func,
+    paginationLoadingIndicator: oneOfType([node, func, element]),
+    paginationLoadingIndicatorPosition: oneOf(['left', 'center', 'right', '']),
+    // SCROLL TO TOP
+    scrollToTop: oneOfType([
+        bool,
+        shape({
+            button: oneOfType([node, element, func]),
+            offset: number,
+            padding: number,
+            position: oneOf(['top right', 'top left', 'bottom right', 'bottom left'])
+        })
+    ]),
+    scrollToTopButton: oneOfType([node, element, func]),
+    scrollToTopOffset: number,
+    scrollToTopPadding: number,
+    scrollToTopPosition: oneOf(['top right', 'top left', 'bottom right', 'bottom left']),
+    // SEARCH
+    search: shape({
+        by: oneOfType([
+            func, string,
+            arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool})]))
+        ]),
+        caseInsensitive: bool,
+        everyWord: deprecated(bool, defaultProps.search.everyWord, 'search.onEveryWord'), // deprecated
+        onEveryWord: bool,
+        minCharactersCount: number,
+        term: string
+    }),
+    searchBy: oneOfType([
+        func, string,
+        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool})]))
+    ]),
+    searchCaseInsensitive: bool,
+    searchOnEveryWord: bool,
+    searchableMinCharactersCount: deprecated(number, defaultProps.searchableMinCharactersCount, 'searchMinCharactersCount'), // deprecated
+    searchMinCharactersCount: number,
+    searchTerm: string,
+    // SORT
+    sort: oneOfType([
+        bool,
+        shape({
+            by: oneOfType([
+                string,
+                arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+            ]),
+            caseInsensitive: bool,
+            descending: bool,
+            groupBy: string,
+            groupCaseInsensitive: bool,
+            groupDescending: bool
+        })]),
+    sortBy: oneOfType([
+        string,
+        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+    ]),
+    sortCaseInsensitive: bool,
+    sortDesc: bool,
+    sortDescending: bool,
+    sortGroupBy: deprecated(oneOfType([
+        string,
+        arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
+    ]), defaultProps.sortGroupBy, 'groupSortedBy'), // deprecated
+    sortGroupDesc: deprecated(bool, defaultProps.sortGroupDesc, 'groupSortedDescending'), // deprecated
+    sortGroupCaseInsensitive: deprecated(bool, defaultProps.sortGroupCaseInsensitive, 'Use "groupSeparatorAtTheBottom"') // deprecated
 };

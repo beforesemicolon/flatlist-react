@@ -11,10 +11,10 @@ import {defaultProps, Props, propTypes, ScrollToTopInterface} from './props';
 const FlatList = (props: Props<{} | []>): JSX.Element => {
     const {
         list, renderWhenEmpty, wrapperHtmlTag, renderItem, renderOnScroll, // render/list related props
-        group, groupSeparator, showGroupSeparatorAtTheBottom, // group props
+        group, groupSeparator, // group props
         display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
-        renderScroll, scrollToTop, scrollToTopButton, scrollToTopPadding, scrollToTopOffset, scrollToTopPosition,
+        scrollToTop, scrollToTopButton, scrollToTopPadding, scrollToTopOffset, scrollToTopPosition,
         pagination, // pagination props
         __forwarededRef,
         ...otherProps

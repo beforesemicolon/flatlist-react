@@ -1,4 +1,4 @@
-import React, {forwardRef, memo, Ref} from 'react';
+import React, {forwardRef, memo, Ref, createRef} from 'react';
 import DisplayHandler from './___subComponents/DisplayHandler';
 import InfiniteLoader from './___subComponents/InfiniteLoader';
 import ScrollRenderer from './___subComponents/ScrollRenderer';
@@ -57,21 +57,16 @@ const FlatList = (props: Props<{} | []>): JSX.Element => {
                     loadingIndicatorPosition={paginationLoadingIndicatorPosition || pagination.loadingIndicatorPosition}
                 />
             )}
-            {
-                (scrollToTop === true || (scrollToTop as ScrollToTopInterface).button || scrollToTopButton)
-                && (
-                    <ScrollToTopButton
-                        button={scrollToTopButton}
-                        padding={scrollToTopPadding}
-                        offset={scrollToTopOffset}
-                        position={scrollToTopPosition}
-                    />
-                )
-            }
         </>
     );
 
-    const WrapperElement = `${isString(wrapperHtmlTag) && wrapperHtmlTag ? wrapperHtmlTag : ''}`;
+    const showScrollToTopButton = (scrollToTop === true || (scrollToTop as ScrollToTopInterface).button || scrollToTopButton);
+
+    let WrapperElement = '';
+
+    if ((isString(wrapperHtmlTag) && wrapperHtmlTag) || showScrollToTopButton) {
+        WrapperElement = wrapperHtmlTag || 'div';
+    }
 
     return (
         <>
@@ -82,6 +77,18 @@ const FlatList = (props: Props<{} | []>): JSX.Element => {
                     ? <WrapperElement ref={__forwarededRef} {...tagProps}>{content}</WrapperElement>
                     : content
             }
+            {
+                showScrollToTopButton
+                && (
+                    <ScrollToTopButton
+                        button={scrollToTopButton}
+                        padding={scrollToTopPadding}
+                        offset={scrollToTopOffset}
+                        position={scrollToTopPosition}
+                        scrollingContainer={__forwarededRef}
+                    />
+                )
+            }
         </>
     );
 };
@@ -90,6 +97,9 @@ FlatList.propTypes = propTypes;
 
 FlatList.defaultProps = defaultProps;
 
-export default memo(withList(forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => (
-    <FlatList {...props} __forwarededRef={ref}/>
-))));
+export default memo(withList(forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
+    ref = ref || createRef();
+    return (
+        <FlatList {...props} __forwarededRef={ref}/>
+    );
+})));

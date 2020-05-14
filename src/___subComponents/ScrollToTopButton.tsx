@@ -1,28 +1,46 @@
-import {element, func, node, number, oneOf, oneOfType} from 'prop-types';
+import {element, func, node, number, oneOf, oneOfType, shape} from 'prop-types';
 import React, {createRef, Ref, useEffect, useState} from 'react';
 import {isFunction} from '../___utils/isType';
 import {btnPosition} from './uiFunctions';
 
-const ScrollToTopButton = (props: any) => {
+interface Props {
+    button: JSX.Element | (() => JSX.Element);
+    position: string;
+    offset: number;
+    padding: number;
+    scrollingContainer: Ref<HTMLElement>;
+}
+
+const ScrollToTopButton = (props: Props) => {
     const anchor: Ref<HTMLElement> = createRef();
-    const {button, position, padding, offset} = props;
-    const btn = isFunction(button) ? button() : button;
+    const {button, position, padding, offset, scrollingContainer} = props;
+    const btn = isFunction(button) ? (button as () => JSX.Element)() : button;
     const [mounted, setMounted] = useState(false);
+    console.log('-- scrollingContainer', scrollingContainer);
 
     // eslint-disable-next-line consistent-return
     useEffect(() => {
         const buttonElement = (anchor as any).current.nextElementSibling;
         const container = (anchor as any).current.parentNode;
-        const positionBtn = btnPosition(container, buttonElement);
+        const scrollContainer = (scrollingContainer as any).current;
+        const containerStyle = getComputedStyle(container);
+        container.style.overflow = 'hidden';
+        container.style.position = ['absolute', 'fixed', 'relative'].includes(containerStyle.overflow)
+            ? containerStyle.overflow : 'relative';
+        scrollContainer.style.overflow = 'auto';
+        scrollContainer.style.padding = containerStyle.padding;
+        scrollContainer.style.height = '100%';
+        container.style.padding = '0';
+        const positionBtn = btnPosition(scrollContainer, buttonElement);
         const pos = position.split(' ');
         const updateBtnPosition = () => positionBtn(pos[0], pos[1], padding, offset);
 
         window.addEventListener('resize', updateBtnPosition);
 
-        container.addEventListener('scroll', updateBtnPosition);
+        scrollContainer.addEventListener('scroll', updateBtnPosition);
 
         buttonElement.addEventListener('click', () => {
-            container.scrollTo({
+            scrollContainer.scrollTo({
                 top: 0,
                 behavior: 'smooth'
             });
@@ -45,6 +63,7 @@ const ScrollToTopButton = (props: any) => {
 };
 
 ScrollToTopButton.propTypes = {
+    scrollingContainer: shape({current: oneOf([element, node])}).isRequired,
     button: oneOfType([node, element, func]),
     position: oneOf(['top right', 'top left', 'bottom right', 'bottom left']),
     padding: number,

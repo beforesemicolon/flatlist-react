@@ -56,36 +56,35 @@ export const handleRenderItem = (
     return (<comp.type {...comp.props} key={key} item={item}/>);
 };
 
-export const btnPosition = (container: HTMLElement, btn: HTMLElement) => {
-    const z = window.getComputedStyle(container).zIndex;
-    btn.style.position = 'fixed';
+export const btnPosition = (scrollContainer: HTMLElement, btn: HTMLElement) => {
+    const z = window.getComputedStyle(scrollContainer).zIndex;
+    btn.style.position = 'absolute';
     btn.style.zIndex = `${z === 'auto' ? 1 : Number(z) + 1}`;
     btn.style.visibility = 'hidden';
 
     return (vertical: string, horizontal: string, padding = 20, offset = 50) => {
-        const {top, left, width, height}: DOMRect = container.getBoundingClientRect();
-        let x = 0;
-        let y = 0;
+        let x = '0px';
+        let y = '0px';
 
         if (vertical === 'top') {
-            y = top + padding;
+            y = `${parseFloat(`${padding}`)}px`;
         } else if (vertical === 'bottom') {
-            y = ((top + height) - padding) - btn.offsetHeight;
+            y = `calc(100% - ${parseFloat(`${padding}`) + btn.offsetHeight}px)`;
         }
 
         if (horizontal === 'left') {
-            x = left + padding;
+            x = `${parseFloat(`${padding}`)}px`;
         } else if (horizontal === 'right') {
-            x = ((left + width) - padding) - btn.offsetWidth;
+            x = `calc(100% - ${parseFloat(`${padding}`) + btn.offsetWidth}px)`;
         }
 
         window.requestAnimationFrame(() => {
-            const dist = Number((container.scrollHeight - container.offsetHeight).toFixed(0));
+            const dist = Number((scrollContainer.scrollHeight - scrollContainer.offsetHeight).toFixed(0));
             offset = Math.min(offset, dist);
 
-            btn.style.top = `${y}px`;
-            btn.style.left = `${x}px`;
-            btn.style.visibility = (Number(container.scrollTop.toFixed(0)) >= offset) ? 'visible' : 'hidden';
+            btn.style.top = y;
+            btn.style.left = x;
+            btn.style.visibility = (Number(scrollContainer.scrollTop.toFixed(0)) >= offset) ? 'visible' : 'hidden';
         });
     };
 };

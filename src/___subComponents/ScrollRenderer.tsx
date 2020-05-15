@@ -32,16 +32,12 @@ const ScrollRenderer = (props: Props) => {
         }
     };
 
-    const onScroll = () => {
-        const span: any = containerRef.current;
+    const onScroll = (span: any) => () => {
+        const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
+        const anchorPos = span.offsetTop - span.parentNode.scrollTop;
 
-        if (span) {
-            const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
-            const anchorPos = span.offsetTop - span.parentNode.scrollTop;
-
-            if (anchorPos <= (startingPoint + (span.parentNode.offsetHeight * 2))) {
-                requestAnimationFrame(() => addItem(span.parentNode, span.parentNode.scrollTop));
-            }
+        if (anchorPos <= (startingPoint + (span.parentNode.offsetHeight * 2))) {
+            requestAnimationFrame(() => addItem(span.parentNode, span.parentNode.scrollTop));
         }
     };
 
@@ -68,17 +64,18 @@ const ScrollRenderer = (props: Props) => {
     useLayoutEffect(() => {
         const span: any = containerRef.current;
         let container: any = null;
+        const handleScroll = onScroll(span);
         if (span) {
             container = span.parentNode;
             // populate double the container height of items
-            if (span.parentNode.scrollHeight <= (container.offsetHeight * 2)) {
+            if (render.index === 0 || container.scrollHeight <= (container.offsetHeight * 2)) {
                 requestAnimationFrame(() => addItem(container));
             }
 
             if (render.index > 0 && dataList.length === render.renderList.length) {
-                container.removeEventListener('scroll', onScroll, true);
+                container.removeEventListener('scroll', handleScroll, true);
             } else {
-                container.addEventListener('scroll', onScroll, true);
+                container.addEventListener('scroll', handleScroll, true);
             }
 
             adding = false;
@@ -86,7 +83,7 @@ const ScrollRenderer = (props: Props) => {
 
         return () => { // when unmounted
             if (span) {
-                container.removeEventListener('scroll', onScroll, true);
+                container.removeEventListener('scroll', handleScroll, true);
             }
         };
     }, [render.index]);

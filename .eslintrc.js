@@ -2,6 +2,10 @@ module.exports = {
 	extends: ['airbnb', 'plugin:@typescript-eslint/recommended'],
 	parser: '@typescript-eslint/parser',
 	plugins: ['@typescript-eslint', 'prettier'],
+	env: {
+		browser: true,
+		es6: true
+	},
 	settings: {
 		'import/parsers': {
 			'@typescript-eslint/parser': ['.ts', '.tsx'],
@@ -17,8 +21,12 @@ module.exports = {
 		'no-nested-ternary': [0],
 		indent: [2, 4, { "SwitchCase": 1 }],
 		"arrow-body-style": [1, 'as-needed'],
+		'no-restricted-globals': [1],
 		'@typescript-eslint/indent': [2, 4],
 		'react/jsx-indent': [2, 4],
+		'react/jsx-tag-spacing': [0],
+		'@typescript-eslint/ban-ts-ignore': [0],
+		'import/prefer-default-export': [0],
 		'react/sort-comp': [0],
 		"react/destructuring-assignment": [1, "always", { "ignoreClassFields": true }],
 		'react/static-property-placement': [1, 'property assignment', {

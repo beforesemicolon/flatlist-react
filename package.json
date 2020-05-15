@@ -1,6 +1,6 @@
 {
   "name": "flatlist-react",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "A helpful utility component to handle lists in react like a champ",
   "main": "./lib/index.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "build": "rm -rf ./lib && npm run lint && tsc",
     "build:local": "npm run lint && npm run tsc",
     "local": "nodemon --watch ./src -e ts,tsx --exec npm run build:local",
-    "test": "jest",
+    "test": "jest --silent",
     "test:watch": "jest --watch"
   },
   "repository": {
@@ -25,13 +25,20 @@
   "license": "MIT",
   "dependencies": {
     "prop-types": "^15.7.2",
-    "react": "^16.13.1"
+    "warning": "^4.0.3"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
   },
   "devDependencies": {
+    "@testing-library/react": "^10.0.4",
     "@types/core-js": "^2.5.3",
     "@types/jest": "^24.9.1",
     "@types/node": "^12.12.34",
     "@types/react": "^16.9.32",
+    "@types/react-dom": "^16.9.7",
+    "@types/warning": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^2.23.0",
     "@typescript-eslint/parser": "^2.23.0",
     "eslint": "^6.8.0",
@@ -43,10 +50,12 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.19.0",
-    "jest": "^24.9.0",
+    "jest": "^25.5.4",
     "nodemon": "^1.19.4",
     "prettier": "^1.19.1",
-    "ts-jest": "^24.0.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "ts-jest": "^25.4.0",
     "typescript": "^3.8.3"
   }
 }

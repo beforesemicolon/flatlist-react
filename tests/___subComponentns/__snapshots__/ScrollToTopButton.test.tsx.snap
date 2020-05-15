@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ScrollToTopButton Should match snapshot 1`] = `
+<DocumentFragment>
+  <div
+    style="overflow: auto; position: relative; height: 100%; padding: 0px;"
+  >
+    <button
+      style="position: absolute; z-index: 1; visibility: hidden;"
+      type="button"
+    >
+      To Top
+    </button>
+  </div>
+</DocumentFragment>
+`;

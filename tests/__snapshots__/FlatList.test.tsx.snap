@@ -1,0 +1,505 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FlatList Should group by 3 with default separator at the bottom 1`] = `
+<DocumentFragment>
+  <li>
+    age-1
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-45
+  </li>
+  <hr
+    class="___list-separator"
+  />
+  <li>
+    age-8
+  </li>
+  <li>
+    age-0
+  </li>
+  <li>
+    age-20
+  </li>
+  <hr
+    class="___list-separator"
+  />
+  <li>
+    age-10
+  </li>
+  <hr
+    class="___list-separator"
+  />
+</DocumentFragment>
+`;
+
+exports[`FlatList Should group by 3 with default separator at the top 1`] = `
+<DocumentFragment>
+  <hr
+    class="___list-separator"
+  />
+  <li>
+    age-1
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-45
+  </li>
+  <hr
+    class="___list-separator"
+  />
+  <li>
+    age-8
+  </li>
+  <li>
+    age-0
+  </li>
+  <li>
+    age-20
+  </li>
+  <hr
+    class="___list-separator"
+  />
+  <li>
+    age-10
+  </li>
+</DocumentFragment>
+`;
+
+exports[`FlatList Should group items by over 18 1`] = `
+<DocumentFragment>
+  <div
+    class="___list-separator"
+  >
+    <div
+      class="separator"
+    >
+      Under 18
+    </div>
+  </div>
+  <li>
+    age-1
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-8
+  </li>
+  <li>
+    age-0
+  </li>
+  <li>
+    age-10
+  </li>
+  <div
+    class="___list-separator"
+  >
+    <div
+      class="separator"
+    >
+      Over or 18
+    </div>
+  </div>
+  <li>
+    age-45
+  </li>
+  <li>
+    age-20
+  </li>
+</DocumentFragment>
+`;
+
+exports[`FlatList Should group items limited 1`] = `
+<DocumentFragment>
+  <hr
+    class="___list-separator"
+  />
+  <li>
+    age-1
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-45
+  </li>
+  <hr
+    class="___list-separator"
+  />
+  <li>
+    age-8
+  </li>
+  <li>
+    age-0
+  </li>
+  <li>
+    age-20
+  </li>
+  <hr
+    class="___list-separator"
+  />
+  <li>
+    age-10
+  </li>
+</DocumentFragment>
+`;
+
+exports[`FlatList Should group items reversed 1`] = `
+<DocumentFragment>
+  <hr
+    class="___list-separator"
+  />
+  <li>
+    age-45
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-1
+  </li>
+  <hr
+    class="___list-separator"
+  />
+  <li>
+    age-20
+  </li>
+  <li>
+    age-0
+  </li>
+  <li>
+    age-8
+  </li>
+  <hr
+    class="___list-separator"
+  />
+  <li>
+    age-10
+  </li>
+</DocumentFragment>
+`;
+
+exports[`FlatList Should group sorted 1`] = `
+<DocumentFragment>
+  <div
+    class="___list-separator"
+  >
+    <div
+      class="separator"
+    >
+      Under 18
+    </div>
+  </div>
+  <li>
+    age-0
+  </li>
+  <li>
+    age-1
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-8
+  </li>
+  <li>
+    age-10
+  </li>
+  <div
+    class="___list-separator"
+  >
+    <div
+      class="separator"
+    >
+      Over or 18
+    </div>
+  </div>
+  <li>
+    age-20
+  </li>
+  <li>
+    age-45
+  </li>
+</DocumentFragment>
+`;
+
+exports[`FlatList Should group with custom separator  1`] = `
+<DocumentFragment>
+  <div
+    class="___list-separator"
+  >
+    <div
+      class="separator"
+    >
+      1
+    </div>
+  </div>
+  <li>
+    age-1
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-45
+  </li>
+  <div
+    class="___list-separator"
+  >
+    <div
+      class="separator"
+    >
+      2
+    </div>
+  </div>
+  <li>
+    age-8
+  </li>
+  <li>
+    age-0
+  </li>
+  <li>
+    age-20
+  </li>
+  <div
+    class="___list-separator"
+  >
+    <div
+      class="separator"
+    >
+      3
+    </div>
+  </div>
+  <li>
+    age-10
+  </li>
+</DocumentFragment>
+`;
+
+exports[`FlatList Should paginate on scroll 1`] = `
+<DocumentFragment>
+  <li>
+    age-1
+  </li>
+  <li>
+    age-2
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-4
+  </li>
+  <li>
+    age-5
+  </li>
+  <div
+    class="__infinite-loader"
+    style="display: flex; height: auto; justify-content: flex-start; padding: 5px 0px; visibility: visible;"
+  >
+    <div
+      class="loading-indicator"
+    >
+      loading...
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FlatList Should paginate on scroll 2`] = `
+<DocumentFragment>
+  <li>
+    age-1
+  </li>
+  <li>
+    age-2
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-4
+  </li>
+  <li>
+    age-5
+  </li>
+  <li>
+    age-6
+  </li>
+  <li>
+    age-7
+  </li>
+  <li>
+    age-8
+  </li>
+  <li>
+    age-9
+  </li>
+  <li>
+    age-10
+  </li>
+  <div
+    class="__infinite-loader"
+    style="display: flex; height: 0px; justify-content: flex-start; padding: 0px; visibility: hidden;"
+  />
+</DocumentFragment>
+`;
+
+exports[`FlatList Should paginate with custom loading indicator  1`] = `
+<DocumentFragment>
+  <li>
+    age-1
+  </li>
+  <li>
+    age-2
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-4
+  </li>
+  <li>
+    age-5
+  </li>
+  <div
+    class="__infinite-loader"
+    style="display: flex; height: auto; justify-content: center; padding: 5px 0px; visibility: visible;"
+  >
+    <div>
+      Loading Items...
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FlatList Should render default blank with empty list 1`] = `
+<DocumentFragment>
+  <p>
+    List is empty...
+  </p>
+</DocumentFragment>
+`;
+
+exports[`FlatList Should render items 1`] = `
+<DocumentFragment>
+  <li>
+    age-1
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-45
+  </li>
+  <li>
+    age-8
+  </li>
+  <li>
+    age-0
+  </li>
+  <li>
+    age-20
+  </li>
+  <li>
+    age-10
+  </li>
+</DocumentFragment>
+`;
+
+exports[`FlatList Should render items wrapped in a tag 1`] = `
+<DocumentFragment>
+  <div
+    id="container"
+  >
+    <li>
+      age-1
+    </li>
+    <li>
+      age-3
+    </li>
+    <li>
+      age-45
+    </li>
+    <li>
+      age-8
+    </li>
+    <li>
+      age-0
+    </li>
+    <li>
+      age-20
+    </li>
+    <li>
+      age-10
+    </li>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FlatList Should render on scroll 1`] = `
+<DocumentFragment>
+  <li>
+    age-1
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-45
+  </li>
+  <li>
+    age-8
+  </li>
+  <li>
+    age-0
+  </li>
+  <span
+    class="___scroll-renderer-anchor"
+    style="visibility: hidden; height: 1px;"
+  />
+</DocumentFragment>
+`;
+
+exports[`FlatList Should render on scroll 2`] = `
+<DocumentFragment>
+  <li>
+    age-1
+  </li>
+  <li>
+    age-3
+  </li>
+  <li>
+    age-45
+  </li>
+  <li>
+    age-8
+  </li>
+  <li>
+    age-0
+  </li>
+  <li>
+    age-20
+  </li>
+  <li>
+    age-10
+  </li>
+  <span
+    class="___scroll-renderer-anchor"
+    style="visibility: hidden; height: 1px;"
+  />
+</DocumentFragment>
+`;
+
+exports[`FlatList Should render provided blank with empty list 1`] = `
+<DocumentFragment>
+  <div>
+    Empty
+  </div>
+</DocumentFragment>
+`;

@@ -327,6 +327,8 @@ end it will fetch some more while showing the loading indicator.
 
 It is also good to use on lists which user normally dont reach the end anyways specially if you are letting them search, or filter the list.
 
+`renderOnScroll` prop will not work while pagination props are being used.
+
 ```jsx
 <PlainList
   list={[1,2,3,...10000000]}
@@ -339,6 +341,8 @@ It is also good to use on lists which user normally dont reach the end anyways s
 FlatList comes with pagination out of the box. This is specially great for when fetching all the items from api would take long
 so you start with fetching a small portion and then let the user scroll to the bottom, show the loading indicator while you
 fetch some more.
+
+Pagination props will not work while `renderOnScroll` is being used.
 
 ### hasMoreItems
 ###### boolean

@@ -11,14 +11,14 @@ interface Props {
     renderItem: JSX.Element | renderFunc;
     renderWhenEmpty?: null | (() => JSX.Element);
     wrapperHtmlTag?: string;
-    renderScroll?: boolean;
+    renderOnScroll?: boolean;
     __forwarededRef?: Ref<HTMLElement>;
     [key: string]: any;
 }
 
 const PlainList = (props: Props) => {
     const {
-        list, renderItem, renderWhenEmpty, renderScroll, wrapperHtmlTag, __forwarededRef,
+        list, renderItem, renderWhenEmpty, renderOnScroll, wrapperHtmlTag, __forwarededRef,
         ...tagProps
     } = props;
     const dataList = convertListToArray(list);
@@ -31,7 +31,7 @@ const PlainList = (props: Props) => {
     const content = (
         <>
             {
-                renderScroll
+                renderOnScroll
                     ? <ScrollRenderer list={dataList} renderItem={renderItem}/>
                     : dataList.map(handleRenderItem(renderItem))
             }
@@ -69,13 +69,13 @@ PlainList.propTypes = {
     wrapperHtmlTag: string,
     // eslint-disable-next-line react/forbid-prop-types
     __forwarededRef: object,
-    renderScroll: bool
+    renderOnScroll: bool
 };
 
 PlainList.defaultProps = {
     wrapperHtmlTag: '',
     renderWhenEmpty: DefaultBlank,
-    renderScroll: false,
+    renderOnScroll: false,
     __forwarededRef: {current: null}
 };
 

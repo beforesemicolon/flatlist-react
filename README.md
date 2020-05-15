@@ -9,7 +9,7 @@ FlatList React
 
 A helpful react utility component intended to simplify handling rendering list with ease.
 It can handle `grouping`, `sorting`, `filtering`, `searching`, `sorting`, `paginating`, `styling` with very simple props.
-
+https://travis-ci.com/ECorreia45/flatlist-react.svg?branch=master
 ---
 
 ###### Dear React Native Developer

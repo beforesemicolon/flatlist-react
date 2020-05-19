@@ -1,5 +1,5 @@
 import {any, arrayOf, element, func, node, oneOfType} from 'prop-types';
-import React, {createRef, Ref, useEffect, useState} from 'react';
+import React, {createRef, Ref, useEffect, useLayoutEffect, useState} from 'react';
 import {handleRenderGroupSeparator, handleRenderItem, renderFunc} from './uiFunctions';
 
 interface Props {
@@ -18,12 +18,12 @@ const ScrollRenderer = (props: Props) => {
 
     const renderThisItem = handleRenderItem(renderItem, handleRenderGroupSeparator(groupSeparator));
 
-    const addItem = (container: any, prevScrollPosition = render.prevScrollPosition) => {
+    const addItem = ({container = null, count = 5, prevScrollPosition = render.prevScrollPosition}) => {
         console.log('-- add item', mounted);
         if (!adding && render.index < list.length) {
             adding = true;
             // @ts-ignore
-            const count = getComputedStyle(container as HTMLElement).display === 'grid' ? 10 : 5;
+            count = getComputedStyle(container as HTMLElement).display === 'grid' ? 10 : count;
             console.log('-- added');
             setRender({
                 prevScrollPosition,
@@ -34,12 +34,17 @@ const ScrollRenderer = (props: Props) => {
     };
 
     const onScroll = (span: any) => () => {
-        console.log('-- on scroll');
-        const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
-        const anchorPos = span.offsetTop - span.parentNode.scrollTop;
+        console.log('-- on scroll', list.length, render.renderList.length, list);
+        if (list.length !== render.renderList.length) {
+            const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
+            const anchorPos = span.offsetTop - span.parentNode.scrollTop;
 
-        if (anchorPos <= (startingPoint + (span.parentNode.offsetHeight * 2))) {
-            requestAnimationFrame(() => addItem(span.parentNode, span.parentNode.scrollTop));
+            if (anchorPos <= (startingPoint + (span.parentNode.offsetHeight * 2))) {
+                requestAnimationFrame(() => addItem({
+                    container: span.parentNode,
+                    prevScrollPosition: span.parentNode.scrollTop
+                }));
+            }
         }
     };
 
@@ -54,17 +59,19 @@ const ScrollRenderer = (props: Props) => {
     }, []);
 
     useEffect(() => {
-        console.log('-- list updated', mounted, Math.min(setupCount, list.length));
+        console.log('-- list updated', mounted, list);
         if (mounted) { // reset list on list change
+            const index = Math.min(setupCount, list.length);
+            console.log('-- new index', index);
             setRender({
-                renderList: list.slice(0, Math.min(setupCount, list.length)) as any,
-                index: setupCount,
+                renderList: list.slice(0, index) as any,
+                index,
                 prevScrollPosition: 0
             });
         }
     }, [list]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         console.log('-- useLayoutEffect', render.index);
         const span: any = containerRef.current;
         let container: any = null;
@@ -73,17 +80,14 @@ const ScrollRenderer = (props: Props) => {
             container = span.parentNode;
             // populate double the container height of items
             if (render.index === 0 || container.scrollHeight <= (container.offsetHeight * 1.5)) {
-                addItem(container);
+                requestAnimationFrame(() => addItem({container, count: 10}));
             } else {
                 console.log('--- setup done', render.index);
                 setSetupCount(render.index);
             }
 
-            if (render.index > 0 && list.length === render.renderList.length) {
-                container.removeEventListener('scroll', handleScroll, true);
-            } else {
-                container.addEventListener('scroll', handleScroll, true);
-            }
+            console.log('-- add scroll');
+            container.addEventListener('scroll', handleScroll, true);
 
             adding = false;
         }
@@ -95,6 +99,7 @@ const ScrollRenderer = (props: Props) => {
         };
     }, [render.index]);
 
+    console.log('-- render.renderList', render.renderList.length);
     return (
         <>
             {render.renderList.map(renderThisItem)}

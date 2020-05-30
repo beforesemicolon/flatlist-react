@@ -459,15 +459,12 @@ exports[`FlatList Should render on scroll 1`] = `
   <li>
     age-0
   </li>
-  <span
-    class="___scroll-renderer-anchor"
-    style="visibility: hidden; height: 1px;"
-  />
-</DocumentFragment>
-`;
-
-exports[`FlatList Should render on scroll 2`] = `
-<DocumentFragment>
+  <li>
+    age-20
+  </li>
+  <li>
+    age-10
+  </li>
   <li>
     age-1
   </li>
@@ -476,18 +473,6 @@ exports[`FlatList Should render on scroll 2`] = `
   </li>
   <li>
     age-45
-  </li>
-  <li>
-    age-8
-  </li>
-  <li>
-    age-0
-  </li>
-  <li>
-    age-20
-  </li>
-  <li>
-    age-10
   </li>
   <span
     class="___scroll-renderer-anchor"

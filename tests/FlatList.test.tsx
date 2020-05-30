@@ -154,7 +154,7 @@ describe('FlatList', () => {
 
             const {asFragment, getAllByText} = render(
                 <FlatList
-                    list={list}
+                    list={[...list, ...list]}
                     renderItem={renderItem}
                     renderOnScroll
                 />,
@@ -162,12 +162,13 @@ describe('FlatList', () => {
             );
 
             // initial render
-            console.log('-- container', container.outerHTML);
             let items = getAllByText(/age-.*/);
 
             expect(asFragment()).toMatchSnapshot();
-            expect(items.length).toBe(5);
-            expect(items.map(i => i.textContent)).toEqual(['age-1', 'age-3', 'age-45', 'age-8', 'age-0']);
+            expect(items.length).toBe(10);
+            expect(items.map(i => i.textContent)).toEqual([
+                'age-1', 'age-3', 'age-45', 'age-8', 'age-0', 'age-20', 'age-10', 'age-1', 'age-3', 'age-45'
+            ]);
 
             // scroll render
             fireEvent.scroll(container, {target: {scrollTop: 150}});
@@ -175,9 +176,11 @@ describe('FlatList', () => {
             items = getAllByText(/age-.*/);
 
             expect(container.scrollTop).toBe(150);
-            expect(asFragment()).toMatchSnapshot();
-            expect(items.length).toBe(7);
-            expect(items.map(i => i.textContent)).toEqual(['age-1', 'age-3', 'age-45', 'age-8', 'age-0', 'age-20', 'age-10']);
+            expect(items.length).toBe(14);
+            expect(items.map(i => i.textContent)).toEqual([
+                'age-1', 'age-3', 'age-45', 'age-8', 'age-0', 'age-20', 'age-10',
+                'age-1', 'age-3', 'age-45', 'age-8', 'age-0', 'age-20', 'age-10'
+            ]);
             raf.mockClear();
         });
     });

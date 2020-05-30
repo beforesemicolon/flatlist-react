@@ -10,96 +10,85 @@ interface Props {
 
 const ScrollRenderer = (props: Props) => {
     const {list, renderItem, groupSeparator} = props;
-    const [render, setRender] = useState({renderList: [], index: 0, prevScrollPosition: 0});
+    const [render, setRender] = useState({renderList: [], index: 0});
     const [mounted, setMounted] = useState(false);
-    const [setupCount, setSetupCount] = useState(0);
+    const [setupCount, setSetupCount] = useState(-1);
     const containerRef: Ref<HTMLElement> = createRef();
-    let adding = false;
 
     const renderThisItem = handleRenderItem(renderItem, handleRenderGroupSeparator(groupSeparator));
 
-    const addItem = ({container = null, count = 5, prevScrollPosition = render.prevScrollPosition}) => {
-        console.log('-- add item', mounted);
-        if (!adding && render.index < list.length) {
-            adding = true;
-            // @ts-ignore
-            count = getComputedStyle(container as HTMLElement).display === 'grid' ? 10 : count;
-            console.log('-- added');
+    const updateRenderInfo = (count = 10) => {
+        if (render.index < list.length) {
+            const index = render.index + count;
             setRender({
-                prevScrollPosition,
-                renderList: [...render.renderList, ...list.slice(render.index, render.index + count)] as any,
-                index: render.index + count
+                renderList: list.slice(0, index) as any,
+                index
             });
         }
     };
 
     const onScroll = (span: any) => () => {
-        console.log('-- on scroll', list.length, render.renderList.length, list);
-        if (list.length !== render.renderList.length) {
+        requestAnimationFrame(() => {
             const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
             const anchorPos = span.offsetTop - span.parentNode.scrollTop;
 
             if (anchorPos <= (startingPoint + (span.parentNode.offsetHeight * 2))) {
-                requestAnimationFrame(() => addItem({
-                    container: span.parentNode,
-                    prevScrollPosition: span.parentNode.scrollTop
-                }));
+                updateRenderInfo();
             }
-        }
+        });
     };
 
     useEffect(() => { // when mounted
-        console.log('-- mounted');
         setMounted(true);
 
         return () => { // when unmounted
-            console.log('-- un-mounted');
             setMounted(false);
         };
     }, []);
 
-    useEffect(() => {
-        console.log('-- list updated', mounted, list);
+    useLayoutEffect(() => {
         if (mounted) { // reset list on list change
-            const index = Math.min(setupCount, list.length);
-            console.log('-- new index', index);
+            const span: any = containerRef.current;
+            const pos = span.parentNode.scrollTop;
+            const index = Math.max(render.renderList.length, setupCount);
+
             setRender({
                 renderList: list.slice(0, index) as any,
-                index,
-                prevScrollPosition: 0
+                index
+            });
+
+            requestAnimationFrame(() => {
+                span.parentNode.scrollTop = pos;
             });
         }
     }, [list]);
 
     useLayoutEffect(() => {
-        console.log('-- useLayoutEffect', render.index);
         const span: any = containerRef.current;
-        let container: any = null;
         const handleScroll = onScroll(span);
+        let container: any = null;
+
         if (span) {
             container = span.parentNode;
-            // populate double the container height of items
-            if (render.index === 0 || container.scrollHeight <= (container.offsetHeight * 1.5)) {
-                requestAnimationFrame(() => addItem({container, count: 10}));
-            } else {
-                console.log('--- setup done', render.index);
-                setSetupCount(render.index);
-            }
+            requestAnimationFrame(() => {
+                // populate double the container height of items
+                if (render.index === 0 || container.scrollHeight <= (container.offsetHeight * 2)) {
+                    updateRenderInfo();
+                } else if (setupCount === -1) {
+                    setSetupCount(render.index);
+                }
+            });
 
-            console.log('-- add scroll');
-            container.addEventListener('scroll', handleScroll, true);
-
-            adding = false;
+            container.addEventListener('scroll', handleScroll, {passive: true});
         }
 
         return () => { // when unmounted
             if (span) {
-                container.removeEventListener('scroll', handleScroll, true);
+                container.removeEventListener('scroll', handleScroll, {passive: true});
             }
         };
-    }, [render.index]);
+    }, [render.index, list.length]);
 
-    console.log('-- render.renderList', render.renderList.length);
     return (
         <>
             {render.renderList.map(renderThisItem)}

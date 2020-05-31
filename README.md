@@ -70,7 +70,7 @@ return (
           list={this.props.people}
           renderItem={this.renderPerson}
           renderWhenEmpty={() => <div>List is empty!</div>}
-          sortBy={["firstName", {by: "lastName", descending: true}]}
+          sortBy={["firstName", {key: "lastName", descending: true}]}
           groupBy={person => person.info.age > 18 ? 'Over 18' : 'Under 18'}
         />
     </ul>

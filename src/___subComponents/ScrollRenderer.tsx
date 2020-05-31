@@ -1,6 +1,5 @@
 import {any, arrayOf, element, func, node, oneOfType} from 'prop-types';
-import React, {createRef, useEffect, useLayoutEffect, useState, Ref} from 'react';
-import convertListToArray from '../___utils/convertListToArray';
+import React, {createRef, Ref, useEffect, useLayoutEffect, useState} from 'react';
 import {handleRenderGroupSeparator, handleRenderItem, renderFunc} from './uiFunctions';
 
 interface Props {
@@ -11,82 +10,84 @@ interface Props {
 
 const ScrollRenderer = (props: Props) => {
     const {list, renderItem, groupSeparator} = props;
-    const [render, setRender] = useState({renderList: [], index: 0, prevScrollPosition: 0});
+    const [render, setRender] = useState({renderList: [], index: 0});
     const [mounted, setMounted] = useState(false);
-    const dataList = convertListToArray(list);
+    const [setupCount, setSetupCount] = useState(-1);
     const containerRef: Ref<HTMLElement> = createRef();
-    let adding = false;
 
     const renderThisItem = handleRenderItem(renderItem, handleRenderGroupSeparator(groupSeparator));
 
-    const addItem = (container: any, prevScrollPosition = render.prevScrollPosition) => {
-        if (!adding && render.index < dataList.length) {
-            adding = true;
-            // @ts-ignore
-            const count = getComputedStyle(container as HTMLElement).display === 'grid' ? 10 : 5;
+    const updateRenderInfo = (count = 10) => {
+        if (render.index < list.length) {
+            const index = render.index + count;
             setRender({
-                prevScrollPosition,
-                renderList: [...render.renderList, ...dataList.slice(render.index, render.index + count)] as any,
-                index: render.index + count
+                renderList: list.slice(0, index) as any,
+                index
             });
         }
     };
 
     const onScroll = (span: any) => () => {
-        const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
-        const anchorPos = span.offsetTop - span.parentNode.scrollTop;
+        requestAnimationFrame(() => {
+            const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
+            const anchorPos = span.offsetTop - span.parentNode.scrollTop;
 
-        if (anchorPos <= (startingPoint + (span.parentNode.offsetHeight * 2))) {
-            requestAnimationFrame(() => addItem(span.parentNode, span.parentNode.scrollTop));
-        }
+            if (anchorPos <= (startingPoint + (span.parentNode.offsetHeight * 2))) {
+                updateRenderInfo();
+            }
+        });
     };
-
-    useEffect(() => {
-        if (mounted) { // reset list on list change
-            setRender({
-                renderList: [],
-                index: 0,
-                prevScrollPosition: 0
-            });
-        }
-    }, [list]);
 
     useEffect(() => { // when mounted
         setMounted(true);
 
         return () => { // when unmounted
-            if (containerRef.current) {
-                (containerRef as any).current.parentNode.removeEventListener('scroll', onScroll, true);
-            }
+            setMounted(false);
         };
     }, []);
 
     useLayoutEffect(() => {
+        if (mounted) { // reset list on list change
+            const span: any = containerRef.current;
+            const pos = span.parentNode.scrollTop;
+            const index = Math.max(render.renderList.length, setupCount);
+
+            setRender({
+                renderList: list.slice(0, index) as any,
+                index
+            });
+
+            requestAnimationFrame(() => {
+                span.parentNode.scrollTop = pos;
+            });
+        }
+    }, [list]);
+
+    useLayoutEffect(() => {
         const span: any = containerRef.current;
-        let container: any = null;
         const handleScroll = onScroll(span);
+        let container: any = null;
+
         if (span) {
             container = span.parentNode;
-            // populate double the container height of items
-            if (render.index === 0 || container.scrollHeight <= (container.offsetHeight * 2)) {
-                requestAnimationFrame(() => addItem(container));
-            }
+            requestAnimationFrame(() => {
+                // populate double the container height of items
+                if (render.index === 0 || container.scrollHeight <= (container.offsetHeight * 2)) {
+                    updateRenderInfo();
+                } else if (setupCount === -1) {
+                    setSetupCount(render.index);
+                }
+            });
 
-            if (render.index > 0 && dataList.length === render.renderList.length) {
-                container.removeEventListener('scroll', handleScroll, true);
-            } else {
-                container.addEventListener('scroll', handleScroll, true);
-            }
-
-            adding = false;
+            container.addEventListener('scroll', handleScroll, {passive: true});
         }
 
         return () => { // when unmounted
             if (span) {
-                container.removeEventListener('scroll', handleScroll, true);
+                container.removeEventListener('scroll', handleScroll, {passive: true});
             }
         };
-    }, [render.index]);
+    }, [render.index, list.length]);
 
     return (
         <>

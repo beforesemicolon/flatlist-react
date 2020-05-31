@@ -10,7 +10,7 @@ FlatList React
 A helpful react utility component intended to simplify handling rendering list with ease.
 It can handle `grouping`, `sorting`, `filtering`, `searching`, `sorting`, `paginating`, `styling` with very simple props.
 
-[![Build Status](https://travis-ci.com/ECorreia45/flatlist-react.svg?branch=master)](https://travis-ci.com/ECorreia45/flatlist-react)
+![Build](https://github.com/ECorreia45/flatlist-react/workflows/Node.js%20CI/badge.svg)
 ![GitHub](https://img.shields.io/github/license/ECorreia45/flatlist-react)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ECorreia45/flatlist-react)
 

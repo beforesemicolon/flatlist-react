@@ -342,6 +342,9 @@ FlatList comes with pagination out of the box. This is specially great for when 
 so you start with fetching a small portion and then let the user scroll to the bottom, show the loading indicator while you
 fetch some more.
 
+To make it work you need to render `FlatList` inside of a scrolling container with "`overflow: auto`" or "`overflow: scroll`".
+If the container wrapping flatlist does not scroll it miss the point of infinite scrolling.
+
 Pagination props will not work while `renderOnScroll` is being used.
 
 ### hasMoreItems
@@ -1337,7 +1340,10 @@ The `rowGap` prop will add spacing in between the stacked rows.
 ```
 
 ## scrollToTop
-Scrolling to top was a requested feature and goes well with rendering list specially if it a long one.
+Scrolling to top goes well with rendering list specially if it a long one. 
+
+To make it work you need to render `FlatList` inside of a scrolling container with "`overflow: auto`" or "`overflow: scroll`".
+If the container wrapping flatlist does not scroll it miss the point of scrolling to top.
 
 You don't need to set this prop if you set `scrollToTopButton` prop. `scrollToTop` is only if you want to
 start with the default button.  

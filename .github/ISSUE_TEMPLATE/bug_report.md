@@ -6,14 +6,17 @@ labels: ''
 assignees: ''
 
 ---
+**FlatList Version**
+:
 
 **Describe the bug**
 :
 
 **Steps to reproduce the behavior**
-
+:
 
 **Expected behavior**
+:
 
 **Desktop (please complete the following information):**
  - OS:

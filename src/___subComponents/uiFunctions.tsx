@@ -84,7 +84,10 @@ export const btnPosition = (scrollContainer: HTMLElement, btn: HTMLElement) => {
 
             btn.style.top = y;
             btn.style.left = x;
-            btn.style.visibility = (Number(scrollContainer.scrollTop.toFixed(0)) >= offset) ? 'visible' : 'hidden';
+            btn.style.visibility = dist !== 0 // got scrolled
+            && (Number(scrollContainer.scrollTop.toFixed(0)) >= offset) // position meets the offset
+                ? 'visible'
+                : 'hidden';
         });
     };
 };

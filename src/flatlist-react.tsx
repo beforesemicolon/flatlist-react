@@ -41,7 +41,7 @@ const FlatList = (props: Props<{} | []>): JSX.Element => {
                                 groupSeparator={group.separator || groupSeparator}
                             />
                         )
-                        : list.map(renderThisItem)
+                        : list.map((item, index) => renderThisItem(item, (item as any).id ?? index))
                     : renderBlank(renderWhenEmpty)
             }
             {

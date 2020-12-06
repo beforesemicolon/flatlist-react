@@ -42,18 +42,20 @@ export const handleRenderItem = (
         return null;
     }
 
+    const itemId = item.id || key;
+
     if (isArray(item) && item[0] === '___list-separator') {
         return renderSeparator
-            ? (renderSeparator as (s: string, i: number | string) => JSX.Element)(item, key)
+            ? (renderSeparator as (s: string, i: number | string) => JSX.Element)(item, itemId)
             : null;
     }
 
     if (isFunction(renderItem)) {
-        return (renderItem as (item: any, idx: number | string) => JSX.Element)(item, key);
+        return (renderItem as (item: any, idx: number | string) => JSX.Element)(item, itemId);
     }
 
     const comp = renderItem as JSX.Element;
-    return (<comp.type {...comp.props} key={key} item={item}/>);
+    return (<comp.type {...comp.props} key={itemId} item={item}/>);
 };
 
 export const btnPosition = (scrollContainer: HTMLElement, btn: HTMLElement) => {

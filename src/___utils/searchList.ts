@@ -11,7 +11,7 @@ export interface SearchOptionsInterface {
     onEveryWord?: boolean;
     caseInsensitive?: boolean;
     minCharactersCount?: number;
-    by?: string | Array<string | {key: string; caseInsensitive?: boolean}> | termCb;
+    by?: string | Array<string | { key: string; caseInsensitive?: boolean }> | termCb;
 }
 
 const defaultSearchOptions = {
@@ -22,6 +22,16 @@ const defaultSearchOptions = {
     term: ''
 };
 
+const getRegexSearchTerm = (term: string, caseInsensitive = false) => {
+    try {
+        // make sure to catch any invalid regex first
+        return new RegExp((term as string).trim(), `g${caseInsensitive ? 'i' : ''}`);
+    } catch (e) {
+        // return escaped regex characters and trimmed string
+        return (term as string).trim().replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
+    }
+};
+
 const defaultFilterByFn = (item: any, term: string | string[], caseInsensitive = false, by = '0') => {
     const keyValue = (isObject(item) || isArray(item))
         ? getObjectDeepKeyValue(item, by as string)
@@ -30,16 +40,12 @@ const defaultFilterByFn = (item: any, term: string | string[], caseInsensitive =
     const value = caseInsensitive ? `${keyValue}`.toLowerCase() : `${keyValue}`;
 
     if (isArray(term)) {
-        return (term as []).some((t: string) => {
-            t = caseInsensitive ? t.toLowerCase() : t.trim();
-
-            return value.search(t.trim()) >= 0;
+        return (term as []).some((trm: string) => {
+            return value.search(getRegexSearchTerm(trm as string, caseInsensitive)) >= 0;
         });
     }
 
-    term = caseInsensitive ? (term as string).toLowerCase() : (term as string);
-
-    return value.search(term.trim() as string) >= 0;
+    return value.search(getRegexSearchTerm(term as string, caseInsensitive)) >= 0;
 };
 
 const getFilterByFn = <T>(term: string | string[], by: SearchOptionsInterface['by'], caseInsensitive = false): cb => {

@@ -2,12 +2,13 @@ import {array, bool, func, node, object, oneOfType, string} from 'prop-types';
 import React, {forwardRef, Ref} from 'react';
 import convertListToArray from '../___utils/convertListToArray';
 import {isString} from '../___utils/isType';
+import {listItem} from '../props';
 import DefaultBlank from './DefaultBlank';
 import ScrollRenderer from './ScrollRenderer';
 import {handleRenderItem, renderBlank, renderFunc} from './uiFunctions';
 
 interface Props {
-    list: any[];
+    list: listItem[];
     renderItem: JSX.Element | renderFunc;
     renderWhenEmpty?: null | (() => JSX.Element);
     wrapperHtmlTag?: string;

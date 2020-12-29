@@ -5,7 +5,7 @@ import {isArray, isFunction, isObject, isNilOrEmpty} from './isType';
 type cb = (item: any, idx: number) => boolean;
 type termCb = (item: any, term: string, idx: number) => boolean;
 
-export interface SearchOptionsInterface<T> {
+export interface SearchOptionsInterface {
     term?: string;
     everyWord?: boolean;
     onEveryWord?: boolean;
@@ -42,7 +42,7 @@ const defaultFilterByFn = (item: any, term: string | string[], caseInsensitive =
     return value.search(term.trim() as string) >= 0;
 };
 
-const getFilterByFn = <T>(term: string | string[], by: SearchOptionsInterface<T>['by'], caseInsensitive = false): cb => {
+const getFilterByFn = <T>(term: string | string[], by: SearchOptionsInterface['by'], caseInsensitive = false): cb => {
     if (isFunction(by)) {
         if (isArray(term)) {
             return (item: T, idx: number) => (term as string[]).some((t: string) => {
@@ -67,9 +67,9 @@ const getFilterByFn = <T>(term: string | string[], by: SearchOptionsInterface<T>
     return (item: T) => defaultFilterByFn(item, term, caseInsensitive, by as string || '0');
 };
 
-const searchList = <T>(list: T[], options: SearchOptionsInterface<T>): T[] => {
+const searchList = <T>(list: T[], options: SearchOptionsInterface): T[] => {
     if (isNilOrEmpty(options)) {
-        options = defaultSearchOptions as SearchOptionsInterface<T>;
+        options = defaultSearchOptions as SearchOptionsInterface;
     }
 
     if (list.length > 0) {

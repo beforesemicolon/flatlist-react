@@ -10,7 +10,7 @@ import {SortOptionsInterface} from './___utils/sortList';
 
 function deprecated(propType: any, defaultVal: any, alternative: string) {
     return (props: any, propName: string, componentName: string, ...rest: any) => {
-        if (props[propName] !== defaultVal) {
+        if (props[propName] !== undefined && props[propName] !== defaultVal) {
             const message = `"${propName}" prop of "${componentName}" has been deprecated. Please use "${alternative}" instead.`;
             // eslint-disable-next-line no-unused-expressions
             const testing = process && process.env ? process.env.JEST_WORKER_ID !== undefined : false;

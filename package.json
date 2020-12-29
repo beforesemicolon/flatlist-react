@@ -9,7 +9,7 @@
     "build": "rm -rf ./lib && npm run lint && tsc",
     "build:local": "npm run lint && npm run tsc",
     "local": "nodemon --watch ./src -e ts,tsx --exec npm run build:local",
-    "test": "jest --silent",
+    "tests": "jest --silent",
     "test:watch": "jest --watch"
   },
   "publishConfig": { "registry": "https://npm.pkg.github.com/" },

@@ -1,4 +1,18 @@
-import {array, arrayOf, bool, element, func, node, number, object, oneOf, oneOfType, shape, string} from 'prop-types';
+import {
+    array,
+    arrayOf,
+    bool,
+    element,
+    func,
+    node,
+    number,
+    object,
+    oneOf,
+    oneOfType,
+    Requireable,
+    shape,
+    string
+} from 'prop-types';
 import {Ref} from 'react';
 import warning from 'warning';
 import {DisplayHandlerProps, DisplayInterface} from './___subComponents/DisplayHandler';
@@ -8,11 +22,10 @@ import {GroupOptionsInterface} from './___utils/groupList';
 import {SearchOptionsInterface} from './___utils/searchList';
 import {SortOptionsInterface} from './___utils/sortList';
 
-function deprecated(propType: any, defaultVal: any, alternative: string) {
-    return (props: any, propName: string, componentName: string, ...rest: any) => {
+function deprecated(propType: Requireable<unknown>, defaultVal: unknown, alternative: string) {
+    return (props: {[key: string]: unknown}, propName: string, componentName: string, location: string, propFullName: string) => {
         if (props[propName] !== undefined && props[propName] !== defaultVal) {
             const message = `"${propName}" prop of "${componentName}" has been deprecated. Please use "${alternative}" instead.`;
-            // eslint-disable-next-line no-unused-expressions
             const testing = process && process.env ? process.env.JEST_WORKER_ID !== undefined : false;
 
             if (!testing) {
@@ -20,9 +33,12 @@ function deprecated(propType: any, defaultVal: any, alternative: string) {
             }
         }
 
-        return propType(props, propName, componentName, ...rest);
+        return propType(props, propName, componentName, location, propFullName);
     };
 }
+
+export type listItem = {id?: string | number} | unknown;
+
 export interface GroupInterface extends GroupOptionsInterface {
     of: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,10 +62,10 @@ export interface SortInterface extends SortOptionsInterface {
     groupCaseInsensitive: GroupInterface['sortCaseInsensitive'];
 }
 
-export interface Props<T> {
+export interface Props {
     __forwarededRef: Ref<HTMLElement>;
     // RENDER
-    list: T[];
+    list: listItem[];
     renderItem: JSX.Element | renderFunc;
     renderWhenEmpty: null | (() => JSX.Element);
     renderOnScroll: boolean;
@@ -85,14 +101,14 @@ export interface Props<T> {
     gridGap: DisplayHandlerProps['gridGap'];
     minColumnWidth: DisplayHandlerProps['minColumnWidth'];
     // filtering
-    filterBy: string | ((item: T, idx: number) => boolean);
+    filterBy: string | ((item: listItem, idx: number) => boolean);
     // searching
-    search: SearchOptionsInterface<T>;
-    searchTerm: SearchOptionsInterface<T>['term'];
-    searchBy: SearchOptionsInterface<T>['by'];
-    searchOnEveryWord: SearchOptionsInterface<T>['everyWord'];
-    searchCaseInsensitive: SearchOptionsInterface<T>['caseInsensitive'];
-    searchableMinCharactersCount: SearchOptionsInterface<T>['minCharactersCount'];
+    search: SearchOptionsInterface;
+    searchTerm: SearchOptionsInterface['term'];
+    searchBy: SearchOptionsInterface['by'];
+    searchOnEveryWord: SearchOptionsInterface['everyWord'];
+    searchCaseInsensitive: SearchOptionsInterface['caseInsensitive'];
+    searchableMinCharactersCount: SearchOptionsInterface['minCharactersCount'];
     // pagination
     pagination: InfiniteLoaderProps;
     hasMoreItems: InfiniteLoaderProps['hasMore'];

@@ -8,7 +8,7 @@ import withList from './___subComponents/withList';
 import {isString} from './___utils/isType';
 import {defaultProps, Props, propTypes, ScrollToTopInterface} from './props';
 
-const FlatList = (props: Props<{} | []>): JSX.Element => {
+const FlatList = (props: Props): JSX.Element => {
     const {
         list, renderWhenEmpty, wrapperHtmlTag, renderItem, renderOnScroll, // render/list related props
         group, groupSeparator, // group props
@@ -41,7 +41,7 @@ const FlatList = (props: Props<{} | []>): JSX.Element => {
                                 groupSeparator={group.separator || groupSeparator}
                             />
                         )
-                        : list.map(renderThisItem)
+                        : list.map((item, index) => renderThisItem(item, (item as {id: string | number}).id ?? index))
                     : renderBlank(renderWhenEmpty)
             }
             {
@@ -97,7 +97,7 @@ FlatList.propTypes = propTypes;
 
 FlatList.defaultProps = defaultProps;
 
-export default memo(withList(forwardRef((props: Props<{} | []>, ref: Ref<HTMLElement>) => {
+export default memo(withList(forwardRef((props: Props, ref: Ref<HTMLElement>) => {
     ref = ref || createRef();
     return (
         <FlatList {...props} __forwarededRef={ref}/>

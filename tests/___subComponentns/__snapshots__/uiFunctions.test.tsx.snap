@@ -45,7 +45,7 @@ exports[`uiFunctions handleRenderItem Should match snapshot 1`] = `<DocumentFrag
 exports[`uiFunctions handleRenderItem Should match snapshot 2`] = `
 <DocumentFragment>
   <div>
-    item name
+    item name 12
   </div>
 </DocumentFragment>
 `;

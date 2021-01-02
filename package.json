@@ -12,7 +12,6 @@
     "tests": "jest --silent",
     "test:watch": "jest --watch"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "repository": {
     "type": "git",
     "url": "https://github.com/ECorreia45/flatlist-react"

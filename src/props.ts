@@ -25,7 +25,7 @@ import {SortOptionsInterface} from './___utils/sortList';
 function deprecated(propType: Requireable<unknown>, defaultVal: unknown, alternative: string) {
     // the rest at the end is need to silence props warning => https://reactjs.org/warnings/dont-call-proptypes.html
     return (props: {[key: string]: unknown}, propName: string, componentName: string, ...rest: any) => {
-        if (props[propName] !== null && props[propName] !== undefined) {
+        if (props[propName] !== null && props[propName] !== undefined && props[propName] !== defaultVal) {
             const message = `"${propName}" prop of "${componentName}" has been deprecated. Please use "${alternative}" instead.`;
             const testing = process && process.env ? process.env.JEST_WORKER_ID !== undefined : false;
 

@@ -29,11 +29,13 @@ const ScrollRenderer = (props: Props) => {
 
     const onScroll = (span: any) => () => {
         requestAnimationFrame(() => {
-            const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
-            const anchorPos = span.offsetTop - span.parentNode.scrollTop;
+            if (span) {
+                const startingPoint = span.parentNode.offsetTop + span.parentNode.offsetHeight;
+                const anchorPos = span.offsetTop - span.parentNode.scrollTop;
 
-            if (anchorPos <= (startingPoint + (span.parentNode.offsetHeight * 2))) {
-                updateRenderInfo();
+                if (anchorPos <= (startingPoint + (span.parentNode.offsetHeight * 2))) {
+                    updateRenderInfo();
+                }
             }
         });
     };
@@ -58,7 +60,7 @@ const ScrollRenderer = (props: Props) => {
             });
 
             requestAnimationFrame(() => {
-                if (span.parentNode) {
+                if (span && span.parentNode) {
                     span.parentNode.scrollTop = pos;
                 }
             });

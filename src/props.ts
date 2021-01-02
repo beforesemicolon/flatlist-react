@@ -23,8 +23,9 @@ import {SearchOptionsInterface} from './___utils/searchList';
 import {SortOptionsInterface} from './___utils/sortList';
 
 function deprecated(propType: Requireable<unknown>, defaultVal: unknown, alternative: string) {
-    return (props: {[key: string]: unknown}, propName: string, componentName: string, location: string, propFullName: string) => {
-        if (props[propName] !== undefined && props[propName] !== defaultVal) {
+    // the rest at the end is need to silence props warning => https://reactjs.org/warnings/dont-call-proptypes.html
+    return (props: {[key: string]: unknown}, propName: string, componentName: string, ...rest: any) => {
+        if (props[propName] !== null && props[propName] !== undefined) {
             const message = `"${propName}" prop of "${componentName}" has been deprecated. Please use "${alternative}" instead.`;
             const testing = process && process.env ? process.env.JEST_WORKER_ID !== undefined : false;
 
@@ -33,7 +34,8 @@ function deprecated(propType: Requireable<unknown>, defaultVal: unknown, alterna
             }
         }
 
-        return propType(props, propName, componentName, location, propFullName);
+        // @ts-ignore
+        return propType(props, propName, componentName, ...rest);
     };
 }
 

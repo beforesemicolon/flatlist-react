@@ -18,16 +18,16 @@ Make sure you are running **react** and **react-dom** version **16.8.0+**.
 FlatList has alternative ways to present your props in order to make things easier to change and quicker to specify.
 
 There are available **shorthands props** just in case you want to make batch updates or want to keep things nicely together:
-- [`group`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#grouping)
-- [`sort`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#sorting)
-- [`search`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#searching)
-- [`paginate`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#pagination)
-- [`scrollToTop`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#scrolltotop)
-- [`display`](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#styling).
+- [`group`](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#grouping)
+- [`sort`](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#sorting)
+- [`search`](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#searching)
+- [`paginate`](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#pagination)
+- [`scrollToTop`](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#scrolltotop)
+- [`display`](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#styling).
 
 For example:
 
-There are several props for [grouping](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#grouping) but there is also a
+There are several props for [grouping](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#grouping) but there is also a
 `group` prop which takes all these props all at once.
 
 ```jsx
@@ -119,11 +119,11 @@ FlatList also offers internal components for usage to further help with your lis
 ### PlainList
 `PlainList` is a simpler version of FlatList. It is an ideal option when all you want to do is render a list.
 It supports only the following props:
-- [list](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#list-and-renderitem)
-- [renderItem](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#list-and-renderitem)
-- [renderWhenEmpty](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#renderwhenempty)
-- [renderOnScroll](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#renderonscroll)
-- [wrapperHtmlTag](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#wrapperhtmltag)
+- [list](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#list-and-renderitem)
+- [renderItem](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#list-and-renderitem)
+- [renderWhenEmpty](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#renderwhenempty)
+- [renderOnScroll](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#renderonscroll)
+- [wrapperHtmlTag](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#wrapperhtmltag)
 
 It is the ideal component to render small simple lists like dropDown, selection options or any other
 list you dont plan to do anything besides rendering them and leave it.

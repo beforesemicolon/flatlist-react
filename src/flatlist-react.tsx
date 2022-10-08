@@ -72,7 +72,6 @@ function FlatList(props: Props): JSX.Element {
         <>
             {
                 WrapperElement
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                     // @ts-ignore
                     ? <WrapperElement ref={__forwarededRef} {...tagProps}>{content}</WrapperElement>
                     : content

@@ -320,7 +320,7 @@ The `renderOnScroll` will render your list to fill the container and then stop. 
 further render the remainder items. This is great if creating a lot of dom elements takes time and you dont want the browser
 to become iresponsive while rendering a very large list. 
 
-It is different from [pagination(Infinite Scrolling)](https://github.com/ECorreia45/flatlist-react/blob/documentation/documentation/Doc.md#pagination). With pagination you start with some items and when the user reaches the
+It is different from [pagination(Infinite Scrolling)](https://github.com/beforesemicolon/flatlist-react/blob/documentation/documentation/Doc.md#pagination). With pagination you start with some items and when the user reaches the
 end it will fetch some more while showing the loading indicator.
 
 `renderOnScroll` is great for when you have large list and rendering it all at once would take long and freeze the browser.

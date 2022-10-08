@@ -1,5 +1,7 @@
-import React from 'react';
+import React from "react";
 
-const DefaultBlank = (): JSX.Element => (<p>List is empty...</p>);
+function DefaultBlank(): JSX.Element {
+  return <p>List is empty...</p>;
+}
 
 export default DefaultBlank;

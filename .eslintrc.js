@@ -1,54 +1,41 @@
 module.exports = {
-	extends: ['airbnb', 'plugin:@typescript-eslint/recommended'],
-	parser: '@typescript-eslint/parser',
-	plugins: ['@typescript-eslint', 'prettier'],
+	extends: [
+		'airbnb-typescript',
+		'airbnb/hooks',
+		'plugin:@typescript-eslint/recommended',
+		'plugin:jest/recommended',
+		'plugin:prettier/recommended'
+	],
+	plugins: ['react', '@typescript-eslint', 'jest', 'import'],
 	env: {
 		browser: true,
-		es6: true
+		es6: true,
+		jest: true,
 	},
-	settings: {
-		'import/parsers': {
-			'@typescript-eslint/parser': ['.ts', '.tsx'],
+	globals: {
+		Atomics: 'readonly',
+		SharedArrayBuffer: 'readonly',
+	},
+	parser: '@typescript-eslint/parser',
+	parserOptions: {
+		ecmaFeatures: {
+			jsx: true,
 		},
-		'import/resolver': {
-			typescript: {},
-		},
+		ecmaVersion: 2018,
+		sourceType: 'module',
+		project: './tsconfig.json',
 	},
 	rules: {
-		'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
-		'import/no-extraneous-dependencies': [2, { devDependencies: ['**/test.tsx', '**/test.ts'] }],
-		'import/extensions': [2, {ignorePackages: true}],
-		'no-nested-ternary': [0],
-		indent: [2, 4, { "SwitchCase": 1 }],
-		"arrow-body-style": [1, 'as-needed'],
-		'no-restricted-globals': [1],
-		'@typescript-eslint/indent': [2, 4],
-		'react/jsx-indent': [2, 4],
-		'react/jsx-tag-spacing': [0],
-		'@typescript-eslint/ban-ts-ignore': [0],
-		'import/prefer-default-export': [0],
-		'react/sort-comp': [0],
-		"react/destructuring-assignment": [1, "always", { "ignoreClassFields": true }],
-		'react/static-property-placement': [1, 'property assignment', {
-			propTypes: "static public field",
-			defaultProps: "static public field"
-		}],
-		'react/state-in-constructor': [0],
-		'react/jsx-indent-props': [2, 4],
-		"object-curly-newline": [0],
-		"object-curly-spacing": [0],
-		quotes: [2, 'single'],
-		"comma-dangle": [2, 'never'],
-		'no-param-reassign': [0],
-		"max-len": [2, {
-			code: 150,
-			comments: 150,
-			ignoreUrls: true
-		}],
-		'react/jsx-props-no-spreading': [2, {
-			html: 'enforce',
-			custom: 'ignore',
-			exceptions: []
-		}]
+		'linebreak-style': 'off',
+		'@typescript-eslint/ban-ts-comment': 'off',
+		'react-hooks/exhaustive-deps': 1,
+		'@typescript-eslint/no-shadow': 1,
+		'@typescript-eslint/naming-convention': 1,
+		'prettier/prettier': [
+			'error',
+			{
+				endOfLine: 'auto',
+			},
+		],
 	},
 };

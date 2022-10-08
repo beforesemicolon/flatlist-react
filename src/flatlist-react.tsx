@@ -8,7 +8,7 @@ import withList from './___subComponents/withList';
 import {isString} from './___utils/isType';
 import {defaultProps, Props, propTypes, ScrollToTopInterface} from './props';
 
-const FlatList = (props: Props): JSX.Element => {
+function FlatList(props: Props): JSX.Element {
     const {
         list, renderWhenEmpty, wrapperHtmlTag, renderItem, renderOnScroll, // render/list related props
         group, groupSeparator, // group props
@@ -91,7 +91,7 @@ const FlatList = (props: Props): JSX.Element => {
             }
         </>
     );
-};
+}
 
 FlatList.propTypes = propTypes;
 

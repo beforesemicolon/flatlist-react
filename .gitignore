@@ -5,3 +5,4 @@ lib
 tools
 coverage
 *.tgz
+npm-debug.log

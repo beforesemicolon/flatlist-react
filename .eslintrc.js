@@ -27,7 +27,7 @@ module.exports = {
 	},
 	rules: {
 		'linebreak-style': 'off',
-		'@typescript-eslint/ban-ts-comment': 'off',
+		'@typescript-eslint/ban-ts-comment': 1,
 		'react-hooks/exhaustive-deps': 1,
 		'@typescript-eslint/no-shadow': 1,
 		'@typescript-eslint/naming-convention': 1,

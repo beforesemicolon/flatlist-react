@@ -25,7 +25,7 @@ Make sure you are running **react** and **react-dom** version **16.8.0+**.
 
 ```npm install flatlist-react```
 
-### Quick Start
+### How to use
 
 Take in consideration the following list passed to component `PeopleList`:
 

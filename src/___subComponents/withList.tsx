@@ -7,7 +7,7 @@ import limitList from "../___utils/limitList";
 import reverseList from "../___utils/reverseList";
 import searchList from "../___utils/searchList";
 import sortList from "../___utils/sortList";
-import { defaultProps, FlatListProps } from "../flatListProps";
+import { defaultProps, FlatListProps, SortInterface } from "../flatListProps";
 import { renderBlank } from "./uiFunctions";
 
 const withList = (List: any): FC<FlatListProps> => {
@@ -88,7 +88,7 @@ const withList = (List: any): FC<FlatListProps> => {
     }
 
     const sortOptions = {
-      ...defaultProps.sort,
+      ...(defaultProps.sort as SortInterface),
       ...sort,
     };
     if (sortOptions.by || sortBy || (isBoolean(sort) && sort)) {

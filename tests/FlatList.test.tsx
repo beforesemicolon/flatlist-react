@@ -378,7 +378,7 @@ describe('FlatList', () => {
                     group={{
                         by: groupByFn,
                         separator: sep,
-                        sortedBy: 'age'
+                        sortBy: 'age'
                     }}
                 />
             );

@@ -1,23 +1,9 @@
-import {
-    array,
-    arrayOf,
-    bool,
-    element,
-    func,
-    node,
-    number,
-    object,
-    oneOf,
-    oneOfType,
-    Requireable,
-    shape,
-    string
-} from 'prop-types';
-import {Component, FC, ReactNode, Ref} from 'react';
+import {array, arrayOf, bool, element, func, node, number, object, oneOf, oneOfType, Requireable, shape, string} from 'prop-types';
+import {ReactNode, Ref} from 'react';
 import warning from 'warning';
 import {DisplayHandlerProps, DisplayInterface} from './___subComponents/DisplayHandler';
 import {InfiniteLoaderInterface} from './___subComponents/InfiniteLoader';
-import {renderFunc, renderItem} from './___subComponents/uiFunctions';
+import {renderItem} from './___subComponents/uiFunctions';
 import {GroupOptionsInterface} from './___utils/groupList';
 import {SearchOptionsInterface} from './___utils/searchList';
 import {SortOptionsInterface} from './___utils/sortList';
@@ -39,12 +25,12 @@ function deprecated(propType: Requireable<unknown>, defaultVal: unknown, alterna
     };
 }
 
-export type listItem = {id?: string | number} | unknown;
+export type listItem = Array<{id?: string | number, [key: string]: any} | any> | Set<any> | Map<any, any> | {id?: string | number, [key: string]: any};
 
 export interface GroupInterface extends GroupOptionsInterface {
     of?: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    separator?: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
+    separator?: ReactNode | ((g: any, idx: number, label: string) => ReactNode | null) | null;
     separatorAtTheBottom?: boolean;
     sortBy?: SortOptionsInterface['by'];
     sortDescending?: boolean;
@@ -52,7 +38,7 @@ export interface GroupInterface extends GroupOptionsInterface {
 }
 
 export interface ScrollToTopInterface {
-    button?: JSX.Element | (() => JSX.Element);
+    button?: ReactNode | (() => JSX.Element);
     offset?: number;
     padding?: number;
     position?: string;
@@ -67,9 +53,9 @@ export interface SortInterface extends SortOptionsInterface {
 export interface FlatListProps {
     __forwarededRef?: Ref<HTMLElement>;
     // RENDER
-    list: listItem[];
+    list: listItem;
     renderItem: renderItem;
-    renderWhenEmpty?: null | (() => JSX.Element);
+    renderWhenEmpty?: ReactNode | (() => JSX.Element);
     renderOnScroll?: boolean;
     limit?: number | string;
     reversed?: boolean;
@@ -119,7 +105,7 @@ export interface FlatListProps {
     paginationLoadingIndicatorPosition?: InfiniteLoaderInterface['loadingIndicatorPosition'];
     // scrollToTop
     scrollToTop?: boolean | ScrollToTopInterface;
-    scrollToTopButton?: JSX.Element | (() => JSX.Element);
+    scrollToTopButton?: ReactNode | (() => ReactNode);
     scrollToTopOffset?: number;
     scrollToTopPadding?: number;
     scrollToTopPosition?: string;
@@ -128,9 +114,11 @@ export interface FlatListProps {
     [key: string]: any;
 }
 
-export const defaultProps = {
+export const defaultProps: FlatListProps = {
     __forwarededRef: {current: null},
     // RENDER
+    list: [],
+    renderItem: null,
     limit: 0,
     renderWhenEmpty: null,
     reversed: false,
@@ -154,18 +142,14 @@ export const defaultProps = {
     // GROUPS
     group: {
         by: '',
-        limit: 0, // deprecated
+        limit: 0,
         of: 0,
         reversed: false,
         separator: null,
         separatorAtTheBottom: false,
-        sortedBy: '',
-        sortBy: '', // deprecated
-        sorted: false,
-        sortedCaseInsensitive: false,
-        sortCaseInsensitive: false, // deprecated
-        sortedDescending: false,
-        sortDescending: false // deprecated
+        sortBy: '',
+        sortCaseInsensitive: false,
+        sortDescending: false
     },
     groupBy: '',
     groupOf: 0,
@@ -260,7 +244,7 @@ export const propTypes = {
     // GROUPS
     group: shape({
         by: oneOfType([func, string]),
-        limit: deprecated(number, defaultProps.group.limit, 'group.of'), // deprecated
+        limit: deprecated(number, defaultProps.group?.limit, 'group.of'), // deprecated
         of: number,
         reversed: bool,
         separator: oneOfType([node, func, element]),
@@ -272,11 +256,11 @@ export const propTypes = {
         sortBy: deprecated(oneOfType([
             string,
             arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool, descending: bool})]))
-        ]), defaultProps.group.sortBy, 'sortedBy'), // deprecated
+        ]), defaultProps?.group?.sortBy, 'sortedBy'), // deprecated
         sortedCaseInsensitive: bool,
-        sortCaseInsensitive: deprecated(bool, defaultProps.group.sortCaseInsensitive, 'sortedCaseInsensitive'), // deprecated
+        sortCaseInsensitive: deprecated(bool, defaultProps.group?.sortCaseInsensitive, 'sortedCaseInsensitive'), // deprecated
         sortedDescending: bool,
-        sortDescending: deprecated(bool, defaultProps.group.sortDescending, 'sortedDescending') // deprecated
+        sortDescending: deprecated(bool, defaultProps.group?.sortDescending, 'sortedDescending') // deprecated
     }),
     groupBy: oneOfType([func, string]),
     groupOf: number,
@@ -324,7 +308,7 @@ export const propTypes = {
             arrayOf(oneOfType([string, shape({by: string, caseInsensitive: bool})]))
         ]),
         caseInsensitive: bool,
-        everyWord: deprecated(bool, defaultProps.search.everyWord, 'search.onEveryWord'), // deprecated
+        everyWord: deprecated(bool, defaultProps.search?.everyWord, 'search.onEveryWord'), // deprecated
         onEveryWord: bool,
         minCharactersCount: number,
         term: string

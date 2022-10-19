@@ -2,21 +2,23 @@ import React, { cloneElement, Component, FC, ReactNode } from "react";
 import { isArray, isFunction } from "../___utils/isType";
 import DefaultBlank from "./DefaultBlank";
 
-export type renderFunc = (item: any, key: number | string) => ReactNode;
+export type renderFunc = (
+  item: any,
+  key: number | string
+) => ReactNode | JSX.Element;
 
-export type renderItemCallback = (item: any, idx: number | string) => ReactNode;
 export type renderItem =
   | ReactNode
-  | FC
+  | FC<any>
   | Component
   | renderFunc
-  | renderItemCallback;
+  | JSX.Element;
 
 export const renderBlank = (
-  renderWhenEmpty: null | (() => JSX.Element) = null
+  renderWhenEmpty: ReactNode | (() => JSX.Element) = null
 ): JSX.Element =>
   renderWhenEmpty && isFunction(renderWhenEmpty)
-    ? renderWhenEmpty()
+    ? (renderWhenEmpty as () => JSX.Element)()
     : DefaultBlank();
 
 export const handleRenderGroupSeparator = (CustomSeparator: any) =>
@@ -49,8 +51,8 @@ export const handleRenderItem =
     renderItem: renderItem,
     renderSeparator:
       | null
-      | ((s: string, i: number | string) => JSX.Element) = null
-  ): renderFunc | ReactNode =>
+      | ((s: string, i: number | string) => ReactNode) = null
+  ): renderFunc =>
   (item: any, key: number | string) => {
     if (!renderItem) {
       return null;
@@ -60,12 +62,12 @@ export const handleRenderItem =
 
     if (isArray(item) && item[0] === "___list-separator") {
       return renderSeparator
-        ? (renderSeparator as renderItemCallback)(item, itemId)
+        ? (renderSeparator as renderFunc)(item, itemId)
         : null;
     }
 
     if (isFunction(renderItem)) {
-      return (renderItem as renderItemCallback)(item, itemId);
+      return (renderItem as renderFunc)(item, itemId);
     }
 
     const comp = renderItem as JSX.Element;

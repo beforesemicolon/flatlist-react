@@ -7,12 +7,12 @@ import {
   oneOfType,
   shape,
 } from "prop-types";
-import React, { createRef, Ref, useEffect, useState } from "react";
+import React, { createRef, ReactNode, Ref, useEffect, useState } from "react";
 import { isFunction } from "../___utils/isType";
 import { btnPosition } from "./uiFunctions";
 
 interface Props {
-  button: JSX.Element | (() => JSX.Element);
+  button: ReactNode | (() => ReactNode);
   position: string;
   offset: number;
   padding: number;
@@ -22,7 +22,7 @@ interface Props {
 function ScrollToTopButton(props: Props) {
   const anchor: Ref<HTMLElement> = createRef();
   const { button, position, padding, offset, scrollingContainer } = props;
-  const btn = isFunction(button) ? (button as () => JSX.Element)() : button;
+  const btn = isFunction(button) ? (button as () => ReactNode)() : button;
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

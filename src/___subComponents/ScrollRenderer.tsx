@@ -1,6 +1,7 @@
 import { any, arrayOf, element, func, node, oneOfType } from "prop-types";
 import React, {
   createRef,
+  ReactNode,
   Ref,
   useEffect,
   useLayoutEffect,
@@ -17,8 +18,8 @@ interface Props {
   list: any[];
   renderItem: renderItem;
   groupSeparator:
-    | JSX.Element
-    | ((g: any, idx: number, label: string) => JSX.Element | null)
+    | ReactNode
+    | ((g: any, idx: number, label: string) => ReactNode | null)
     | null;
 }
 

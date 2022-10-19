@@ -48,7 +48,7 @@ describe('uiFunctions', () => {
         it('Should match snapshot', () => {
             const item = {name: 'item name', id: 12};
             const itemNull = handleRenderItem(null);
-            const itemFn = handleRenderItem((item, key) => <div key={key}>{item.name} {key}</div>);
+            const itemFn = handleRenderItem((item: any, key: string) => <div key={key}>{item.name} {key}</div>);
 
             const {asFragment: i1} = render(itemNull(item, 0) as any);
             const {asFragment: i2} = render(itemFn(item, 0) as any);

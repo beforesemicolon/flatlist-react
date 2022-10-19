@@ -1,5 +1,5 @@
 import { array, bool, func, node, object, oneOfType, string } from "prop-types";
-import React, { forwardRef, Ref } from "react";
+import React, { forwardRef, ReactNode, Ref } from "react";
 import convertListToArray from "../___utils/convertListToArray";
 import { isString } from "../___utils/isType";
 import { listItem } from "../flatListProps";
@@ -9,8 +9,8 @@ import { handleRenderItem, renderBlank, renderFunc } from "./uiFunctions";
 
 export interface PlainListProps {
   list: listItem[];
-  renderItem: JSX.Element | renderFunc;
-  renderWhenEmpty?: null | (() => JSX.Element);
+  renderItem: ReactNode | renderFunc;
+  renderWhenEmpty?: ReactNode | (() => JSX.Element);
   wrapperHtmlTag?: string;
   renderOnScroll?: boolean;
   forwardRef?: Ref<HTMLElement>;

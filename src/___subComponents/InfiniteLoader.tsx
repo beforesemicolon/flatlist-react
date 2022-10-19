@@ -89,11 +89,12 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
       this.state.scrollingContainer.scrollTop = this.lastScrollTop;
     }
 
-    // if prev and current loading are the same is because the component updated from props change
-    // otherwise is because the component updated itself
+    // reset loading state when the list size changes
     if (prevProps.itemsCount !== this.props.itemsCount) {
       this.reset();
     }
+
+    this.checkIfLoadingIsNeeded();
   }
 
   componentWillUnmount(): void {
@@ -103,9 +104,7 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
 
   // update the loading flags and items count whether "hasMore" is false or list changed
   reset(): void {
-    this.setState({ loading: false }, () => {
-      this.checkIfLoadingIsNeeded();
-    });
+    this.setState({ loading: false });
   }
 
   getScrollingContainerChildrenCount = (): number => {
@@ -166,22 +165,24 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
     }
   };
 
-  render(): JSX.Element {
+  render(): ReactNode {
     const { loading } = this.state;
     const { hasMore, loadingIndicator, loadingIndicatorPosition } = this.props;
+
+    const spinning = hasMore && loading;
 
     // do not remove the element from the dom so the ref is not broken but set it invisible enough
     const styles: CSSProperties = {
       display: "flex",
-      height: hasMore ? "auto" : 0,
+      height: spinning ? "auto" : 0,
       justifyContent:
         loadingIndicatorPosition === "center"
           ? loadingIndicatorPosition
           : loadingIndicatorPosition === "right"
           ? "flex-end"
           : "flex-start",
-      padding: hasMore ? "5px 0" : 0,
-      visibility: loading && hasMore ? "visible" : "hidden",
+      padding: spinning ? "5px 0" : 0,
+      visibility: spinning ? "visible" : "hidden",
     };
 
     const loadingEl = isFunction(loadingIndicator)
@@ -194,7 +195,7 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
         className="__infinite-loader"
         style={styles}
       >
-        {hasMore && (loadingIndicator ? loadingEl : <DefaultLoadIndicator />)}
+        {spinning && (loadingIndicator ? loadingEl : <DefaultLoadIndicator />)}
       </div>
     );
   }

@@ -8,13 +8,17 @@ import withList from './___subComponents/withList';
 import {isString} from './___utils/isType';
 import {defaultProps, FlatListProps, GroupInterface, propTypes, ScrollToTopInterface} from './flatListProps';
 
-function FlatList(props: FlatListProps): JSX.Element {
+interface Props extends FlatListProps {
+    list: any[]; // withList changes the list to array of anything
+}
+
+function FlatList(props: Props): JSX.Element {
     const {
-        list, renderWhenEmpty, wrapperHtmlTag, renderItem = null, renderOnScroll, // render/list related props
+        list, renderWhenEmpty = null, wrapperHtmlTag, renderItem = null, renderOnScroll, // render/list related props
         group = {} as GroupInterface, groupSeparator, // group props
         display = {} as DisplayInterface, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
-        scrollToTop, scrollToTopButton, scrollToTopPadding, scrollToTopOffset, scrollToTopPosition,
+        scrollToTop, scrollToTopButton = null, scrollToTopPadding, scrollToTopOffset, scrollToTopPosition,
         pagination = {} as InfiniteLoaderInterface, // pagination props
         __forwarededRef,
         ...otherProps
@@ -97,7 +101,7 @@ FlatList.propTypes = propTypes;
 
 FlatList.defaultProps = defaultProps;
 
-export default memo<FlatListProps>(withList(forwardRef((props: FlatListProps, ref: Ref<HTMLElement>) => {
+export default memo<FlatListProps>(withList(forwardRef((props: Props, ref: Ref<HTMLElement>) => {
     ref = ref || createRef();
     return (
         <FlatList {...props} __forwarededRef={ref}/>

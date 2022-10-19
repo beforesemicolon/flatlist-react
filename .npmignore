@@ -4,3 +4,7 @@ documentation
 tsconfig.json
 jest.config.js
 *.tgz
+.idea
+.github
+.eslintrc.js
+.yml

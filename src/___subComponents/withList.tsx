@@ -1,4 +1,4 @@
-import React, { forwardRef, memo } from "react";
+import React, { FC, forwardRef, memo } from "react";
 import convertListToArray from "../___utils/convertListToArray";
 import filterList from "../___utils/filterList";
 import groupList from "../___utils/groupList";
@@ -7,10 +7,10 @@ import limitList from "../___utils/limitList";
 import reverseList from "../___utils/reverseList";
 import searchList from "../___utils/searchList";
 import sortList from "../___utils/sortList";
-import { defaultProps } from "../props";
+import { defaultProps, FlatListProps } from "../flatListProps";
 import { renderBlank } from "./uiFunctions";
 
-const withList = (List: any) => {
+const withList = (List: any): FC<FlatListProps> => {
   function DataList(props: any) {
     const {
       list,

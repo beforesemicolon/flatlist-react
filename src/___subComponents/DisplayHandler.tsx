@@ -2,11 +2,11 @@ import { bool, shape, string } from "prop-types";
 import React, { createRef, useEffect, useState } from "react";
 
 export interface DisplayInterface {
-  row: boolean;
-  rowGap: string;
-  grid: boolean;
-  gridGap: string;
-  gridMinColumnWidth: string;
+  row?: boolean;
+  rowGap?: string;
+  grid?: boolean;
+  gridGap?: string;
+  gridMinColumnWidth?: string;
 }
 
 export interface DisplayHandlerProps {

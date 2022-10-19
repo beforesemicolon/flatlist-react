@@ -10,11 +10,12 @@ import {
   handleRenderGroupSeparator,
   handleRenderItem,
   renderFunc,
+  renderItem,
 } from "./uiFunctions";
 
 interface Props {
   list: any[];
-  renderItem: JSX.Element | renderFunc;
+  renderItem: renderItem;
   groupSeparator:
     | JSX.Element
     | ((g: any, idx: number, label: string) => JSX.Element | null)
@@ -22,7 +23,7 @@ interface Props {
 }
 
 function ScrollRenderer(props: Props) {
-  const { list, renderItem, groupSeparator } = props;
+  const { list, renderItem = null, groupSeparator } = props;
   const [render, setRender] = useState({ renderList: [], index: 0 });
   const [mounted, setMounted] = useState(false);
   const [setupCount, setSetupCount] = useState(-1);
@@ -121,7 +122,7 @@ function ScrollRenderer(props: Props) {
 
   return (
     <>
-      {render.renderList.map(renderThisItem)}
+      {render.renderList.map(renderThisItem as renderFunc)}
       <span
         ref={containerRef}
         style={{ visibility: "hidden", height: 1 }}

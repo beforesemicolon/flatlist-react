@@ -13,11 +13,11 @@ import {
     shape,
     string
 } from 'prop-types';
-import {Ref} from 'react';
+import {Component, FC, ReactNode, Ref} from 'react';
 import warning from 'warning';
 import {DisplayHandlerProps, DisplayInterface} from './___subComponents/DisplayHandler';
-import {InfiniteLoaderProps} from './___subComponents/InfiniteLoader';
-import {renderFunc} from './___subComponents/uiFunctions';
+import {InfiniteLoaderInterface} from './___subComponents/InfiniteLoader';
+import {renderFunc, renderItem} from './___subComponents/uiFunctions';
 import {GroupOptionsInterface} from './___utils/groupList';
 import {SearchOptionsInterface} from './___utils/searchList';
 import {SortOptionsInterface} from './___utils/sortList';
@@ -42,87 +42,87 @@ function deprecated(propType: Requireable<unknown>, defaultVal: unknown, alterna
 export type listItem = {id?: string | number} | unknown;
 
 export interface GroupInterface extends GroupOptionsInterface {
-    of: number;
+    of?: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    separator: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
-    separatorAtTheBottom: boolean;
-    sortBy: SortOptionsInterface['by'];
-    sortDescending: boolean;
-    sortCaseInsensitive: boolean;
+    separator?: JSX.Element | ((g: any, idx: number, label: string) => JSX.Element | null) | null;
+    separatorAtTheBottom?: boolean;
+    sortBy?: SortOptionsInterface['by'];
+    sortDescending?: boolean;
+    sortCaseInsensitive?: boolean;
 }
 
 export interface ScrollToTopInterface {
-    button: JSX.Element | (() => JSX.Element);
-    offset: number;
-    padding: number;
-    position: string;
+    button?: JSX.Element | (() => JSX.Element);
+    offset?: number;
+    padding?: number;
+    position?: string;
 }
 
 export interface SortInterface extends SortOptionsInterface {
-    groupBy: GroupInterface['sortBy'];
-    groupDescending: GroupInterface['sortDescending'];
-    groupCaseInsensitive: GroupInterface['sortCaseInsensitive'];
+    groupBy?: GroupInterface['sortBy'];
+    groupDescending?: GroupInterface['sortDescending'];
+    groupCaseInsensitive?: GroupInterface['sortCaseInsensitive'];
 }
 
-export interface Props {
-    __forwarededRef: Ref<HTMLElement>;
+export interface FlatListProps {
+    __forwarededRef?: Ref<HTMLElement>;
     // RENDER
     list: listItem[];
-    renderItem: JSX.Element | renderFunc;
-    renderWhenEmpty: null | (() => JSX.Element);
-    renderOnScroll: boolean;
-    limit: number | string;
-    reversed: boolean;
-    wrapperHtmlTag: string;
+    renderItem: renderItem;
+    renderWhenEmpty?: null | (() => JSX.Element);
+    renderOnScroll?: boolean;
+    limit?: number | string;
+    reversed?: boolean;
+    wrapperHtmlTag?: string;
     // sortingsortGroupBy
-    sort: boolean | SortInterface;
-    sortBy: SortInterface['by'];
-    sortCaseInsensitive: SortInterface['caseInsensitive'];
-    sortDesc: SortInterface['descending'];
-    sortDescending: SortInterface['descending'];
-    sortGroupBy: GroupInterface['sortBy'];
-    sortGroupDesc: GroupInterface['sortDescending'];
-    sortGroupDescending: GroupInterface['sortDescending'];
-    sortGroupCaseInsensitive: GroupInterface['sortCaseInsensitive'];
+    sort?: boolean | SortInterface;
+    sortBy?: SortInterface['by'];
+    sortCaseInsensitive?: SortInterface['caseInsensitive'];
+    sortDesc?: SortInterface['descending'];
+    sortDescending?: SortInterface['descending'];
+    sortGroupBy?: GroupInterface['sortBy'];
+    sortGroupDesc?: GroupInterface['sortDescending'];
+    sortGroupDescending?: GroupInterface['sortDescending'];
+    sortGroupCaseInsensitive?: GroupInterface['sortCaseInsensitive'];
     // grouping
-    group: GroupInterface;
-    showGroupSeparatorAtTheBottom: GroupInterface['separatorAtTheBottom'];
-    groupSeparatorAtTheBottom: GroupInterface['separatorAtTheBottom'];
-    groupReversed: GroupInterface['reversed'];
-    groupSeparator: GroupInterface['separator'];
-    groupBy: GroupInterface['by'];
-    groupOf: GroupInterface['limit'];
-    groupSorted: boolean;
-    groupSortedDescending: GroupInterface['sortDescending'];
-    groupSortedCaseInsensitive: GroupInterface['sortCaseInsensitive'];
+    group?: GroupInterface;
+    showGroupSeparatorAtTheBottom?: GroupInterface['separatorAtTheBottom'];
+    groupSeparatorAtTheBottom?: GroupInterface['separatorAtTheBottom'];
+    groupReversed?: GroupInterface['reversed'];
+    groupSeparator?: GroupInterface['separator'];
+    groupBy?: GroupInterface['by'];
+    groupOf?: GroupInterface['limit'];
+    groupSorted?: boolean;
+    groupSortedDescending?: GroupInterface['sortDescending'];
+    groupSortedCaseInsensitive?: GroupInterface['sortCaseInsensitive'];
     // display
-    display: DisplayInterface;
-    displayRow: DisplayHandlerProps['displayRow'];
-    rowGap: DisplayHandlerProps['rowGap'];
-    displayGrid: DisplayHandlerProps['displayGrid'];
-    gridGap: DisplayHandlerProps['gridGap'];
-    minColumnWidth: DisplayHandlerProps['minColumnWidth'];
+    display?: DisplayInterface;
+    displayRow?: DisplayHandlerProps['displayRow'];
+    rowGap?: DisplayHandlerProps['rowGap'];
+    displayGrid?: DisplayHandlerProps['displayGrid'];
+    gridGap?: DisplayHandlerProps['gridGap'];
+    minColumnWidth?: DisplayHandlerProps['minColumnWidth'];
     // filtering
-    filterBy: string | ((item: listItem, idx: number) => boolean);
+    filterBy?: string | ((item: listItem, idx: number) => boolean);
     // searching
-    search: SearchOptionsInterface;
-    searchTerm: SearchOptionsInterface['term'];
-    searchBy: SearchOptionsInterface['by'];
-    searchOnEveryWord: SearchOptionsInterface['everyWord'];
-    searchCaseInsensitive: SearchOptionsInterface['caseInsensitive'];
-    searchableMinCharactersCount: SearchOptionsInterface['minCharactersCount'];
+    search?: SearchOptionsInterface;
+    searchTerm?: SearchOptionsInterface['term'];
+    searchBy?: SearchOptionsInterface['by'];
+    searchOnEveryWord?: SearchOptionsInterface['everyWord'];
+    searchCaseInsensitive?: SearchOptionsInterface['caseInsensitive'];
+    searchableMinCharactersCount?: SearchOptionsInterface['minCharactersCount'];
     // pagination
-    pagination: InfiniteLoaderProps;
-    hasMoreItems: InfiniteLoaderProps['hasMore'];
-    loadMoreItems: null | InfiniteLoaderProps['loadMore'];
-    paginationLoadingIndicator: InfiniteLoaderProps['loadingIndicator'];
-    paginationLoadingIndicatorPosition: InfiniteLoaderProps['loadingIndicatorPosition'];
+    pagination?: InfiniteLoaderInterface;
+    hasMoreItems?: InfiniteLoaderInterface['hasMore'];
+    loadMoreItems?: null | InfiniteLoaderInterface['loadMore'];
+    paginationLoadingIndicator?: InfiniteLoaderInterface['loadingIndicator'];
+    paginationLoadingIndicatorPosition?: InfiniteLoaderInterface['loadingIndicatorPosition'];
     // scrollToTop
-    scrollToTop: boolean | ScrollToTopInterface;
-    scrollToTopButton: JSX.Element | (() => JSX.Element);
-    scrollToTopOffset: number;
-    scrollToTopPadding: number;
-    scrollToTopPosition: string;
+    scrollToTop?: boolean | ScrollToTopInterface;
+    scrollToTopButton?: JSX.Element | (() => JSX.Element);
+    scrollToTopOffset?: number;
+    scrollToTopPadding?: number;
+    scrollToTopPosition?: string;
     // others
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;

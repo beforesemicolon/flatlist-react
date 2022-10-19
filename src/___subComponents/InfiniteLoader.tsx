@@ -1,11 +1,19 @@
 import React, { Component, createRef, CSSProperties, ReactNode } from "react";
-import { bool, element, func, node, oneOf, oneOfType } from "prop-types";
+import {
+  bool,
+  element,
+  func,
+  node,
+  oneOf,
+  oneOfType,
+  number,
+} from "prop-types";
 import { isFunction } from "../___utils/isType";
 import DefaultLoadIndicator from "./DefaultLoadIndicator";
 
-export interface InfiniteLoaderProps {
-  loadingIndicator: null | (() => ReactNode) | ReactNode;
-  loadingIndicatorPosition: string;
+export interface InfiniteLoaderInterface {
+  loadingIndicator?: null | (() => ReactNode) | ReactNode;
+  loadingIndicatorPosition?: string;
   hasMore: boolean;
   loadMore: null | (() => void);
 }
@@ -14,10 +22,16 @@ interface State {
   scrollingContainer: HTMLElement | null;
   loadIndicatorContainer: HTMLDivElement | null;
   loading: boolean;
+  prevItemsCount: number;
+}
+
+interface InfiniteLoaderProps extends InfiniteLoaderInterface {
+  itemsCount: number;
 }
 
 class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
   static propTypes = {
+    itemsCount: number,
     hasMore: bool.isRequired,
     loadMore: func.isRequired,
     loadingIndicator: oneOfType([func, node, element]),
@@ -30,6 +44,7 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
   };
 
   state: State = {
+    prevItemsCount: this.props.itemsCount,
     loadIndicatorContainer: null,
     loading: false,
     scrollingContainer: null,
@@ -76,7 +91,7 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
 
     // if prev and current loading are the same is because the component updated from props change
     // otherwise is because the component updated itself
-    if (prevState.loading === this.state.loading) {
+    if (prevProps.itemsCount !== this.props.itemsCount) {
       this.reset();
     }
   }
@@ -88,11 +103,9 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
 
   // update the loading flags and items count whether "hasMore" is false or list changed
   reset(): void {
-    if (this.state.loading) {
-      this.setState({ loading: false });
-    }
-
-    this.checkIfLoadingIsNeeded();
+    this.setState({ loading: false }, () => {
+      this.checkIfLoadingIsNeeded();
+    });
   }
 
   getScrollingContainerChildrenCount = (): number => {
@@ -110,13 +123,13 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
 
     if (scrollingContainer) {
       ["scroll", "mousewheel", "touchmove"].forEach((event: string) => {
-        if (removeEvent) {
-          scrollingContainer.removeEventListener(
-            event,
-            this.checkIfLoadingIsNeeded,
-            true
-          );
-        } else {
+        scrollingContainer.removeEventListener(
+          event,
+          this.checkIfLoadingIsNeeded,
+          true
+        );
+
+        if (!removeEvent) {
           scrollingContainer.addEventListener(
             event,
             this.checkIfLoadingIsNeeded,
@@ -143,7 +156,12 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
       const startingPoint = offsetTop + offsetHeight;
 
       if (loaderPosition <= startingPoint) {
-        this.setState({ loading: true }, this.props.loadMore as () => void);
+        this.setState(
+          { prevItemsCount: this.props.itemsCount, loading: true },
+          () => {
+            (this.props.loadMore as () => void)();
+          }
+        );
       }
     }
   };

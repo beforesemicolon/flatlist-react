@@ -2,12 +2,12 @@ import { array, bool, func, node, object, oneOfType, string } from "prop-types";
 import React, { forwardRef, Ref } from "react";
 import convertListToArray from "../___utils/convertListToArray";
 import { isString } from "../___utils/isType";
-import { listItem } from "../props";
+import { listItem } from "../flatListProps";
 import DefaultBlank from "./DefaultBlank";
 import ScrollRenderer from "./ScrollRenderer";
 import { handleRenderItem, renderBlank, renderFunc } from "./uiFunctions";
 
-interface Props {
+export interface PlainListProps {
   list: listItem[];
   renderItem: JSX.Element | renderFunc;
   renderWhenEmpty?: null | (() => JSX.Element);
@@ -17,7 +17,7 @@ interface Props {
   [key: string]: any;
 }
 
-function PlainList(props: Props) {
+function PlainList(props: PlainListProps) {
   const {
     list,
     renderItem,
@@ -41,7 +41,7 @@ function PlainList(props: Props) {
       {renderOnScroll ? (
         <ScrollRenderer list={dataList} renderItem={renderItem} />
       ) : (
-        dataList.map(handleRenderItem(renderItem))
+        dataList.map(handleRenderItem(renderItem) as renderFunc)
       )}
     </>
   );
@@ -88,6 +88,6 @@ PlainList.defaultProps = {
   forwardRef: { current: null },
 };
 
-export default forwardRef((props: Props, ref: Ref<HTMLElement>) => (
+export default forwardRef((props: PlainListProps, ref: Ref<HTMLElement>) => (
   <PlainList forwardRef={ref} {...props} />
 ));

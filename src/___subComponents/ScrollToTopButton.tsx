@@ -16,7 +16,7 @@ interface Props {
   position: string;
   offset: number;
   padding: number;
-  scrollingContainer: Ref<HTMLElement>;
+  scrollingContainer: Ref<HTMLElement> | undefined;
 }
 
 function ScrollToTopButton(props: Props) {

@@ -21,7 +21,7 @@ There are available **shorthands props** just in case you want to make batch upd
 - [`group`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#grouping)
 - [`sort`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#sorting)
 - [`search`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#searching)
-- [`paginate`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#pagination)
+- [`pagination`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#pagination)
 - [`scrollToTop`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#scrolltotop)
 - [`display`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#styling).
 
@@ -338,21 +338,42 @@ It is also good to use on lists which user normally dont reach the end anyways s
 ```
 
 ## Pagination
-FlatList comes with pagination out of the box. This is specially great for when fetching all the items from api would take long
+FlatList comes with pagination out of the box. This is specially great for when fetching all the items from api would take long,
 so you start with fetching a small portion and then let the user scroll to the bottom, show the loading indicator while you
 fetch some more.
 
 To make it work you need to render `FlatList` inside of a scrolling container with "`overflow: auto`" or "`overflow: scroll`".
-If the container wrapping flatlist does not scroll it miss the point of infinite scrolling.
+If the container wrapping FlatList does not scroll it misses the point of infinite scrolling.
 
-Pagination props will not work while `renderOnScroll` is being used.
+```jsx
+<div style={{overflow: "auto", height: "300px"}}>
+    <FlatList
+        list={this.props.people}
+        renderItem={this.renderPerson}
+        renderWhenEmpty={this.showBlank}
+    />
+</div>
+
+// --- OR ---
+
+<FlatList
+    list={this.props.people}
+    renderItem={this.renderPerson}
+    renderWhenEmpty={this.showBlank}
+    wrapperHtmlTag="div"
+    style={{overflow: "auto", height: "300px"}}
+/>
+```
+
+Pagination props will not work while `renderOnScroll` is being used. Pagination already renders on scroll.
 
 ### hasMoreItems
 ###### boolean
 You start by telling FlatList if there are more items to come with `hasMoreItems` prop. It will then start monitor scrolling
-and show loading indicator when the user reaches the end of the list.
+activities and the list size to show loading indicator when the user reaches the end of the list and fetching begins.
 
-When you are done fetching the whole list you can set this to "false" and FlatList will know you have the whole list.
+When you are done fetching the whole list you can set this to "false" and FlatList will know you have the whole list
+and stop monitoring scrolling and list size.
 
 ### loadMoreItems
 ###### () => void
@@ -412,7 +433,7 @@ fetchData = () => {
   list={this.props.people}
   renderItem={this.renderPerson}
   renderWhenEmpty={this.showBlank} // let user know if initial data is loading or there is no data to show
-  paginate={{
+  pagination={{
     hasMore: this.state.hasMoreItems,
     loadMore: this.fetchData
   }}
@@ -441,7 +462,7 @@ to show while items are being fetched.
   list={this.props.people}
   renderItem={this.renderPerson}
   renderWhenEmpty={this.showBlank} // let user know if initial data is loading or there is no data to show
-  paginate={{
+  pagination={{
     hasMore: this.state.hasMoreItems,
     loadMore: this.fetchData,
     loadingIndicator: <div style={{background: '#090'}}>Getting more items...</div>
@@ -470,7 +491,7 @@ you can also specify **"center"** or **"right"**.
   list={this.props.people}
   renderItem={this.renderPerson}
   renderWhenEmpty={this.showBlank} // let user know if initial data is loading or there is no data to show
-  paginate={{
+  pagination={{
     hasMore: this.state.hasMoreItems,
     loadMore: this.fetchData,
     loadingIndicator: <div style={{background: '#090'}}>Getting more items...</div>,
@@ -1454,6 +1475,109 @@ The position is where you want the button to be placed. The default is **"bottom
     position: "top right"
   }}
   />
+```
+
+## Utilities
+You may also use the internal utility functions FlatList uses to do all the amazing thing without rendering 
+anything or be in React. You may use these to craft your own FlatList alternative, custom to you.
+
+### sortList
+###### <T>(list: T[], options?: SortOptionsInterface) => T[]
+
+```ts
+import {sortList} from "flatlist-react";
+
+const list = [2, 4, 1, 9]
+
+sortList(list);
+sortList(list, {descending: true, caseInsensitive: true});
+
+const objectArray = [
+    {name: 'Last', other: 'Zer', age: 2},
+    {name: 'First', other: 'Last', age: 8},
+    {name: 'Middle', other: 'Zer', age: 1},
+    {name: 'First', other: 'Middle', age: 8},
+    {name: 'Last', other: 'Abo', age: 2}
+];
+
+sortList(objectArray, {descending: true, caseInsensitive: true, by: 'name'});
+sortList(objectArray, {descending: false, caseInsensitive: true, by: ['name', {key: 'age', descending: true}]});
+```
+
+### searchList
+###### <T>(list: T[], options: SearchOptionsInterface) => T[]
+
+```ts
+import {searchList} from "flatlist-react";
+
+const objectArray = [
+    {name: 'Last', other: 'Zer', age: 2},
+    {name: 'First', other: 'Last', age: 8},
+    {name: 'Middle', other: 'Zer', age: 1},
+    {name: 'First', other: 'Middle', age: 8},
+    {name: 'Last', other: 'Abo', age: 2}
+];
+
+searchList(objectArray, {
+   by: ['name', 'other'],
+   term: 'Last', // <- search term
+   everyWord: false,
+   caseInsensitive: true
+})
+```
+
+### filterList
+###### <T>(list: T[], by?: ((item: T, idx: number) => boolean) | string) => T[]
+
+```ts
+import {filterList} from "flatlist-react";
+
+const objectList = [
+    {name: 'Last', other: 'Zer', age: 2},
+    {name: 'First', other: 'Last', age: 8},
+    {name: 'Middle', other: 'Zer', age: 1},
+    {name: 'First', other: 'Middle', age: 8},
+    {name: 'Last', other: 'Abo', age: 2}
+];
+
+filterList(objectList, (item: any) => item.age && item.age > 10);
+filterList(objectList, 'age')
+```
+
+### groupList
+###### <T>(list: T[], options?: GroupOptionsInterface) => {groupLabels: string[], groupLists: T[]}
+
+```ts
+import {groupList} from "flatlist-react";
+
+const objectList = [
+    {name: 'Last', other: 'Zer', age: 2},
+    {name: 'First', other: 'Last', age: 8},
+    {name: 'Middle', other: 'Zer', age: 1},
+    {name: 'First', other: 'Middle', age: 7},
+    {name: 'Last', other: 'Abo', age: 3}
+];
+
+groupList(objectList, {limit: 2});
+
+const groupBy: (item: any, idx: number) => string | number = (item: any) => {
+    return item.age % 2 === 0 ? 'divided by 2' : 'not divided by 2';
+};
+
+groupList(list, {by: groupBy});
+```
+
+### limitList
+###### <T>(list: T[], limit?: string | number, to?: string | number) => T[]
+
+```ts
+import {limitList} from "flatlist-react";
+
+const list = [2, 4, 1, 9, 89, 1, 33]
+
+limitList(list, 5) // [2, 4, 1, 9, 89]
+limitList(list, 2, 4) // [3, 4]
+limitList(list, 2, -2) // [3]
 ```
 
 ### Thank You

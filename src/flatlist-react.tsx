@@ -1,21 +1,21 @@
 import React, {forwardRef, memo, Ref, createRef} from 'react';
-import DisplayHandler from './___subComponents/DisplayHandler';
-import InfiniteLoader from './___subComponents/InfiniteLoader';
+import DisplayHandler, {DisplayInterface} from './___subComponents/DisplayHandler';
+import InfiniteLoader, {InfiniteLoaderInterface} from './___subComponents/InfiniteLoader';
 import ScrollRenderer from './___subComponents/ScrollRenderer';
 import ScrollToTopButton from './___subComponents/ScrollToTopButton';
-import {handleRenderGroupSeparator, handleRenderItem, renderBlank} from './___subComponents/uiFunctions';
+import {handleRenderGroupSeparator, handleRenderItem, renderBlank, renderFunc} from './___subComponents/uiFunctions';
 import withList from './___subComponents/withList';
 import {isString} from './___utils/isType';
-import {defaultProps, Props, propTypes, ScrollToTopInterface} from './props';
+import {defaultProps, FlatListProps, GroupInterface, propTypes, ScrollToTopInterface} from './flatListProps';
 
-function FlatList(props: Props): JSX.Element {
+function FlatList(props: FlatListProps): JSX.Element {
     const {
-        list, renderWhenEmpty, wrapperHtmlTag, renderItem, renderOnScroll, // render/list related props
-        group, groupSeparator, // group props
-        display, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
+        list, renderWhenEmpty, wrapperHtmlTag, renderItem = null, renderOnScroll, // render/list related props
+        group = {} as GroupInterface, groupSeparator, // group props
+        display = {} as DisplayInterface, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
         scrollToTop, scrollToTopButton, scrollToTopPadding, scrollToTopOffset, scrollToTopPosition,
-        pagination, // pagination props
+        pagination = {} as InfiniteLoaderInterface, // pagination props
         __forwarededRef,
         ...otherProps
     } = props;
@@ -41,7 +41,7 @@ function FlatList(props: Props): JSX.Element {
                                 groupSeparator={group.separator || groupSeparator}
                             />
                         )
-                        : list.map((item, index) => renderThisItem(item, (item as {id: string | number}).id ?? index))
+                        : list.map((item, index) => (renderThisItem as renderFunc)(item, (item as {id: string | number}).id ?? index))
                     : renderBlank(renderWhenEmpty)
             }
             {
@@ -51,6 +51,7 @@ function FlatList(props: Props): JSX.Element {
             {((loadMoreItems || pagination.loadMore) && !renderOnScroll)
             && (
                 <InfiniteLoader
+                    itemsCount={list.length}
                     hasMore={hasMoreItems || pagination.hasMore}
                     loadMore={loadMoreItems || pagination.loadMore}
                     loadingIndicator={paginationLoadingIndicator || pagination.loadingIndicator}
@@ -96,7 +97,7 @@ FlatList.propTypes = propTypes;
 
 FlatList.defaultProps = defaultProps;
 
-export default memo(withList(forwardRef((props: Props, ref: Ref<HTMLElement>) => {
+export default memo<FlatListProps>(withList(forwardRef((props: FlatListProps, ref: Ref<HTMLElement>) => {
     ref = ref || createRef();
     return (
         <FlatList {...props} __forwarededRef={ref}/>

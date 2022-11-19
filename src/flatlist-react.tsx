@@ -12,7 +12,7 @@ import {PlainListProps} from './___subComponents/PlainList';
 function FlatList<ListItem>(props: FlatListProps<ListItem>) {
     const {
         list, renderWhenEmpty = null, wrapperHtmlTag, renderItem, renderOnScroll, // render/list related props
-        group = {} as GroupInterface, groupSeparator, // group props
+        group = {} as GroupInterface<ListItem>, groupSeparator, // group props
         display = {} as DisplayInterface, displayRow, rowGap, displayGrid, gridGap, minColumnWidth, // display props,
         hasMoreItems, loadMoreItems, paginationLoadingIndicator, paginationLoadingIndicatorPosition,
         scrollToTop, scrollToTopButton = null, scrollToTopPadding, scrollToTopOffset, scrollToTopPosition,

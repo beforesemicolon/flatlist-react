@@ -2,10 +2,10 @@ import filterList from "./filterList";
 import getObjectDeepKeyValue from "./getObjectDeepKeyValue";
 import { isArray, isFunction, isObject, isNilOrEmpty } from "./isType";
 
-type cb = (item: any, idx: number) => boolean;
-type termCb = (item: any, term: string, idx: number) => boolean;
+type cb<ListItem> = (item: ListItem, idx: number) => boolean;
+type termCb<ListItem> = (item: ListItem, term: string, idx: number) => boolean;
 
-export interface SearchOptionsInterface {
+export interface SearchOptionsInterface<ListItem> {
   term?: string;
   everyWord?: boolean;
   onEveryWord?: boolean;
@@ -14,7 +14,7 @@ export interface SearchOptionsInterface {
   by?:
     | string
     | Array<string | { key: string; caseInsensitive?: boolean }>
-    | termCb;
+    | termCb<ListItem>;
 }
 
 const defaultSearchOptions = {
@@ -51,27 +51,27 @@ const defaultFilterByFn = (
   return value.search(term.trim() as string) >= 0;
 };
 
-const getFilterByFn = <T>(
+const getFilterByFn = <ListItem>(
   term: string | string[],
-  by: SearchOptionsInterface["by"],
+  by: SearchOptionsInterface<ListItem>["by"],
   caseInsensitive = false
-): cb => {
+): cb<ListItem> => {
   if (isFunction(by)) {
     if (isArray(term)) {
-      return (item: T, idx: number) =>
+      return (item: ListItem, idx: number) =>
         (term as string[]).some((t: string) => {
           t = caseInsensitive ? (t as string).toLowerCase() : t;
-          return (by as termCb)(item, t.trim(), idx);
+          return (by as termCb<ListItem>)(item, t.trim(), idx);
         });
     }
 
     term = caseInsensitive ? (term as string).toLowerCase() : term;
-    return (item: T, idx: number) =>
-      (by as termCb)(item, (term as string).trim(), idx);
+    return (item: ListItem, idx: number) =>
+      (by as termCb<ListItem>)(item, (term as string).trim(), idx);
   }
 
   if (isArray(by)) {
-    return (item: T) =>
+    return (item: ListItem) =>
       (by as []).some((key: any) => {
         const keyCaseInsensitive =
           isObject(key) && key.caseInsensitive !== undefined
@@ -82,13 +82,16 @@ const getFilterByFn = <T>(
       });
   }
 
-  return (item: T) =>
+  return (item: ListItem) =>
     defaultFilterByFn(item, term, caseInsensitive, (by as string) || "0");
 };
 
-const searchList = <T>(list: T[], options: SearchOptionsInterface): T[] => {
+const searchList = <ListItem>(
+  list: ListItem[],
+  options: SearchOptionsInterface<ListItem>
+): ListItem[] => {
   if (isNilOrEmpty(options)) {
-    options = defaultSearchOptions as SearchOptionsInterface;
+    options = defaultSearchOptions as SearchOptionsInterface<ListItem>;
   }
 
   if (list.length > 0) {

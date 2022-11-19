@@ -9,7 +9,7 @@ import searchList from "../___utils/searchList";
 import sortList from "../___utils/sortList";
 import { defaultProps, FlatListProps, SortInterface } from "../flatListProps";
 
-export const useList = <T,>({
+export const useList = <ListItem,>({
   list,
   limit,
   reversed,
@@ -39,7 +39,7 @@ export const useList = <T,>({
   searchCaseInsensitive,
   searchableMinCharactersCount,
   searchMinCharactersCount,
-}: FlatListProps<T>): T[] => {
+}: FlatListProps<ListItem>): ListItem[] => {
   // convert list to array
   let renderList = useMemo(() => convertListToArray(list), [list]);
 
@@ -108,8 +108,8 @@ export const useList = <T,>({
 
   const sortOptions = useMemo(
     () => ({
-      ...(defaultProps.sort as SortInterface),
-      ...(sort as SortInterface),
+      ...(defaultProps.sort as SortInterface<ListItem>),
+      ...(sort as SortInterface<ListItem>),
     }),
     [renderList, sort]
   );

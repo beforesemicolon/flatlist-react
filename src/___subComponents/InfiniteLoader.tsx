@@ -18,7 +18,7 @@ export interface InfiniteLoaderInterface {
   loadMore: null | (() => void);
 }
 
-interface State {
+interface InfiniteLoaderState {
   scrollingContainer: HTMLElement | null;
   loadIndicatorContainer: HTMLDivElement | null;
   loading: boolean;
@@ -29,7 +29,10 @@ interface InfiniteLoaderProps extends InfiniteLoaderInterface {
   itemsCount: number;
 }
 
-class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
+class InfiniteLoader extends Component<
+  InfiniteLoaderProps,
+  InfiniteLoaderState
+> {
   static propTypes = {
     itemsCount: number,
     hasMore: bool.isRequired,
@@ -43,7 +46,7 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
     loadingIndicator: DefaultLoadIndicator,
   };
 
-  state: State = {
+  state: InfiniteLoaderState = {
     prevItemsCount: this.props.itemsCount,
     loadIndicatorContainer: null,
     loading: false,
@@ -83,7 +86,10 @@ class InfiniteLoader extends Component<InfiniteLoaderProps, State> {
     }
   }
 
-  componentDidUpdate(prevProps: InfiniteLoaderProps, prevState: State): void {
+  componentDidUpdate(
+    prevProps: InfiniteLoaderProps,
+    prevState: InfiniteLoaderState
+  ): void {
     // reset scroll position to where last was
     if (this.state.scrollingContainer) {
       this.state.scrollingContainer.scrollTop = this.lastScrollTop;

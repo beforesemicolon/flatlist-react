@@ -8,13 +8,13 @@ import {
 } from "./isType";
 import reverseList from "./reverseList";
 
-export interface GroupOptionsInterface {
-  by?: string | ((item: any, idx: number) => string | number);
+export interface GroupOptionsInterface<ListItem> {
+  by?: string | ((item: ListItem, idx: number) => string | number);
   limit?: number;
   reversed?: boolean;
 }
 
-const defaultGroupOptions: GroupOptionsInterface = {
+const defaultGroupOptions: GroupOptionsInterface<any> = {
   by: "",
   limit: 0,
   reversed: false,
@@ -24,7 +24,10 @@ interface GroupedItemsObjectInterface<T> {
   [s: string]: T[];
 }
 
-const handleGroupReverse = <T>(groupedLists: T[][], reverse = false) => {
+const handleGroupReverse = <ListItem>(
+  groupedLists: ListItem[][],
+  reverse = false
+) => {
   if (reverse && isBoolean(reverse)) {
     return groupedLists.map((group) => reverseList(group));
   }
@@ -32,9 +35,9 @@ const handleGroupReverse = <T>(groupedLists: T[][], reverse = false) => {
   return groupedLists;
 };
 
-const groupList = <T>(
-  list: T[],
-  options: GroupOptionsInterface = defaultGroupOptions
+const groupList = <ListItem>(
+  list: ListItem[],
+  options: GroupOptionsInterface<ListItem> = defaultGroupOptions
 ) => {
   let groupLabels: any[] = [];
 
@@ -45,10 +48,14 @@ const groupList = <T>(
   const { by: groupBy, limit } = options;
 
   if (groupBy && (isFunction(groupBy) || isString(groupBy))) {
-    const groupedList: GroupedItemsObjectInterface<T> = list.reduce(
-      (prevList: GroupedItemsObjectInterface<T>, item: T, idx: number) => {
+    const groupedList: GroupedItemsObjectInterface<ListItem> = list.reduce(
+      (
+        prevList: GroupedItemsObjectInterface<ListItem>,
+        item: ListItem,
+        idx: number
+      ) => {
         const groupLabel: any = isFunction(groupBy)
-          ? (groupBy as (item: any, idx: number) => string)(item, idx)
+          ? (groupBy as (item: ListItem, idx: number) => string)(item, idx)
           : getObjectDeepKeyValue(item, groupBy as string);
 
         if (!prevList[groupLabel]) {
@@ -77,8 +84,8 @@ const groupList = <T>(
   }
   if (limit && isNumber(limit) && limit > 0) {
     let groupLabel = 1;
-    const groupLists: GroupedItemsObjectInterface<T> = list.reduce(
-      (prevList: GroupedItemsObjectInterface<T>, item: T) => {
+    const groupLists: GroupedItemsObjectInterface<ListItem> = list.reduce(
+      (prevList: GroupedItemsObjectInterface<ListItem>, item: ListItem) => {
         if (!prevList[groupLabel]) {
           prevList[groupLabel] = [];
         }

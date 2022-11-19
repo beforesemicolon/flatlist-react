@@ -1,33 +1,37 @@
 import { array, bool, func, node, object, oneOfType, string } from "prop-types";
-import React, { forwardRef, ReactNode, Ref } from "react";
+import React, { forwardRef, ReactNode, Ref, useMemo } from "react";
 import convertListToArray from "../___utils/convertListToArray";
 import { isString } from "../___utils/isType";
-import { listItem } from "../flatListProps";
 import DefaultBlank from "./DefaultBlank";
 import ScrollRenderer from "./ScrollRenderer";
 import { handleRenderItem, renderBlank, renderFunc } from "./uiFunctions";
+import { List } from "../flatListProps";
 
-export interface PlainListProps {
-  list: listItem[];
-  renderItem: ReactNode | renderFunc;
+export interface PlainListProps<ListItem> {
+  list: List<ListItem>;
+  renderItem: renderFunc<ListItem>;
   renderWhenEmpty?: ReactNode | (() => JSX.Element);
   wrapperHtmlTag?: string;
   renderOnScroll?: boolean;
-  forwardRef?: Ref<HTMLElement>;
   [key: string]: any;
 }
 
-function PlainList(props: PlainListProps) {
+function PlainList<ListItem>(props: PlainListProps<ListItem>) {
   const {
     list,
     renderItem,
     renderWhenEmpty,
     renderOnScroll,
     wrapperHtmlTag,
-    forwardRef,
+    __forwarededRef,
     ...tagProps
   } = props;
   const dataList = convertListToArray(list);
+
+  const renderThisItem = useMemo(
+    () => handleRenderItem(renderItem, null),
+    [renderItem]
+  );
 
   if (dataList.length === 0) {
     return renderBlank(renderWhenEmpty);
@@ -41,7 +45,7 @@ function PlainList(props: PlainListProps) {
       {renderOnScroll ? (
         <ScrollRenderer list={dataList} renderItem={renderItem} />
       ) : (
-        dataList.map(handleRenderItem(renderItem) as renderFunc)
+        dataList.map(renderThisItem)
       )}
     </>
   );
@@ -50,7 +54,7 @@ function PlainList(props: PlainListProps) {
     <>
       {WrapperElement ? (
         // @ts-ignore
-        <WrapperElement {...tagProps} ref={forwardRef}>
+        <WrapperElement {...tagProps} ref={__forwarededRef}>
           {content}
         </WrapperElement>
       ) : (
@@ -85,9 +89,10 @@ PlainList.defaultProps = {
   wrapperHtmlTag: "",
   renderWhenEmpty: DefaultBlank,
   renderOnScroll: false,
-  forwardRef: { current: null },
 };
 
-export default forwardRef((props: PlainListProps, ref: Ref<HTMLElement>) => (
-  <PlainList forwardRef={ref} {...props} />
-));
+export default forwardRef(
+  <ListItem,>(props: PlainListProps<ListItem>, ref: Ref<HTMLElement>) => (
+    <PlainList __forwarededRef={ref} {...props} />
+  )
+) as <ListItem>(props: PlainListProps<ListItem>) => JSX.Element;

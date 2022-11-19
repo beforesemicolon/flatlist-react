@@ -1,6 +1,6 @@
 import React from "react";
 
-function DefaultBlank(): JSX.Element {
+function DefaultBlank() {
   return <p>List is empty...</p>;
 }
 

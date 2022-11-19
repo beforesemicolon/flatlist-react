@@ -2,16 +2,16 @@ import React, { cloneElement, Component, FC, ReactNode } from "react";
 import { isArray, isFunction } from "../___utils/isType";
 import DefaultBlank from "./DefaultBlank";
 
-export type renderFunc = (
-  item: any,
-  key: number | string
+export type renderFunc<ListItem> = (
+  item: ListItem,
+  key: string
 ) => ReactNode | JSX.Element;
 
-export type renderItem =
+export type renderItem<ListItem> =
   | ReactNode
   | FC<any>
   | Component
-  | renderFunc
+  | renderFunc<ListItem>
   | JSX.Element;
 
 export const renderBlank = (
@@ -47,30 +47,34 @@ export const handleRenderGroupSeparator = (CustomSeparator: any) =>
   };
 
 export const handleRenderItem =
-  (
-    renderItem: renderItem,
+  <ListItem,>(
+    renderItem: renderFunc<ListItem>,
     renderSeparator:
       | null
-      | ((s: string, i: number | string) => ReactNode) = null
-  ): renderFunc =>
-  (item: any, key: number | string) => {
+      | ((s: ListItem, i: number | string) => ReactNode) = null
+  ) =>
+  (item: ListItem, key: number | string) => {
     if (!renderItem) {
       return null;
     }
 
-    const itemId = item.id || key;
+    const itemId =
+      (`${item}` === "[object Object]" &&
+        (item as { id: string | number }).id) ||
+      key;
 
-    if (isArray(item) && item[0] === "___list-separator") {
-      return renderSeparator
-        ? (renderSeparator as renderFunc)(item, itemId)
+    if (isArray(item) && (item as ListItem[])[0] === "___list-separator") {
+      return typeof renderSeparator === "function"
+        ? renderSeparator(item, itemId)
         : null;
     }
 
-    if (isFunction(renderItem)) {
-      return (renderItem as renderFunc)(item, itemId);
+    if (typeof renderItem === "function") {
+      return renderItem(item, `${itemId}`);
     }
 
     const comp = renderItem as JSX.Element;
+
     return <comp.type {...comp.props} key={itemId} item={item} />;
   };
 

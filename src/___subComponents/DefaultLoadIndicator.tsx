@@ -1,6 +1,6 @@
 import React from "react";
 
-function DefaultLoadingIndicator(): JSX.Element {
+function DefaultLoadingIndicator() {
   return <div className="loading-indicator">loading...</div>;
 }
 

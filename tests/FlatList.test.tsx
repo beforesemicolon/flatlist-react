@@ -1,11 +1,17 @@
-import {render, cleanup, fireEvent, act} from '@testing-library/react';
+import {cleanup, fireEvent, render} from '@testing-library/react';
 import React from 'react';
 import FlatList from '../src/flatlist-react';
 
 jest.spyOn(React, 'createRef').mockImplementation(() => ({current: null}));
 
+interface Person {
+    firstName: string;
+    lastName: string;
+    age: number;
+}
+
 describe('FlatList', () => {
-    let list = [
+    let list: Person[] = [
         {firstName: 'John', lastName: 'Doe', age: 1},
         {firstName: 'April', lastName: 'zune', age: 3},
         {firstName: 'June', lastName: 'doe', age: 45},

@@ -1,9 +1,9 @@
 import {array, arrayOf, bool, element, func, node, number, object, oneOf, oneOfType, Requireable, shape, string} from 'prop-types';
-import {ReactNode, Ref} from 'react';
+import {FunctionComponent, ReactNode, Ref} from 'react';
 import warning from 'warning';
 import {DisplayHandlerProps, DisplayInterface} from './___subComponents/DisplayHandler';
 import {InfiniteLoaderInterface} from './___subComponents/InfiniteLoader';
-import {renderItem} from './___subComponents/uiFunctions';
+import {renderFunc, renderItem} from './___subComponents/uiFunctions';
 import {GroupOptionsInterface} from './___utils/groupList';
 import {SearchOptionsInterface} from './___utils/searchList';
 import {SortOptionsInterface} from './___utils/sortList';
@@ -25,12 +25,12 @@ function deprecated(propType: Requireable<unknown>, defaultVal: unknown, alterna
     };
 }
 
-export type listItem = Array<{id?: string | number, [key: string]: any} | any> | Set<any> | Map<any, any> | {id?: string | number, [key: string]: any};
+export type List<T> = Array<T> | Set<T> | Map<any, T> | {[key: string]: T};
 
-export interface GroupInterface extends GroupOptionsInterface {
+export interface GroupInterface<ListItem> extends GroupOptionsInterface<ListItem> {
     of?: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    separator?: ReactNode | ((g: any, idx: number, label: string) => ReactNode | null) | null;
+    separator?: ReactNode | ((g: ListItem[], idx: number, label: string) => ReactNode | null) | null;
     separatorAtTheBottom?: boolean;
     sortBy?: SortOptionsInterface['by'];
     sortDescending?: boolean;
@@ -44,43 +44,42 @@ export interface ScrollToTopInterface {
     position?: string;
 }
 
-export interface SortInterface extends SortOptionsInterface {
-    groupBy?: GroupInterface['sortBy'];
-    groupDescending?: GroupInterface['sortDescending'];
-    groupCaseInsensitive?: GroupInterface['sortCaseInsensitive'];
+export interface SortInterface<ListItem> extends SortOptionsInterface {
+    groupBy?: GroupInterface<ListItem>['sortBy'];
+    groupDescending?: GroupInterface<ListItem>['sortDescending'];
+    groupCaseInsensitive?: GroupInterface<ListItem>['sortCaseInsensitive'];
 }
 
-export interface FlatListProps {
-    __forwarededRef?: Ref<HTMLElement>;
+export interface FlatListProps<ListItem> {
     // RENDER
-    list: listItem;
-    renderItem: renderItem;
+    list: List<ListItem>;
+    renderItem: renderFunc<ListItem>;
     renderWhenEmpty?: ReactNode | (() => JSX.Element);
     renderOnScroll?: boolean;
     limit?: number | string;
     reversed?: boolean;
     wrapperHtmlTag?: string;
-    // sortingsortGroupBy
-    sort?: boolean | SortInterface;
-    sortBy?: SortInterface['by'];
-    sortCaseInsensitive?: SortInterface['caseInsensitive'];
-    sortDesc?: SortInterface['descending'];
-    sortDescending?: SortInterface['descending'];
-    sortGroupBy?: GroupInterface['sortBy'];
-    sortGroupDesc?: GroupInterface['sortDescending'];
-    sortGroupDescending?: GroupInterface['sortDescending'];
-    sortGroupCaseInsensitive?: GroupInterface['sortCaseInsensitive'];
+    // sorting
+    sort?: boolean | SortInterface<ListItem>;
+    sortBy?: SortInterface<ListItem>['by'];
+    sortCaseInsensitive?: SortInterface<ListItem>['caseInsensitive'];
+    sortDesc?: SortInterface<ListItem>['descending'];
+    sortDescending?: SortInterface<ListItem>['descending'];
+    sortGroupBy?: GroupInterface<ListItem>['sortBy'];
+    sortGroupDesc?: GroupInterface<ListItem>['sortDescending'];
+    sortGroupDescending?: GroupInterface<ListItem>['sortDescending'];
+    sortGroupCaseInsensitive?: GroupInterface<ListItem>['sortCaseInsensitive'];
     // grouping
-    group?: GroupInterface;
-    showGroupSeparatorAtTheBottom?: GroupInterface['separatorAtTheBottom'];
-    groupSeparatorAtTheBottom?: GroupInterface['separatorAtTheBottom'];
-    groupReversed?: GroupInterface['reversed'];
-    groupSeparator?: GroupInterface['separator'];
-    groupBy?: GroupInterface['by'];
-    groupOf?: GroupInterface['limit'];
+    group?: GroupInterface<ListItem>;
+    showGroupSeparatorAtTheBottom?: GroupInterface<ListItem>['separatorAtTheBottom'];
+    groupSeparatorAtTheBottom?: GroupInterface<ListItem>['separatorAtTheBottom'];
+    groupReversed?: GroupInterface<ListItem>['reversed'];
+    groupSeparator?: GroupInterface<ListItem>['separator'];
+    groupBy?: GroupInterface<ListItem>['by'];
+    groupOf?: GroupInterface<ListItem>['limit'];
     groupSorted?: boolean;
-    groupSortedDescending?: GroupInterface['sortDescending'];
-    groupSortedCaseInsensitive?: GroupInterface['sortCaseInsensitive'];
+    groupSortedDescending?: GroupInterface<ListItem>['sortDescending'];
+    groupSortedCaseInsensitive?: GroupInterface<ListItem>['sortCaseInsensitive'];
     // display
     display?: DisplayInterface;
     displayRow?: DisplayHandlerProps['displayRow'];
@@ -89,14 +88,14 @@ export interface FlatListProps {
     gridGap?: DisplayHandlerProps['gridGap'];
     minColumnWidth?: DisplayHandlerProps['minColumnWidth'];
     // filtering
-    filterBy?: string | ((item: listItem, idx: number) => boolean);
+    filterBy?: string | ((item: ListItem, idx: number) => boolean);
     // searching
-    search?: SearchOptionsInterface;
-    searchTerm?: SearchOptionsInterface['term'];
-    searchBy?: SearchOptionsInterface['by'];
-    searchOnEveryWord?: SearchOptionsInterface['everyWord'];
-    searchCaseInsensitive?: SearchOptionsInterface['caseInsensitive'];
-    searchableMinCharactersCount?: SearchOptionsInterface['minCharactersCount'];
+    search?: SearchOptionsInterface<ListItem>;
+    searchTerm?: SearchOptionsInterface<ListItem>['term'];
+    searchBy?: SearchOptionsInterface<ListItem>['by'];
+    searchOnEveryWord?: SearchOptionsInterface<ListItem>['everyWord'];
+    searchCaseInsensitive?: SearchOptionsInterface<ListItem>['caseInsensitive'];
+    searchableMinCharactersCount?: SearchOptionsInterface<ListItem>['minCharactersCount'];
     // pagination
     pagination?: InfiniteLoaderInterface;
     hasMoreItems?: InfiniteLoaderInterface['hasMore'];
@@ -114,11 +113,11 @@ export interface FlatListProps {
     [key: string]: any;
 }
 
-export const defaultProps: FlatListProps = {
+export const defaultProps: FlatListProps<any> = {
     __forwarededRef: {current: null},
     // RENDER
     list: [],
-    renderItem: null,
+    renderItem: () => null,
     limit: 0,
     renderWhenEmpty: null,
     reversed: false,

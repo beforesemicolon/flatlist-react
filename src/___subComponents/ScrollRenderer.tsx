@@ -5,6 +5,7 @@ import React, {
   Ref,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useState,
 } from "react";
 import {
@@ -14,25 +15,26 @@ import {
   renderItem,
 } from "./uiFunctions";
 
-interface Props {
+interface ScrollRendererProps<ListItem> {
   list: any[];
-  renderItem: renderItem;
+  renderItem: renderFunc<ListItem>;
   groupSeparator:
     | ReactNode
     | ((g: any, idx: number, label: string) => ReactNode | null)
     | null;
 }
 
-function ScrollRenderer(props: Props) {
-  const { list, renderItem = null, groupSeparator } = props;
+function ScrollRenderer<ListItem>(props: ScrollRendererProps<ListItem>) {
+  const { list, renderItem, groupSeparator } = props;
   const [render, setRender] = useState({ renderList: [], index: 0 });
   const [mounted, setMounted] = useState(false);
   const [setupCount, setSetupCount] = useState(-1);
   const containerRef: Ref<HTMLElement> = createRef();
 
-  const renderThisItem = handleRenderItem(
-    renderItem,
-    handleRenderGroupSeparator(groupSeparator)
+  const renderThisItem = useMemo(
+    () =>
+      handleRenderItem(renderItem, handleRenderGroupSeparator(groupSeparator)),
+    [renderItem, groupSeparator]
   );
 
   const updateRenderInfo = (count = 10) => {
@@ -45,14 +47,14 @@ function ScrollRenderer(props: Props) {
     }
   };
 
-  const onScroll = (span: any) => () => {
+  const onScroll = (span: HTMLSpanElement) => () => {
     requestAnimationFrame(() => {
       if (span) {
-        const startingPoint =
-          span.parentNode.offsetTop + span.parentNode.offsetHeight;
-        const anchorPos = span.offsetTop - span.parentNode.scrollTop;
+        const parent = span.parentNode as HTMLElement;
+        const startingPoint = parent.offsetTop + parent.offsetHeight;
+        const anchorPos = span.offsetTop - parent.scrollTop;
 
-        if (anchorPos <= startingPoint + span.parentNode.offsetHeight * 2) {
+        if (anchorPos <= startingPoint + parent.offsetHeight * 2) {
           updateRenderInfo();
         }
       }
@@ -90,7 +92,7 @@ function ScrollRenderer(props: Props) {
   }, [list]);
 
   useLayoutEffect(() => {
-    const span: any = containerRef.current;
+    const span = containerRef.current as HTMLSpanElement;
     const handleScroll = onScroll(span);
     let container: any = null;
 
@@ -123,7 +125,7 @@ function ScrollRenderer(props: Props) {
 
   return (
     <>
-      {render.renderList.map(renderThisItem as renderFunc)}
+      {render.renderList.map((item, idx) => renderThisItem(item, `${idx}`))}
       <span
         ref={containerRef}
         style={{ visibility: "hidden", height: 1 }}

@@ -1,9 +1,9 @@
 import {array, arrayOf, bool, element, func, node, number, object, oneOf, oneOfType, Requireable, shape, string} from 'prop-types';
-import {ReactNode, Ref} from 'react';
+import {FunctionComponent, ReactNode, Ref} from 'react';
 import warning from 'warning';
 import {DisplayHandlerProps, DisplayInterface} from './___subComponents/DisplayHandler';
 import {InfiniteLoaderInterface} from './___subComponents/InfiniteLoader';
-import {renderItem} from './___subComponents/uiFunctions';
+import {renderFunc, renderItem} from './___subComponents/uiFunctions';
 import {GroupOptionsInterface} from './___utils/groupList';
 import {SearchOptionsInterface} from './___utils/searchList';
 import {SortOptionsInterface} from './___utils/sortList';
@@ -25,7 +25,7 @@ function deprecated(propType: Requireable<unknown>, defaultVal: unknown, alterna
     };
 }
 
-export type listItem = Array<{id?: string | number, [key: string]: any} | any> | Set<any> | Map<any, any> | {id?: string | number, [key: string]: any};
+export type List<T> = Array<T> | Set<T> | Map<any, T> | {[key: string]: T};
 
 export interface GroupInterface extends GroupOptionsInterface {
     of?: number;
@@ -50,17 +50,16 @@ export interface SortInterface extends SortOptionsInterface {
     groupCaseInsensitive?: GroupInterface['sortCaseInsensitive'];
 }
 
-export interface FlatListProps {
-    __forwarededRef?: Ref<HTMLElement>;
+export interface FlatListProps<ListItem> {
     // RENDER
-    list: listItem;
-    renderItem: renderItem;
+    list: List<ListItem>;
+    renderItem: renderFunc<ListItem>;
     renderWhenEmpty?: ReactNode | (() => JSX.Element);
     renderOnScroll?: boolean;
     limit?: number | string;
     reversed?: boolean;
     wrapperHtmlTag?: string;
-    // sortingsortGroupBy
+    // sorting
     sort?: boolean | SortInterface;
     sortBy?: SortInterface['by'];
     sortCaseInsensitive?: SortInterface['caseInsensitive'];
@@ -89,7 +88,7 @@ export interface FlatListProps {
     gridGap?: DisplayHandlerProps['gridGap'];
     minColumnWidth?: DisplayHandlerProps['minColumnWidth'];
     // filtering
-    filterBy?: string | ((item: listItem, idx: number) => boolean);
+    filterBy?: string | ((item: ListItem, idx: number) => boolean);
     // searching
     search?: SearchOptionsInterface;
     searchTerm?: SearchOptionsInterface['term'];
@@ -114,11 +113,11 @@ export interface FlatListProps {
     [key: string]: any;
 }
 
-export const defaultProps: FlatListProps = {
+export const defaultProps: FlatListProps<any> = {
     __forwarededRef: {current: null},
     // RENDER
     list: [],
-    renderItem: null,
+    renderItem: () => null,
     limit: 0,
     renderWhenEmpty: null,
     reversed: false,

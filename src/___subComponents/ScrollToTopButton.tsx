@@ -11,7 +11,7 @@ import React, { createRef, ReactNode, Ref, useEffect, useState } from "react";
 import { isFunction } from "../___utils/isType";
 import { btnPosition } from "./uiFunctions";
 
-interface Props {
+interface ScrollToTopButtonProps {
   button: ReactNode | (() => ReactNode);
   position: string;
   offset: number;
@@ -19,7 +19,7 @@ interface Props {
   scrollingContainer: Ref<HTMLElement> | undefined;
 }
 
-function ScrollToTopButton(props: Props) {
+function ScrollToTopButton(props: ScrollToTopButtonProps) {
   const anchor: Ref<HTMLElement> = createRef();
   const { button, position, padding, offset, scrollingContainer } = props;
   const btn = isFunction(button) ? (button as () => ReactNode)() : button;

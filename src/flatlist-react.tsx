@@ -1,4 +1,4 @@
-import React, {forwardRef, Ref, useMemo} from 'react';
+import React, {createRef, forwardRef, Ref, useMemo} from 'react';
 import DisplayHandler, {DisplayInterface} from './___subComponents/DisplayHandler';
 import InfiniteLoader, {InfiniteLoaderInterface} from './___subComponents/InfiniteLoader';
 import ScrollRenderer from './___subComponents/ScrollRenderer';
@@ -104,7 +104,10 @@ FlatList.defaultProps = defaultProps;
 
 // export default FlatList;
 export default forwardRef<HTMLElement, PlainListProps<any>>(
-    <ListItem,>(props: PlainListProps<ListItem>, ref: Ref<HTMLElement>) => (
-        <FlatList __forwarededRef={ref} {...props} />
-    )
+    <ListItem,>(props: PlainListProps<ListItem>, ref: Ref<HTMLElement>) => {
+        ref = ref || createRef();
+        return (
+            <FlatList __forwarededRef={ref} {...props} />
+        )
+    }
 ) as <ListItem,>(props: FlatListProps<ListItem>) => JSX.Element;

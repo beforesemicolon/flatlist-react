@@ -65,13 +65,13 @@ class InfiniteLoader extends Component<
 
   componentDidMount(): void {
     this.mounted = true;
-    const { current: loadIndicatorContainer }: any = this.loaderContainerRef;
+    const { current: loadIndicatorContainer } = this.loaderContainerRef;
 
     if (loadIndicatorContainer) {
       this.setState(
         {
           loadIndicatorContainer,
-          scrollingContainer: loadIndicatorContainer.parentNode,
+          scrollingContainer: loadIndicatorContainer.parentNode as HTMLElement,
         },
         () => {
           this.currentItemsCount = this.getScrollingContainerChildrenCount();

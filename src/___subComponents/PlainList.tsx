@@ -1,5 +1,5 @@
 import { array, bool, func, node, object, oneOfType, string } from "prop-types";
-import React, { forwardRef, ReactNode, Ref, useMemo } from "react";
+import React, { createRef, forwardRef, ReactNode, Ref, useMemo } from "react";
 import convertListToArray from "../___utils/convertListToArray";
 import { isString } from "../___utils/isType";
 import DefaultBlank from "./DefaultBlank";
@@ -92,7 +92,8 @@ PlainList.defaultProps = {
 };
 
 export default forwardRef(
-  <ListItem,>(props: PlainListProps<ListItem>, ref: Ref<HTMLElement>) => (
-    <PlainList __forwarededRef={ref} {...props} />
-  )
+  <ListItem,>(props: PlainListProps<ListItem>, ref: Ref<HTMLElement>) => {
+    ref = ref || createRef();
+    return <PlainList __forwarededRef={ref} {...props} />;
+  }
 ) as <ListItem>(props: PlainListProps<ListItem>) => JSX.Element;

@@ -12,7 +12,6 @@ import {
   handleRenderGroupSeparator,
   handleRenderItem,
   renderFunc,
-  renderItem,
 } from "./uiFunctions";
 
 interface ScrollRendererProps<ListItem> {

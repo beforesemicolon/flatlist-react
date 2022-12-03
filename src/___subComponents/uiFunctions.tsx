@@ -21,8 +21,9 @@ export const renderBlank = (
     ? (renderWhenEmpty as () => JSX.Element)()
     : DefaultBlank();
 
-export const handleRenderGroupSeparator = (CustomSeparator: any) =>
-  function (sep: any, idx: number | string): JSX.Element {
+export const handleRenderGroupSeparator =
+  (CustomSeparator: any) =>
+  (sep: any, idx: number | string): JSX.Element => {
     const [cls, groupLabel, group] = sep;
     const separatorKey = `separator-${idx}`;
 

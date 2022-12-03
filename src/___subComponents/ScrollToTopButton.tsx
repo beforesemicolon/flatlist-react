@@ -29,17 +29,6 @@ function ScrollToTopButton(props: ScrollToTopButtonProps) {
     const buttonElement = (anchor as any).current.nextElementSibling;
     const container = (anchor as any).current.parentNode;
     const scrollContainer = (scrollingContainer as any).current;
-    const containerStyle = getComputedStyle(container);
-    container.style.overflow = "hidden";
-    container.style.position = ["absolute", "fixed", "relative"].includes(
-      containerStyle.overflow
-    )
-      ? containerStyle.overflow
-      : "relative";
-    scrollContainer.style.overflow = "auto";
-    scrollContainer.style.padding = containerStyle.padding;
-    scrollContainer.style.height = "100%";
-    container.style.padding = "0";
     const positionBtn = btnPosition(scrollContainer, buttonElement);
     const pos = position.split(" ");
     const updateBtnPosition = () =>

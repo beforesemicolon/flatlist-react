@@ -67,21 +67,21 @@ function DisplayHandler(props: DisplayHandlerProps) {
         defaultProps.display.gridMinColumnWidth;
 
       styleTag.innerHTML = `
-                [data-cont="${container.dataset.cont}"] {
-                    display: grid;
-                    grid-gap: ${gap};
-                    gap: ${gap};
-                    grid-template-columns: repeat(auto-fill, minmax(${column}, 1fr));
-                    grid-template-rows: auto;
-                    align-items: stretch;
-                }
-                
-                [data-cont="${container.dataset.cont}"] .__infinite-loader,
-                [data-cont="${container.dataset.cont}"] .___scroll-renderer-anchor,
-                [data-cont="${container.dataset.cont}"] .___list-separator {
-                    grid-column: 1/-1;
-                }
-            `;
+          [data-cont="${container.dataset.cont}"] {
+              display: grid;
+              grid-gap: ${gap};
+              gap: ${gap};
+              grid-template-columns: repeat(auto-fill, minmax(${column}, 1fr));
+              grid-template-rows: auto;
+              align-items: stretch;
+          }
+          
+          [data-cont="${container.dataset.cont}"] .__infinite-loader,
+          [data-cont="${container.dataset.cont}"] .___scroll-renderer-anchor,
+          [data-cont="${container.dataset.cont}"] .___list-separator {
+              grid-column: 1/-1;
+          }
+      `;
     } else {
       styleTag.innerHTML = "";
     }
@@ -95,18 +95,18 @@ function DisplayHandler(props: DisplayHandlerProps) {
       const gap = display.rowGap || rowGap || defaultProps.display.rowGap;
 
       styleTag.innerHTML = `
-                [data-cont="${container.dataset.cont}"] {
-                    display: flex;
-                    flex-direction: column;
-                }
-                
-                [data-cont="${container.dataset.cont}"] > *:not(.__infinite-loader) {
-                    display: block;
-                    flex: 1;
-                    width: 100%;
-                    margin-bottom: ${gap};
-                }
-            `;
+          [data-cont="${container.dataset.cont}"] {
+              display: flex;
+              flex-direction: column;
+          }
+          
+          [data-cont="${container.dataset.cont}"] > *:not(.__infinite-loader) {
+              display: block;
+              flex: 1;
+              width: 100%;
+              margin-bottom: ${gap};
+          }
+      `;
     } else {
       styleTag.innerHTML = "";
     }

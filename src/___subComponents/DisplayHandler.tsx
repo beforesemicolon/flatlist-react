@@ -52,11 +52,11 @@ const defaultProps = {
 function DisplayHandler(props: DisplayHandlerProps) {
   const { displayGrid, displayRow, display, gridGap, minColumnWidth, rowGap } =
     props;
-  const childSpanRef: any = createRef();
-  const [combo, setParentComponent]: any = useState(null);
+  const childSpanRef = createRef<HTMLSpanElement>();
+  const [combo, setParentComponent] = useState<[HTMLElement, HTMLElement]>();
 
   const styleParentGrid = (
-    styleTag: HTMLStyleElement,
+    styleTag: HTMLElement,
     container: HTMLElement
   ): void => {
     if (displayGrid || display.grid) {
@@ -88,7 +88,7 @@ function DisplayHandler(props: DisplayHandlerProps) {
   };
 
   const styleParentRow = (
-    styleTag: HTMLStyleElement,
+    styleTag: HTMLElement,
     container: HTMLElement
   ): void => {
     if (displayRow || display.row) {
@@ -114,7 +114,7 @@ function DisplayHandler(props: DisplayHandlerProps) {
 
   const handleDisplayHandlerProps = (
     container: HTMLElement,
-    style: HTMLStyleElement
+    style: HTMLElement
   ): void => {
     if (container) {
       if (display.grid || displayGrid) {
@@ -132,19 +132,22 @@ function DisplayHandler(props: DisplayHandlerProps) {
   });
 
   useEffect(() => {
-    const { current }: any = childSpanRef;
-    let container: any = null;
-    let style: any = null;
+    const { current } = childSpanRef;
+    let container: HTMLElement;
+    let style: HTMLElement;
 
     if (current) {
       const id = `__container-${new Date().getTime()}`;
-      container = current.parentNode;
-      container.setAttribute("data-cont", id);
-      style = document.createElement("STYLE");
-      style.id = id;
-      document.head.appendChild(style);
-      setParentComponent([container, style]);
-      handleDisplayHandlerProps(container, style);
+      container = current.parentNode as HTMLElement;
+
+      if (container) {
+        container.setAttribute("data-cont", id);
+        style = document.createElement("STYLE");
+        style.id = id;
+        document.head.appendChild(style);
+        setParentComponent([container, style]);
+        handleDisplayHandlerProps(container, style);
+      }
     } else {
       console.warn(
         "FlatList: it was not possible to get container's ref. Styling will not be possible"

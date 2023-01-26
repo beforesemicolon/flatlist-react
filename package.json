@@ -1,8 +1,9 @@
 {
   "name": "flatlist-react",
-  "version": "1.5.7",
+  "version": "1.5.8",
   "description": "A helpful utility component to handle lists in react like a champ",
   "main": "./lib/index.js",
+  "types": "./lib/index.d.js",
   "scripts": {
     "format": "prettier --write src/**/*.ts{,x}",
     "lint": "eslint src/**/*.ts{,x}",

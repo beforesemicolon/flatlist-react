@@ -7,7 +7,7 @@ type termCb<ListItem> = (item: ListItem, term: string, idx: number) => boolean;
 
 export interface SearchOptionsInterface<ListItem> {
   term?: string;
-  everyWord?: boolean;
+  everyWord?: boolean; // deprecated
   onEveryWord?: boolean;
   caseInsensitive?: boolean;
   minCharactersCount?: number;

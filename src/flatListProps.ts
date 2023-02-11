@@ -13,14 +13,14 @@ import {
   shape,
   string,
 } from "prop-types";
-import { FunctionComponent, ReactNode, Ref } from "react";
+import { ReactNode } from "react";
 import warning from "warning";
 import {
   DisplayHandlerProps,
   DisplayInterface,
 } from "./___subComponents/DisplayHandler";
 import { InfiniteLoaderInterface } from "./___subComponents/InfiniteLoader";
-import { renderFunc, renderItem } from "./___subComponents/uiFunctions";
+import { renderFunc } from "./___subComponents/uiFunctions";
 import { GroupOptionsInterface } from "./___utils/groupList";
 import { SearchOptionsInterface } from "./___utils/searchList";
 import { SortOptionsInterface } from "./___utils/sortList";
@@ -43,14 +43,7 @@ function deprecated(
       props[propName] !== defaultVal
     ) {
       const message = `"${propName}" prop of "${componentName}" has been deprecated. Please use "${alternative}" instead.`;
-      const testing =
-        process && process.env
-          ? process.env.JEST_WORKER_ID !== undefined
-          : false;
-
-      if (!testing) {
-        warning(false, message);
-      }
+      warning(false, message);
     }
 
     // @ts-ignore

@@ -7,6 +7,22 @@ padding: 10px 20px;
 FlatList React
 </h1>
 
+
+| Features                                    | Props / Components                                                                                                                                                                                                                                                                                                                              |
+|:--------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [Rendering](#rendering)                     | [list](#list-and-renderitem), [renderItem](#list-and-renderitem), [renderWhenEmpty](#renderwhenempty), [wrapperHtmlTag](#wrapperhtmltag), [limit](#limit), [reversed](#reversed)                                                                                                                                                                |
+| [Render Optimization](#render-optimization) | [renderOnScroll](#renderonscroll)                                                                                                                                                                                                                                                                                                               |
+| [Pagination (Infinite Scroll)](#pagination) | [hasMoreItems](#hasmoreitems), [loadMoreItems](#loadmoreitems), [paginationLoadingIndicator](#paginationloadingindicator), [paginationLoadingIndicatorPosition](#paginationloadingindicatorposition)                                                                                                                                            |
+| [Filtering](#filtering)                     | [filterBy](#filterby)                                                                                                                                                                                                                                                                                                                           |
+| [Searching](#searching)                     | [searchTerm](#searchterm), [searchBy](#searchby), [searchOnEveryWord](#searchoneveryword), [searchMinCharactersCount](#searchmincharacterscount), [searchCaseInsensitive](#searchcaseinsensitive)                                                                                                                                               |
+| [Sorting](#sorting)                         | [sortBy](#sortby), [sortCaseInsensitive](#sortcaseinsensitive), [sortDescending](#sortdescending)                                                                                                                                                                                                                                               |
+| [Grouping](#grouping)                       | [groupOf](#groupof), [groupBy](#groupby), [groupSeparator](#groupseparator), [groupSeparatorAtTheBottom](#groupseparatoratthebottom), [groupReversed](#groupreversed), [groupSorted](#groupsorted), [groupSortedBy](#groupsortedby), [groupSortedDescending](#groupsorteddescending), [groupSortedCaseInsensitive](#groupsortedcaseinsensitive) |
+| [Styling](#styling)                         | [displayGrid](#displaygrid), [gridGap](#gridgap), [minColumnWidth](#mincolumnwidth), [displayRow](#displayrow), [rowGap](#rowgap)                                                                                                                                                                                                               |
+| [scrollToTop](#scrolltotop)                 | [scrollToTopButton](#scrolltotopbutton), [scrollToTopOffset](#scrolltotopoffset), [scrollToTopPadding](#scrolltotoppadding), [scrollToTopPosition](#scrolltotopposition)                                                                                                                                                                        |
+| [Components](#components)                   | [PlainList](#plainlist)                                                                                                                                                                                                                                                                                                                         |
+| [Utilities](#utilities)                     | [sortList](#sortlist), [searchList](#searchlist), [filterList](#filterlist), [groupList](#grouplist), [limitList](#limitlist)                                                                                                                                                                                                                   |
+
+
 ### Install
 
 Make sure you are running **react** and **react-dom** version **16.8.0+**.
@@ -18,16 +34,16 @@ Make sure you are running **react** and **react-dom** version **16.8.0+**.
 FlatList has alternative ways to present your props in order to make things easier to change and quicker to specify.
 
 There are available **shorthands props** just in case you want to make batch updates or want to keep things nicely together:
-- [`group`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#grouping)
-- [`sort`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#sorting)
-- [`search`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#searching)
-- [`pagination`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#pagination)
-- [`scrollToTop`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#scrolltotop)
-- [`display`](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#styling).
+- [`group`](#grouping)
+- [`sort`](#sorting)
+- [`search`](#searching)
+- [`pagination`](#pagination)
+- [`scrollToTop`](#scrolltotop)
+- [`display`](#styling).
 
 For example:
 
-There are several props for [grouping](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#grouping) but there is also a
+There are several props for [grouping](#grouping) but there is also a
 `group` prop which takes all these props all at once.
 
 ```jsx
@@ -119,11 +135,11 @@ FlatList also offers internal components for usage to further help with your lis
 ### PlainList
 `PlainList` is a simpler version of FlatList. It is an ideal option when all you want to do is render a list.
 It supports only the following props:
-- [list](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#list-and-renderitem)
-- [renderItem](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#list-and-renderitem)
-- [renderWhenEmpty](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#renderwhenempty)
-- [renderOnScroll](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#renderonscroll)
-- [wrapperHtmlTag](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#wrapperhtmltag)
+- [list](#list-and-renderitem)
+- [renderItem](#list-and-renderitem)
+- [renderWhenEmpty](#renderwhenempty)
+- [renderOnScroll](#renderonscroll)
+- [wrapperHtmlTag](#wrapperhtmltag)
 
 It is the ideal component to render small simple lists like dropDown, selection options or any other
 list you dont plan to do anything besides rendering them and leave it.
@@ -320,7 +336,7 @@ The `renderOnScroll` will render your list to fill the container and then stop. 
 further render the remainder items. This is great if creating a lot of dom elements takes time and you dont want the browser
 to become iresponsive while rendering a very large list. 
 
-It is different from [pagination(Infinite Scrolling)](https://github.com/beforesemicolon/flatlist-react/blob/master/documentation/Doc.md#pagination). With pagination you start with some items and when the user reaches the
+It is different from [pagination(Infinite Scrolling)](#pagination). With pagination you start with some items and when the user reaches the
 end it will fetch some more while showing the loading indicator.
 
 `renderOnScroll` is great for when you have large list and rendering it all at once would take long and freeze the browser.

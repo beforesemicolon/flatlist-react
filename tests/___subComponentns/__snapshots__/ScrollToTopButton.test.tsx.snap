@@ -2,7 +2,9 @@
 
 exports[`ScrollToTopButton Should match snapshot 1`] = `
 <DocumentFragment>
-  <div>
+  <div
+    style="position: relative;"
+  >
     <button
       style="position: absolute; z-index: 1; visibility: hidden;"
       type="button"

@@ -75,7 +75,13 @@ export interface ScrollToTopInterface {
   button?: ReactNode | (() => JSX.Element);
   offset?: number;
   padding?: number;
-  position?: string;
+  position?:
+    | "top"
+    | "bottom"
+    | "top right"
+    | "top left"
+    | "bottom left"
+    | "bottom right";
 }
 
 export interface SortInterface<ListItem> extends SortOptionsInterface {
@@ -211,14 +217,14 @@ export const defaultProps: FlatListProps<any> = {
   // SCROLL TO TOP
   scrollToTop: {
     button: null,
-    offset: 50,
-    padding: 20,
-    position: "bottom right",
+    offset: undefined,
+    padding: undefined,
+    position: undefined,
   },
   scrollToTopButton: null,
-  scrollToTopOffset: 50,
-  scrollToTopPadding: 20,
-  scrollToTopPosition: "bottom right",
+  scrollToTopOffset: undefined,
+  scrollToTopPadding: undefined,
+  scrollToTopPosition: undefined,
   // SEARCH
   search: {
     by: "",

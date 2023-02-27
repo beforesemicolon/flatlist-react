@@ -21,7 +21,13 @@ interface ScrollToTopButtonProps {
 
 function ScrollToTopButton(props: ScrollToTopButtonProps) {
   const anchor: Ref<HTMLElement> = createRef();
-  const { button, position, padding, offset, scrollingContainer } = props;
+  const {
+    button = null,
+    position = "bottom right",
+    padding = 20,
+    offset = 50,
+    scrollingContainer,
+  } = props;
   const btn = isFunction(button) ? (button as () => ReactNode)() : button;
   const [mounted, setMounted] = useState(false);
 
@@ -29,6 +35,11 @@ function ScrollToTopButton(props: ScrollToTopButtonProps) {
     const buttonElement = (anchor as any).current.nextElementSibling;
     const container = (anchor as any).current.parentNode;
     const scrollContainer = (scrollingContainer as any).current;
+    const containerStyle = getComputedStyle(container);
+    const ogPos = containerStyle.position;
+    container.style.position = ["absolute", "fixed", "relative"].includes(ogPos)
+      ? ogPos
+      : "relative";
     const positionBtn = btnPosition(scrollContainer, buttonElement);
     const pos = position.split(" ");
     const updateBtnPosition = () =>
@@ -49,9 +60,7 @@ function ScrollToTopButton(props: ScrollToTopButtonProps) {
 
     setMounted(true);
     return () => {
-      container.style.removeProperty("overflow");
-      container.style.removeProperty("position");
-      container.style.removeProperty("padding");
+      container.style.position = ogPos;
       window.removeEventListener("resize", updateBtnPosition);
     };
   }, []);
@@ -74,9 +83,9 @@ ScrollToTopButton.propTypes = {
 
 ScrollToTopButton.defaultProps = {
   button: null,
-  padding: 20,
-  offset: 50,
-  position: "bottom right",
+  padding: undefined,
+  offset: undefined,
+  position: undefined,
 };
 
 export default ScrollToTopButton;

@@ -17,7 +17,6 @@ import {
   defaultProps,
   FlatListProps,
   GroupInterface,
-  propTypes,
   ScrollToTopInterface,
 } from "./flatListProps";
 import { useList } from "./hooks/use-list";
@@ -48,9 +47,11 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
     scrollToTopOffset,
     scrollToTopPosition,
     pagination = {} as InfiniteLoaderInterface, // pagination props
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    // @ts-ignore
     __forwarededRef,
     ...otherProps
-  } = props;
+  } = { ...defaultProps, ...props };
   const renderList = useList(props);
 
   const tagProps = useMemo(
@@ -58,7 +59,13 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
       Object.keys(otherProps)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter((k: string) => (defaultProps as any)[k] === undefined)
-        .reduce((p, k: string) => ({ ...p, [k]: otherProps[k] }), {}),
+        .reduce(
+          (p, k: string) => ({
+            ...p,
+            [k]: (otherProps as Record<string, unknown>)[k],
+          }),
+          {}
+        ),
     [otherProps]
   );
 
@@ -157,10 +164,6 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
     </>
   );
 }
-
-FlatList.propTypes = propTypes;
-
-FlatList.defaultProps = defaultProps;
 
 // export default FlatList;
 export default forwardRef<HTMLElement, PlainListProps<any>>(

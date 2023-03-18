@@ -1,21 +1,12 @@
-import {
-  element,
-  func,
-  node,
-  number,
-  oneOf,
-  oneOfType,
-  shape,
-} from "prop-types";
 import React, { createRef, ReactNode, Ref, useEffect, useState } from "react";
 import { isFunction } from "../___utils/isType";
 import { btnPosition } from "./uiFunctions";
 
 interface ScrollToTopButtonProps {
-  button: ReactNode | (() => ReactNode);
-  position: string;
-  offset: number;
-  padding: number;
+  button?: ReactNode | (() => ReactNode);
+  position?: string;
+  offset?: number;
+  padding?: number;
   scrollingContainer: Ref<HTMLElement> | undefined;
 }
 
@@ -72,20 +63,5 @@ function ScrollToTopButton(props: ScrollToTopButtonProps) {
     </>
   );
 }
-
-ScrollToTopButton.propTypes = {
-  scrollingContainer: shape({ current: oneOf([element, node]) }).isRequired,
-  button: oneOfType([node, element, func]),
-  position: oneOf(["top right", "top left", "bottom right", "bottom left"]),
-  padding: number,
-  offset: number,
-};
-
-ScrollToTopButton.defaultProps = {
-  button: null,
-  padding: undefined,
-  offset: undefined,
-  position: undefined,
-};
 
 export default ScrollToTopButton;

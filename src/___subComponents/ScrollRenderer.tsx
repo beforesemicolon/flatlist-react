@@ -1,4 +1,3 @@
-import { any, arrayOf, element, func, node, oneOfType } from "prop-types";
 import React, {
   createRef,
   ReactNode,
@@ -15,16 +14,16 @@ import {
 } from "./uiFunctions";
 
 interface ScrollRendererProps<ListItem> {
-  list: any[];
-  renderItem: renderFunc<ListItem>;
-  groupSeparator:
+  list?: any[];
+  renderItem?: renderFunc<ListItem>;
+  groupSeparator?:
     | ReactNode
     | ((g: any, idx: number, label: string) => ReactNode | null)
     | null;
 }
 
 function ScrollRenderer<ListItem>(props: ScrollRendererProps<ListItem>) {
-  const { list, renderItem, groupSeparator } = props;
+  const { list = [], renderItem = () => null, groupSeparator = null } = props;
   const [render, setRender] = useState({ renderList: [], index: 0 });
   const [mounted, setMounted] = useState(false);
   const [setupCount, setSetupCount] = useState(-1);
@@ -133,15 +132,5 @@ function ScrollRenderer<ListItem>(props: ScrollRendererProps<ListItem>) {
     </>
   );
 }
-
-ScrollRenderer.propTypes = {
-  list: arrayOf(any).isRequired,
-  renderItem: func.isRequired,
-  groupSeparator: oneOfType([node, func, element]),
-};
-
-ScrollRenderer.defaultProps = {
-  groupSeparator: null,
-};
 
 export default ScrollRenderer;

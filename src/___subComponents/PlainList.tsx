@@ -1,8 +1,6 @@
-import { array, bool, func, node, object, oneOfType, string } from "prop-types";
 import React, { createRef, forwardRef, ReactNode, Ref, useMemo } from "react";
 import convertListToArray from "../___utils/convertListToArray";
 import { isString } from "../___utils/isType";
-import DefaultBlank from "./DefaultBlank";
 import ScrollRenderer from "./ScrollRenderer";
 import { handleRenderItem, renderBlank, renderFunc } from "./uiFunctions";
 import { List } from "../flatListProps";
@@ -63,33 +61,6 @@ function PlainList<ListItem>(props: PlainListProps<ListItem>) {
     </>
   );
 }
-
-PlainList.propTypes = {
-  /**
-   * a list of anything to be displayed
-   */
-  list: oneOfType([array, object]).isRequired,
-  /**
-   * a jsx element or a function that it is called for every item on the list and returns a jsx element
-   */
-  renderItem: oneOfType([func, node]).isRequired,
-  /**
-   * the function that gets called when the list is empty or was filtered to the point it became empty
-   */
-  renderWhenEmpty: func,
-  /**
-   * an optional html tag to use to wrap the list items
-   */
-  wrapperHtmlTag: string,
-  forwardRef: object,
-  renderOnScroll: bool,
-};
-
-PlainList.defaultProps = {
-  wrapperHtmlTag: "",
-  renderWhenEmpty: DefaultBlank,
-  renderOnScroll: false,
-};
 
 export default forwardRef(
   <ListItem,>(props: PlainListProps<ListItem>, ref: Ref<HTMLElement>) => {

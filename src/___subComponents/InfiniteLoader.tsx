@@ -1,13 +1,4 @@
 import React, { Component, createRef, CSSProperties, ReactNode } from "react";
-import {
-  bool,
-  element,
-  func,
-  node,
-  oneOf,
-  oneOfType,
-  number,
-} from "prop-types";
 import { isFunction } from "../___utils/isType";
 import DefaultLoadIndicator from "./DefaultLoadIndicator";
 
@@ -33,19 +24,6 @@ class InfiniteLoader extends Component<
   InfiniteLoaderProps,
   InfiniteLoaderState
 > {
-  static propTypes = {
-    itemsCount: number,
-    hasMore: bool.isRequired,
-    loadMore: func.isRequired,
-    loadingIndicator: oneOfType([func, node, element]),
-    loadingIndicatorPosition: oneOf(["left", "center", "right", ""]),
-  };
-
-  static defaultProps = {
-    loadingIndicatorPosition: "left",
-    loadingIndicator: DefaultLoadIndicator,
-  };
-
   state: InfiniteLoaderState = {
     prevItemsCount: this.props.itemsCount,
     loadIndicatorContainer: null,
@@ -173,7 +151,11 @@ class InfiniteLoader extends Component<
 
   render(): ReactNode {
     const { loading } = this.state;
-    const { hasMore, loadingIndicator, loadingIndicatorPosition } = this.props;
+    const {
+      hasMore,
+      loadingIndicator = DefaultLoadIndicator,
+      loadingIndicatorPosition = "left",
+    } = this.props;
 
     const spinning = hasMore && loading;
 

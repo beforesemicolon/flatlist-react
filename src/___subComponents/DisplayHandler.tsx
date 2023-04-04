@@ -1,4 +1,3 @@
-import { bool, shape, string } from "prop-types";
 import React, { createRef, useEffect, useState } from "react";
 
 export interface DisplayInterface {
@@ -10,31 +9,16 @@ export interface DisplayInterface {
 }
 
 export interface DisplayHandlerProps {
-  displayRow: boolean;
-  rowGap: string;
-  displayGrid: boolean;
+  displayRow?: boolean;
+  rowGap?: string;
+  displayGrid?: boolean;
   // showGroupSeparatorAtTheBottom?: boolean;
-  gridGap: string;
-  minColumnWidth: string;
-  display: DisplayInterface;
+  gridGap?: string;
+  minColumnWidth?: string;
+  display?: DisplayInterface;
 }
 
-const propTypes = {
-  display: shape({
-    grid: bool,
-    gridGap: string,
-    gridMinColumnWidth: string,
-    row: bool,
-    rowGap: string,
-  }),
-  displayGrid: bool,
-  displayRow: bool,
-  gridGap: string,
-  minColumnWidth: string,
-  rowGap: string,
-};
-
-const defaultProps = {
+const defaultProps: Required<DisplayHandlerProps> = {
   display: {
     grid: false,
     gridGap: "20px",
@@ -51,7 +35,7 @@ const defaultProps = {
 
 function DisplayHandler(props: DisplayHandlerProps) {
   const { displayGrid, displayRow, display, gridGap, minColumnWidth, rowGap } =
-    props;
+    { ...defaultProps, ...props };
   const childSpanRef = createRef<HTMLSpanElement>();
   const [combo, setParentComponent] = useState<[HTMLElement, HTMLElement]>();
 
@@ -169,8 +153,5 @@ function DisplayHandler(props: DisplayHandlerProps) {
     </>
   );
 }
-
-DisplayHandler.propTypes = propTypes;
-DisplayHandler.defaultProps = defaultProps;
 
 export default DisplayHandler;

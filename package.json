@@ -1,6 +1,6 @@
 {
   "name": "flatlist-react",
-  "version": "1.5.13",
+  "version": "1.5.14",
   "description": "A helpful utility component to handle lists in react like a champ",
   "main": "./lib/index.js",
   "types": "./lib/index.d.js",
@@ -8,10 +8,9 @@
     "format": "prettier --write src/**/*.ts{,x}",
     "lint": "eslint src/**/*.ts{,x}",
     "lint:fix": "eslint --fix src/**/*.ts{,x}",
-    "tsc": "tsc",
     "clean": "rm -rf ./lib",
-    "build": "npm run clean && npm run format && npm run lint && npm run tsc",
-    "build:local": "npm run format && npm run lint && npm run tsc",
+    "build": "npm run clean && npm run format && npm run lint && npm run test && tsc",
+    "build:local": "npm run format && npm run lint && tsc",
     "local": "nodemon --watch ./src -e ts,tsx --exec 'npm run build:local && npm pack'",
     "test": "jest --silent",
     "test:watch": "jest --watch"
@@ -27,10 +26,6 @@
   ],
   "author": "Elson T. Correia",
   "license": "MIT",
-  "dependencies": {
-    "prop-types": "^15.8.1",
-    "warning": "^4.0.3"
-  },
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"

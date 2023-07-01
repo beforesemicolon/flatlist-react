@@ -46,6 +46,7 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
     scrollToTopPadding,
     scrollToTopOffset,
     scrollToTopPosition,
+    scrollingContainerId,
     pagination = {} as InfiniteLoaderInterface, // pagination props
     // eslint-disable-next-line @typescript-eslint/naming-convention
     // @ts-ignore
@@ -113,6 +114,7 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
           loadingIndicator={
             paginationLoadingIndicator || pagination.loadingIndicator
           }
+          scrollingContainerId={scrollingContainerId}
           loadingIndicatorPosition={
             paginationLoadingIndicatorPosition ||
             pagination.loadingIndicatorPosition

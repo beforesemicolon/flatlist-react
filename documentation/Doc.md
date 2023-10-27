@@ -358,10 +358,10 @@ FlatList comes with pagination out of the box. This is specially great for when 
 so you start with fetching a small portion and then let the user scroll to the bottom, show the loading indicator while you
 fetch some more.
 
-To make it work you need to render `FlatList` inside of a scrolling container with "`overflow: auto`" or "`overflow: scroll`".
-If the container wrapping FlatList does not scroll it misses the point of infinite scrolling.
+To make it work you need to render `FlatList` inside of a scrolling container ancestor element with "`overflow: auto`" or "`overflow: scroll`".
 
 ```jsx
+// as direct child of a scrolling container
 <div style={{overflow: "auto", height: "300px"}}>
     <FlatList
         list={this.props.people}
@@ -371,7 +371,7 @@ If the container wrapping FlatList does not scroll it misses the point of infini
 </div>
 
 // --- OR ---
-
+// as a scrolling container itself using the "wrapperHtmlTag" prop
 <FlatList
     list={this.props.people}
     renderItem={this.renderPerson}
@@ -379,6 +379,21 @@ If the container wrapping FlatList does not scroll it misses the point of infini
     wrapperHtmlTag="div"
     style={{overflow: "auto", height: "300px"}}
 />
+
+// --- OR ---
+// as a DEEP child of a scrolling ancestor element using the "scrollingContainerId" prop
+<div style={{overflow: "auto", height: "300px"}} id="scrolling-container">
+  <div className="mid-wrapper">
+    <div className="list-wrapper">
+      <FlatList
+        list={this.props.people}
+        renderItem={this.renderPerson}
+        renderWhenEmpty={this.showBlank}
+        scrollingContainerId="scrolling-container"
+      />
+    </div>
+  </div>
+</div>
 ```
 
 Pagination props will not work while `renderOnScroll` is being used. Pagination already renders on scroll.

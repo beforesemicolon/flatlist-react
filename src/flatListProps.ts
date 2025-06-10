@@ -106,6 +106,7 @@ export interface FlatListProps<ListItem> {
   scrollToTopOffset?: number;
   scrollToTopPadding?: number;
   scrollToTopPosition?: string;
+  scrollingContainerId?: string;
   // others
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
@@ -183,6 +184,7 @@ export const defaultProps: FlatListProps<any> = {
   scrollToTopOffset: undefined,
   scrollToTopPadding: undefined,
   scrollToTopPosition: undefined,
+  scrollingContainerId: undefined,
   // SEARCH
   search: {
     by: "",

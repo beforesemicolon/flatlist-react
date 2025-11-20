@@ -18,6 +18,7 @@ interface InfiniteLoaderState {
 
 interface InfiniteLoaderProps extends InfiniteLoaderInterface {
   itemsCount: number;
+  scrollingContainerId?: string;
 }
 
 class InfiniteLoader extends Component<
@@ -46,10 +47,25 @@ class InfiniteLoader extends Component<
     const { current: loadIndicatorContainer } = this.loaderContainerRef;
 
     if (loadIndicatorContainer) {
+      let scrollingContainer = loadIndicatorContainer.parentNode as HTMLElement;
+
+      if (this.props.scrollingContainerId) {
+        // find the closest ancestor with the id
+        scrollingContainer = scrollingContainer.closest(
+          `#${this.props.scrollingContainerId}`
+        ) as HTMLElement;
+
+        if (!scrollingContainer) {
+          throw new Error(
+            `Can't find scrolling container with id of "${this.props.scrollingContainerId}"`
+          );
+        }
+      }
+
       this.setState(
         {
           loadIndicatorContainer,
-          scrollingContainer: loadIndicatorContainer.parentNode as HTMLElement,
+          scrollingContainer,
         },
         () => {
           this.currentItemsCount = this.getScrollingContainerChildrenCount();

@@ -211,6 +211,9 @@ export const useList = <ListItem,>({
   }, [
     sortedList,
     group,
+    groupBy,
+    groupOf,
+    showGroupSeparatorAtTheBottom,
     groupReversed,
     groupSeparatorAtTheBottom,
     groupSortedCaseInsensitive,
@@ -220,6 +223,8 @@ export const useList = <ListItem,>({
     sortGroupBy,
     sortGroupDesc,
     sortGroupCaseInsensitive,
+    sortOptions.groupBy,
+    sortOptions.groupCaseInsensitive,
   ]);
 
   return groupedList;

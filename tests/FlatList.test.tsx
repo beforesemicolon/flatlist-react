@@ -1021,7 +1021,7 @@ describe('FlatList', () => {
             expect(containerStyle.display).toBe('flex');
             expect(containerStyle.flexDirection).toBe('column');
             expect(itemStyle.display).toBe('block');
-            expect(itemStyle.flex).toBe('1');
+            expect(itemStyle.flexGrow).toBe('1');
             expect(itemStyle.width).toBe('100%');
             expect(itemStyle.marginBottom).toBe('50px');
 

@@ -4,26 +4,28 @@ import DefaultBlank from "./DefaultBlank";
 
 export type renderFunc<ListItem> = (
   item: ListItem,
-  key: string
-) => ReactNode | JSX.Element;
+  key: string,
+) => ReactNode | React.JSX.Element;
 
 export type renderItem<ListItem> =
   | ReactNode
   | FC<any>
   | Component
   | renderFunc<ListItem>
-  | JSX.Element;
+  | React.JSX.Element;
 
 export const renderBlank = (
-  renderWhenEmpty: ReactNode | (() => JSX.Element) = null
-): JSX.Element =>
+  renderWhenEmpty: ReactNode | (() => React.JSX.Element) = null,
+): React.JSX.Element =>
   renderWhenEmpty && isFunction(renderWhenEmpty)
-    ? (renderWhenEmpty as () => JSX.Element)()
+    ? (renderWhenEmpty as () => React.JSX.Element)()
     : DefaultBlank();
 
-export const handleRenderGroupSeparator =
-  (CustomSeparator: any) =>
-  (sep: any, idx: number | string): JSX.Element => {
+export const handleRenderGroupSeparator = (CustomSeparator: any) => {
+  const GroupSeparator = (
+    sep: any,
+    idx: number | string,
+  ): React.JSX.Element => {
     const [cls, groupLabel, group] = sep;
     const separatorKey = `separator-${idx}`;
 
@@ -46,15 +48,16 @@ export const handleRenderGroupSeparator =
 
     return <hr key={separatorKey} className={cls} />;
   };
+  return GroupSeparator;
+};
 
-export const handleRenderItem =
-  <ListItem,>(
-    renderItem: renderFunc<ListItem>,
-    renderSeparator:
-      | null
-      | ((s: ListItem, i: number | string) => ReactNode) = null
-  ) =>
-  (item: ListItem, key: number | string) => {
+export const handleRenderItem = <ListItem,>(
+  renderItem: renderFunc<ListItem>,
+  renderSeparator:
+    | null
+    | ((s: ListItem, i: number | string) => ReactNode) = null,
+) => {
+  const ItemRenderer = (item: ListItem, key: number | string) => {
     if (!renderItem) {
       return null;
     }
@@ -74,10 +77,12 @@ export const handleRenderItem =
       return renderItem(item, `${itemId}`);
     }
 
-    const comp = renderItem as JSX.Element;
+    const comp = renderItem as React.JSX.Element;
 
     return <comp.type {...comp.props} key={itemId} item={item} />;
   };
+  return ItemRenderer;
+};
 
 export const btnPosition = (scrollContainer: HTMLElement, btn: HTMLElement) => {
   const z = window.getComputedStyle(scrollContainer).zIndex;
@@ -103,7 +108,9 @@ export const btnPosition = (scrollContainer: HTMLElement, btn: HTMLElement) => {
 
     window.requestAnimationFrame(() => {
       const dist = Number(
-        (scrollContainer.scrollHeight - scrollContainer.offsetHeight).toFixed(0)
+        (scrollContainer.scrollHeight - scrollContainer.offsetHeight).toFixed(
+          0,
+        ),
       );
       offset = Math.min(offset, dist);
 

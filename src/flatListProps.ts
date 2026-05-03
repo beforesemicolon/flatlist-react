@@ -30,7 +30,7 @@ export interface GroupInterface<ListItem>
 }
 
 export interface ScrollToTopInterface {
-  button?: ReactNode | (() => JSX.Element);
+  button?: ReactNode | (() => React.JSX.Element);
   offset?: number;
   padding?: number;
   position?:
@@ -52,7 +52,7 @@ export interface FlatListProps<ListItem> {
   // RENDER
   list: List<ListItem>;
   renderItem: renderFunc<ListItem>;
-  renderWhenEmpty?: ReactNode | (() => JSX.Element);
+  renderWhenEmpty?: ReactNode | (() => React.JSX.Element);
   renderOnScroll?: boolean;
   limit?: number | string;
   reversed?: boolean;

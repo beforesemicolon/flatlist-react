@@ -32,7 +32,7 @@ function ScrollRenderer<ListItem>(props: ScrollRendererProps<ListItem>) {
   const renderThisItem = useMemo(
     () =>
       handleRenderItem(renderItem, handleRenderGroupSeparator(groupSeparator)),
-    [renderItem, groupSeparator]
+    [renderItem, groupSeparator],
   );
 
   const updateRenderInfo = (count = 10) => {
@@ -61,6 +61,7 @@ function ScrollRenderer<ListItem>(props: ScrollRendererProps<ListItem>) {
 
   useEffect(() => {
     // when mounted
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
 
     return () => {
@@ -76,6 +77,7 @@ function ScrollRenderer<ListItem>(props: ScrollRendererProps<ListItem>) {
       const pos = span.parentNode.scrollTop;
       const index = Math.max(render.renderList.length, setupCount);
 
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRender({
         renderList: list.slice(0, index) as any,
         index,

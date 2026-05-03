@@ -20,7 +20,7 @@ interface InfiniteLoaderProps extends InfiniteLoaderInterface {
   itemsCount: number;
 }
 
-class InfiniteLoader extends Component<
+class InfiniteLoader extends React.Component<
   InfiniteLoaderProps,
   InfiniteLoaderState
 > {
@@ -54,23 +54,24 @@ class InfiniteLoader extends Component<
         () => {
           this.currentItemsCount = this.getScrollingContainerChildrenCount();
           this.setupScrollingContainerEventsListener();
-        }
+        },
       );
     } else {
       console.warn(
         "FlatList: it was not possible to get container's ref. " +
-          "Infinite scrolling pagination will not be possible"
+          "Infinite scrolling pagination will not be possible",
       );
     }
   }
 
   componentDidUpdate(
     prevProps: InfiniteLoaderProps,
-    prevState: InfiniteLoaderState
+    _prevState: InfiniteLoaderState,
   ): void {
     // reset scroll position to where last was
-    if (this.state.scrollingContainer) {
-      this.state.scrollingContainer.scrollTop = this.lastScrollTop;
+    const { scrollingContainer } = this.state;
+    if (scrollingContainer) {
+      scrollingContainer.scrollTop = this.lastScrollTop;
     }
 
     // reset loading state when the list size changes
@@ -109,14 +110,14 @@ class InfiniteLoader extends Component<
         scrollingContainer.removeEventListener(
           event,
           this.checkIfLoadingIsNeeded,
-          true
+          true,
         );
 
         if (!removeEvent) {
           scrollingContainer.addEventListener(
             event,
             this.checkIfLoadingIsNeeded,
-            true
+            true,
           );
         }
       });
@@ -143,7 +144,7 @@ class InfiniteLoader extends Component<
           { prevItemsCount: this.props.itemsCount, loading: true },
           () => {
             (this.props.loadMore as () => void)();
-          }
+          },
         );
       }
     }
@@ -167,8 +168,8 @@ class InfiniteLoader extends Component<
         loadingIndicatorPosition === "center"
           ? loadingIndicatorPosition
           : loadingIndicatorPosition === "right"
-          ? "flex-end"
-          : "flex-start",
+            ? "flex-end"
+            : "flex-start",
       padding: spinning ? "5px 0" : 0,
       visibility: spinning ? "visible" : "hidden",
     };

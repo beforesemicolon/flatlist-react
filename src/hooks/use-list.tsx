@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import convertListToArray from "../___utils/convertListToArray";
 import filterList from "../___utils/filterList";
 import groupList from "../___utils/groupList";
@@ -41,42 +41,42 @@ export const useList = <ListItem,>({
   searchMinCharactersCount,
 }: FlatListProps<ListItem>): ListItem[] => {
   // convert list to array
-  let renderList = useMemo(() => convertListToArray(list), [list]);
+  const arrayList = useMemo(() => convertListToArray(list), [list]);
 
   // reverse list
-  renderList = useMemo(
+  const reversedList = useMemo(
     () =>
       typeof reversed === "boolean" && reversed
-        ? reverseList(renderList)
-        : renderList,
-    [renderList, reversed]
+        ? reverseList(arrayList)
+        : arrayList,
+    [arrayList, reversed],
   );
 
   // limit list
-  renderList = useMemo(() => {
+  const limitedList = useMemo(() => {
     if (!isNil(limit)) {
       const [from, to] = `${limit}`.split(",");
-      return limitList(renderList, from, to);
+      return limitList(reversedList, from, to);
     }
 
-    return renderList;
-  }, [renderList, limit]);
+    return reversedList;
+  }, [reversedList, limit]);
 
   // filter list
-  renderList = useMemo(
-    () => (filterBy ? filterList(renderList, filterBy) : renderList),
-    [renderList, filterBy]
+  const filteredList = useMemo(
+    () => (filterBy ? filterList(limitedList, filterBy) : limitedList),
+    [limitedList, filterBy],
   );
 
   // search list
-  renderList = useMemo(() => {
+  const searchedList = useMemo(() => {
     if (searchTerm || (search && search.term)) {
       const searchOptions = {
         ...defaultProps.search,
         ...search,
       };
 
-      return searchList(renderList, {
+      return searchList(filteredList, {
         by: searchOptions.by || searchBy || "0",
         caseInsensitive: searchOptions.caseInsensitive || searchCaseInsensitive,
         everyWord:
@@ -85,8 +85,7 @@ export const useList = <ListItem,>({
           searchOnEveryWord,
         term: searchOptions.term || searchTerm,
         minCharactersCount:
-          // @ts-ignore
-          searchOptions.searchableMinCharactersCount || // deprecated
+          (searchOptions as any).searchableMinCharactersCount || // deprecated
           searchOptions.minCharactersCount ||
           searchMinCharactersCount ||
           searchableMinCharactersCount || // deprecated
@@ -94,9 +93,9 @@ export const useList = <ListItem,>({
       });
     }
 
-    return renderList;
+    return filteredList;
   }, [
-    renderList,
+    filteredList,
     search,
     searchBy,
     searchOnEveryWord,
@@ -111,13 +110,13 @@ export const useList = <ListItem,>({
       ...(defaultProps.sort as SortInterface<ListItem>),
       ...(sort as SortInterface<ListItem>),
     }),
-    [renderList, sort]
+    [sort],
   );
 
   // sort list
-  renderList = useMemo(() => {
+  const sortedList = useMemo(() => {
     if (sortOptions.by || sortBy || (isBoolean(sort) && sort)) {
-      return sortList(renderList, {
+      return sortList(searchedList, {
         caseInsensitive:
           sortOptions.caseInsensitive || sortCaseInsensitive || false,
         descending:
@@ -126,9 +125,9 @@ export const useList = <ListItem,>({
       });
     }
 
-    return renderList;
+    return searchedList;
   }, [
-    renderList,
+    searchedList,
     sortOptions,
     sortBy,
     sortDesc,
@@ -138,7 +137,7 @@ export const useList = <ListItem,>({
   ]);
 
   // group list
-  renderList = useMemo(() => {
+  const groupedList = useMemo(() => {
     const groupOptions = {
       ...defaultProps.group,
       ...group,
@@ -157,60 +156,60 @@ export const useList = <ListItem,>({
         reversed: groupOptions.reversed || groupReversed,
       };
 
-      const gList = groupList(renderList, groupingOptions);
+      const gList = groupList(sortedList, groupingOptions);
 
       return gList.groupLists.reduce((newGList: any, aGroup, idx: number) => {
+        let currentGroup = aGroup;
         if (
           groupSorted ||
-          // @ts-ignore
-          groupOptions.sorted ||
+          (groupOptions as any).sorted ||
           groupSortedBy ||
-          // @ts-ignore
-          groupOptions.sortedBy ||
+          (groupOptions as any).sortedBy ||
           groupOptions.sortBy ||
           sortGroupBy ||
           sortOptions.groupBy // deprecated
         ) {
-          aGroup = sortList(aGroup, {
+          currentGroup = sortList(aGroup, {
             caseInsensitive:
               groupSortedCaseInsensitive ||
-              // @ts-ignore
-              groupOptions.sortedCaseInsensitive ||
+              (groupOptions as any).sortedCaseInsensitive ||
               groupOptions.sortCaseInsensitive || // deprecated
               sortGroupCaseInsensitive || // deprecated
               sortOptions.groupCaseInsensitive, // deprecated
             descending:
               groupSortedDescending ||
-              // @ts-ignore
-              groupOptions.sortedDescending ||
+              (groupOptions as any).sortedDescending ||
               groupOptions.sortDescending || // deprecated
               sortGroupDesc, // deprecated
             by:
               groupSortedBy ||
-              // @ts-ignore
-              groupOptions.sortedBy ||
+              (groupOptions as any).sortedBy ||
               groupOptions.sortBy || // deprecated
               sortGroupBy, // deprecated
           });
         }
 
-        const separator = ["___list-separator", gList.groupLabels[idx], aGroup];
+        const separator = [
+          "___list-separator",
+          gList.groupLabels[idx],
+          currentGroup,
+        ];
 
         if (
           groupOptions.separatorAtTheBottom ||
           groupSeparatorAtTheBottom ||
           showGroupSeparatorAtTheBottom
         ) {
-          return [...newGList, ...aGroup, separator];
+          return [...newGList, ...currentGroup, separator];
         }
 
-        return [...newGList, separator, ...aGroup];
+        return [...newGList, separator, ...currentGroup];
       }, []);
     }
 
-    return renderList;
+    return sortedList;
   }, [
-    renderList,
+    sortedList,
     group,
     groupReversed,
     groupSeparatorAtTheBottom,
@@ -223,5 +222,5 @@ export const useList = <ListItem,>({
     sortGroupCaseInsensitive,
   ]);
 
-  return renderList;
+  return groupedList;
 };

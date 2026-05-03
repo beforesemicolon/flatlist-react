@@ -19,7 +19,9 @@ function ScrollToTopButton(props: ScrollToTopButtonProps) {
     offset = 50,
     scrollingContainer,
   } = props;
-  const btn = isFunction(button) ? (button as () => ReactNode)() : button;
+  const btn: ReactNode = isFunction(button)
+    ? (button as () => ReactNode)()
+    : button;
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -49,6 +51,7 @@ function ScrollToTopButton(props: ScrollToTopButtonProps) {
 
     setTimeout(() => updateBtnPosition(), 250);
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     return () => {
       container.style.position = ogPos;

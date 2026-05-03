@@ -41,7 +41,7 @@ function DisplayHandler(props: DisplayHandlerProps) {
 
   const styleParentGrid = (
     styleTag: HTMLElement,
-    container: HTMLElement
+    container: HTMLElement,
   ): void => {
     if (displayGrid || display.grid) {
       const gap = display.gridGap || gridGap || defaultProps.display.gridGap;
@@ -73,7 +73,7 @@ function DisplayHandler(props: DisplayHandlerProps) {
 
   const styleParentRow = (
     styleTag: HTMLElement,
-    container: HTMLElement
+    container: HTMLElement,
   ): void => {
     if (displayRow || display.row) {
       const gap = display.rowGap || rowGap || defaultProps.display.rowGap;
@@ -98,7 +98,7 @@ function DisplayHandler(props: DisplayHandlerProps) {
 
   const handleDisplayHandlerProps = (
     container: HTMLElement,
-    style: HTMLElement
+    style: HTMLElement,
   ): void => {
     if (container) {
       if (display.grid || displayGrid) {
@@ -134,7 +134,7 @@ function DisplayHandler(props: DisplayHandlerProps) {
       }
     } else {
       console.warn(
-        "FlatList: it was not possible to get container's ref. Styling will not be possible"
+        "FlatList: it was not possible to get container's ref. Styling will not be possible",
       );
     }
 

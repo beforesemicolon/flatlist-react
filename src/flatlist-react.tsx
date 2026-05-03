@@ -166,9 +166,11 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
 }
 
 // export default FlatList;
-export default forwardRef<HTMLElement, PlainListProps<any>>(
-  <ListItem,>(props: PlainListProps<ListItem>, ref: Ref<HTMLElement>) => {
-    ref = ref || createRef();
-    return <FlatList __forwarededRef={ref} {...props} />;
-  }
-) as <ListItem>(props: FlatListProps<ListItem>) => JSX.Element;
+const FlatListWithRef = forwardRef<HTMLElement, any>((props, ref) => {
+  return <FlatList {...(props as any)} __forwarededRef={ref || createRef()} />;
+});
+FlatListWithRef.displayName = "FlatList";
+
+export default FlatListWithRef as <ListItem>(
+  props: FlatListProps<ListItem>
+) => React.JSX.Element;

@@ -23,7 +23,7 @@ export const types: StringObjectInterface = Object.values(typesMap).reduce(
     obj[type] = type;
     return obj;
   },
-  {}
+  {},
 );
 
 const getType = (x: any): string => {
@@ -41,16 +41,16 @@ const getType = (x: any): string => {
       return x === null
         ? typesMap.null
         : x instanceof Set
-        ? typesMap.set
-        : x instanceof WeakSet
-        ? typesMap.weakSet
-        : x instanceof Map
-        ? typesMap.map
-        : x instanceof WeakMap
-        ? typesMap.weakMap
-        : Array.isArray(x)
-        ? typesMap.array
-        : typesMap.object; // otherwise it is an object
+          ? typesMap.set
+          : x instanceof WeakSet
+            ? typesMap.weakSet
+            : x instanceof Map
+              ? typesMap.map
+              : x instanceof WeakMap
+                ? typesMap.weakMap
+                : Array.isArray(x)
+                  ? typesMap.array
+                  : typesMap.object; // otherwise it is an object
   }
 };
 

@@ -113,12 +113,12 @@ describe('Util: getObjectDeepKeyValue()', () => {
 
         // @ts-ignore
         expect(() => getObjectDeepKeyValue([testingObject, ]))
-            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a dot separated values string');
+            .toThrow('getObjectDeepKeyValue: "dotSeparatedKeys" is not a dot separated values string');
         // @ts-ignore
         expect(() => getObjectDeepKeyValue(testingArray, 1))
-            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a dot separated values string');
+            .toThrow('getObjectDeepKeyValue: "dotSeparatedKeys" is not a dot separated values string');
         // @ts-ignore
         expect(() => getObjectDeepKeyValue({testingObject, }))
-            .toThrowError('getObjectDeepKeyValue: "dotSeparatedKeys" is not a dot separated values string');
+            .toThrow('getObjectDeepKeyValue: "dotSeparatedKeys" is not a dot separated values string');
     });
 });

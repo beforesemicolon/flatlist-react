@@ -21,7 +21,7 @@ const defaultSortOptions: SortOptionsInterface = {
 const compareKeys = (
   first: any,
   second: any,
-  { key = "", caseInsensitive = false, descending = false }: any
+  { key = "", caseInsensitive = false, descending = false }: any,
 ) => {
   if (key) {
     first =
@@ -44,15 +44,15 @@ const compareKeys = (
       ? -1
       : 1
     : first < second
-    ? descending
-      ? 1
-      : -1
-    : 0;
+      ? descending
+        ? 1
+        : -1
+      : 0;
 };
 
 const sortList = <T>(
   list: T[],
-  options: SortOptionsInterface = defaultSortOptions
+  options: SortOptionsInterface = defaultSortOptions,
 ): T[] => {
   const listCopy = [...list];
 

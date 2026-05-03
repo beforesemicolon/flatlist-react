@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`FlatList Should group by 3 with default separator at the bottom 1`] = `
 <DocumentFragment>

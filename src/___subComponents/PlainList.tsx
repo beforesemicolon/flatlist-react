@@ -8,7 +8,7 @@ import { List } from "../flatListProps";
 export interface PlainListProps<ListItem> {
   list: List<ListItem>;
   renderItem: renderFunc<ListItem>;
-  renderWhenEmpty?: ReactNode | (() => JSX.Element);
+  renderWhenEmpty?: ReactNode | (() => React.JSX.Element);
   wrapperHtmlTag?: string;
   renderOnScroll?: boolean;
   [key: string]: any;
@@ -28,7 +28,7 @@ function PlainList<ListItem>(props: PlainListProps<ListItem>) {
 
   const renderThisItem = useMemo(
     () => handleRenderItem(renderItem, null),
-    [renderItem]
+    [renderItem],
   );
 
   if (dataList.length === 0) {
@@ -62,9 +62,11 @@ function PlainList<ListItem>(props: PlainListProps<ListItem>) {
   );
 }
 
-export default forwardRef(
-  <ListItem,>(props: PlainListProps<ListItem>, ref: Ref<HTMLElement>) => {
-    ref = ref || createRef();
-    return <PlainList __forwarededRef={ref} {...props} />;
-  }
-) as <ListItem>(props: PlainListProps<ListItem>) => JSX.Element;
+const PlainListWithRef = forwardRef<HTMLElement, any>((props, ref) => {
+  return <PlainList {...(props as any)} __forwarededRef={ref || createRef()} />;
+});
+PlainListWithRef.displayName = "PlainList";
+
+export default PlainListWithRef as <ListItem>(
+  props: PlainListProps<ListItem>,
+) => React.JSX.Element;

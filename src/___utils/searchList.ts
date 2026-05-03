@@ -29,7 +29,7 @@ const defaultFilterByFn = (
   item: any,
   term: string | string[],
   caseInsensitive = false,
-  by = "0"
+  by = "0",
 ) => {
   const keyValue =
     isObject(item) || isArray(item)
@@ -54,7 +54,7 @@ const defaultFilterByFn = (
 const getFilterByFn = <ListItem>(
   term: string | string[],
   by: SearchOptionsInterface<ListItem>["by"],
-  caseInsensitive = false
+  caseInsensitive = false,
 ): cb<ListItem> => {
   if (isFunction(by)) {
     if (isArray(term)) {
@@ -74,10 +74,10 @@ const getFilterByFn = <ListItem>(
     return (item: ListItem) =>
       (by as []).some((key: any) => {
         const keyCaseInsensitive =
-          isObject(key) && key.caseInsensitive !== undefined
-            ? key.caseInsensitive
+          isObject(key) && (key as any).caseInsensitive !== undefined
+            ? (key as any).caseInsensitive
             : caseInsensitive;
-        const keyBy = (isObject(key) ? key.key : key) || "0";
+        const keyBy = (isObject(key) ? (key as any).key : key) || "0";
         return defaultFilterByFn(item, term, keyCaseInsensitive, keyBy);
       });
   }
@@ -88,7 +88,7 @@ const getFilterByFn = <ListItem>(
 
 const searchList = <ListItem>(
   list: ListItem[],
-  options: SearchOptionsInterface<ListItem>
+  options: SearchOptionsInterface<ListItem>,
 ): ListItem[] => {
   if (isNilOrEmpty(options)) {
     options = defaultSearchOptions as SearchOptionsInterface<ListItem>;
@@ -110,7 +110,7 @@ const searchList = <ListItem>(
           const filterByFn = getFilterByFn(
             Array.from(new Set(termWords)),
             by,
-            caseInsensitive
+            caseInsensitive,
           );
 
           return filterList(list, filterByFn);

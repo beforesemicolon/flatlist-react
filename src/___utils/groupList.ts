@@ -26,7 +26,7 @@ interface GroupedItemsObjectInterface<T> {
 
 const handleGroupReverse = <ListItem>(
   groupedLists: ListItem[][],
-  reverse = false
+  reverse = false,
 ) => {
   if (reverse && isBoolean(reverse)) {
     return groupedLists.map((group) => reverseList(group));
@@ -37,7 +37,7 @@ const handleGroupReverse = <ListItem>(
 
 const groupList = <ListItem>(
   list: ListItem[],
-  options: GroupOptionsInterface<ListItem> = defaultGroupOptions
+  options: GroupOptionsInterface<ListItem> = defaultGroupOptions,
 ) => {
   let groupLabels: any[] = [];
 
@@ -52,7 +52,7 @@ const groupList = <ListItem>(
       (
         prevList: GroupedItemsObjectInterface<ListItem>,
         item: ListItem,
-        idx: number
+        idx: number,
       ) => {
         const groupLabel: any = isFunction(groupBy)
           ? (groupBy as (item: ListItem, idx: number) => string)(item, idx)
@@ -68,7 +68,7 @@ const groupList = <ListItem>(
 
         return prevList;
       },
-      {}
+      {},
     );
 
     // using Set here so the order is preserved and prevent duplicates
@@ -78,7 +78,7 @@ const groupList = <ListItem>(
       groupLabels,
       groupLists: handleGroupReverse(
         Object.values(groupedList),
-        options.reversed
+        options.reversed,
       ),
     };
   }
@@ -98,7 +98,7 @@ const groupList = <ListItem>(
 
         return prevList;
       },
-      {}
+      {},
     );
 
     groupLabels = Array.from(new Set(Object.keys(groupLists)));
@@ -107,7 +107,7 @@ const groupList = <ListItem>(
       groupLabels,
       groupLists: handleGroupReverse(
         Object.values(groupLists),
-        options.reversed
+        options.reversed,
       ),
     };
   }

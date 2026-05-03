@@ -54,28 +54,20 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
   } = { ...defaultProps, ...props };
   const renderList = useList(props);
 
-  const tagProps = useMemo(
-    () =>
-      Object.keys(otherProps)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .filter((k: string) => (defaultProps as any)[k] === undefined)
-        .reduce(
-          (p, k: string) => ({
-            ...p,
-            [k]: (otherProps as Record<string, unknown>)[k],
-          }),
-          {}
-        ),
-    [otherProps]
-  );
+  const tagProps = Object.keys(otherProps)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .filter((k: string) => (defaultProps as any)[k] === undefined)
+    .reduce(
+      (p, k: string) => ({
+        ...p,
+        [k]: (otherProps as Record<string, unknown>)[k],
+      }),
+      {}
+    );
 
-  const renderThisItem = useMemo(
-    () =>
-      handleRenderItem(
-        renderItem,
-        handleRenderGroupSeparator(group.separator || groupSeparator)
-      ),
-    [renderItem, group.separator, groupSeparator]
+  const renderThisItem = handleRenderItem(
+    renderItem,
+    handleRenderGroupSeparator(group.separator || groupSeparator)
   );
 
   if (renderList.length === 0) {

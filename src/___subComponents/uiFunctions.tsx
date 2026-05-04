@@ -51,11 +51,71 @@ export const handleRenderGroupSeparator = (CustomSeparator: any) => {
   return GroupSeparator;
 };
 
+export const handleRenderGroupHeader = (CustomHeader: any) => {
+  const GroupHeader = (
+    header: any,
+    idx: number | string,
+  ): React.JSX.Element | null => {
+    const [cls, groupLabel, group] = header;
+    const headerKey = `header-${idx}`;
+
+    if (CustomHeader) {
+      if (isFunction(CustomHeader)) {
+        return (
+          <div key={headerKey} className={cls}>
+            {CustomHeader(groupLabel, group)}
+          </div>
+        );
+      }
+
+      return (
+        <div key={headerKey} className={cls}>
+          {cloneElement(CustomHeader, { groupLabel, group })}
+        </div>
+      );
+    }
+
+    return null;
+  };
+  return GroupHeader;
+};
+
+export const handleRenderGroupFooter = (CustomFooter: any) => {
+  const GroupFooter = (
+    footer: any,
+    idx: number | string,
+  ): React.JSX.Element | null => {
+    const [cls, groupLabel, group] = footer;
+    const footerKey = `footer-${idx}`;
+
+    if (CustomFooter) {
+      if (isFunction(CustomFooter)) {
+        return (
+          <div key={footerKey} className={cls}>
+            {CustomFooter(groupLabel, group)}
+          </div>
+        );
+      }
+
+      return (
+        <div key={footerKey} className={cls}>
+          {cloneElement(CustomFooter, { groupLabel, group })}
+        </div>
+      );
+    }
+
+    return null;
+  };
+  return GroupFooter;
+};
+
 export const handleRenderItem = <ListItem,>(
   renderItem: renderFunc<ListItem>,
   renderSeparator:
     | null
     | ((s: ListItem, i: number | string) => ReactNode) = null,
+  renderHeader: null | ((s: ListItem, i: number | string) => ReactNode) = null,
+  renderFooter: null | ((s: ListItem, i: number | string) => ReactNode) = null,
 ) => {
   const ItemRenderer = (item: ListItem, key: number | string) => {
     if (!renderItem) {
@@ -67,10 +127,23 @@ export const handleRenderItem = <ListItem,>(
         (item as { id: string | number }).id) ||
       key;
 
-    if (isArray(item) && (item as ListItem[])[0] === "___list-separator") {
-      return typeof renderSeparator === "function"
-        ? renderSeparator(item, itemId)
-        : null;
+    if (isArray(item)) {
+      const type = (item as ListItem[])[0];
+      if (type === "___list-separator") {
+        return typeof renderSeparator === "function"
+          ? renderSeparator(item, itemId)
+          : null;
+      }
+      if (type === "___list-group-header") {
+        return typeof renderHeader === "function"
+          ? renderHeader(item, itemId)
+          : null;
+      }
+      if (type === "___list-group-footer") {
+        return typeof renderFooter === "function"
+          ? renderFooter(item, itemId)
+          : null;
+      }
     }
 
     if (typeof renderItem === "function") {

@@ -21,6 +21,8 @@ export interface GroupInterface<ListItem>
     | ((g: ListItem[], idx: number, label: string) => ReactNode | null)
     | null;
   separatorAtTheBottom?: boolean;
+  renderHeader?: (label: string, group: ListItem[]) => ReactNode;
+  renderFooter?: (label: string, group: ListItem[]) => ReactNode;
   sortBy?: SortOptionsInterface["by"];
   sortedBy?: SortOptionsInterface["by"];
   sortDescending?: boolean;
@@ -54,6 +56,7 @@ export interface FlatListProps<ListItem> {
   renderItem: renderFunc<ListItem>;
   renderWhenEmpty?: ReactNode | (() => React.JSX.Element);
   renderOnScroll?: boolean;
+  ref?: React.Ref<HTMLElement>;
   limit?: number | string;
   reversed?: boolean;
   wrapperHtmlTag?: string;
@@ -73,6 +76,10 @@ export interface FlatListProps<ListItem> {
   groupSeparatorAtTheBottom?: GroupInterface<ListItem>["separatorAtTheBottom"];
   groupReversed?: GroupInterface<ListItem>["reversed"];
   groupSeparator?: GroupInterface<ListItem>["separator"];
+  renderGroupHeader?: GroupInterface<ListItem>["renderHeader"];
+  renderGroupFooter?: GroupInterface<ListItem>["renderFooter"];
+  renderTableHeader?: () => ReactNode;
+  renderTableFooter?: () => ReactNode;
   groupBy?: GroupInterface<ListItem>["by"];
   groupOf?: GroupInterface<ListItem>["limit"];
   groupSorted?: boolean;
@@ -106,6 +113,8 @@ export interface FlatListProps<ListItem> {
   scrollToTopOffset?: number;
   scrollToTopPadding?: number;
   scrollToTopPosition?: string;
+  scrollingContainerId?: string;
+  inverted?: boolean;
   // others
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
@@ -155,6 +164,10 @@ export const defaultProps: FlatListProps<any> = {
   groupOf: 0,
   groupReversed: false,
   groupSeparator: null,
+  renderGroupHeader: undefined,
+  renderGroupFooter: undefined,
+  renderTableHeader: undefined,
+  renderTableFooter: undefined,
   groupSeparatorAtTheBottom: false,
   groupSorted: false,
   groupSortedBy: "",
@@ -183,6 +196,8 @@ export const defaultProps: FlatListProps<any> = {
   scrollToTopOffset: undefined,
   scrollToTopPadding: undefined,
   scrollToTopPosition: undefined,
+  scrollingContainerId: undefined,
+  inverted: false,
   // SEARCH
   search: {
     by: "",

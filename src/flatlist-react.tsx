@@ -1,13 +1,16 @@
-import React, { createRef, forwardRef, Ref, useMemo } from "react";
+import React, { createRef } from "react";
 import DisplayHandler, {
   DisplayInterface,
 } from "./___subComponents/DisplayHandler";
 import InfiniteLoader, {
   InfiniteLoaderInterface,
 } from "./___subComponents/InfiniteLoader";
+import PlainList from "./___subComponents/PlainList";
 import ScrollRenderer from "./___subComponents/ScrollRenderer";
 import ScrollToTopButton from "./___subComponents/ScrollToTopButton";
 import {
+  handleRenderGroupFooter,
+  handleRenderGroupHeader,
   handleRenderGroupSeparator,
   handleRenderItem,
   renderBlank,
@@ -20,23 +23,26 @@ import {
   ScrollToTopInterface,
 } from "./flatListProps";
 import { useList } from "./hooks/use-list";
-import { PlainListProps } from "./___subComponents/PlainList";
 
 function FlatList<ListItem>(props: FlatListProps<ListItem>) {
   const {
-    list,
     renderWhenEmpty = null,
     wrapperHtmlTag,
     renderItem,
     renderOnScroll, // render/list related props
     group = {} as GroupInterface<ListItem>,
     groupSeparator, // group props
+    renderGroupHeader,
+    renderGroupFooter,
+    renderTableHeader,
+    renderTableFooter,
     display = {} as DisplayInterface,
     displayRow,
     rowGap,
     displayGrid,
     gridGap,
     minColumnWidth, // display props,
+    displayTable,
     hasMoreItems,
     loadMoreItems,
     paginationLoadingIndicator,
@@ -46,10 +52,13 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
     scrollToTopPadding,
     scrollToTopOffset,
     scrollToTopPosition,
+    scrollingContainerId,
+    inverted,
     pagination = {} as InfiniteLoaderInterface, // pagination props
     // eslint-disable-next-line @typescript-eslint/naming-convention
     // @ts-ignore
     __forwarededRef,
+    ref,
     ...otherProps
   } = { ...defaultProps, ...props };
   const renderList = useList(props);
@@ -62,12 +71,18 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
         ...p,
         [k]: (otherProps as Record<string, unknown>)[k],
       }),
-      {}
+      {},
     );
 
   const renderThisItem = handleRenderItem(
     renderItem,
-    handleRenderGroupSeparator(group.separator || groupSeparator)
+    handleRenderGroupSeparator(group.separator || groupSeparator),
+    handleRenderGroupHeader(
+      group.renderHeader || renderGroupHeader || (props as any).groupHeader,
+    ),
+    handleRenderGroupFooter(
+      group.renderFooter || renderGroupFooter || (props as any).groupFooter,
+    ),
   );
 
   if (renderList.length === 0) {
@@ -76,6 +91,22 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
 
   const content = (
     <>
+      {inverted && (loadMoreItems || pagination.loadMore) && !renderOnScroll && (
+        <InfiniteLoader
+          itemsCount={renderList.length}
+          hasMore={hasMoreItems || pagination.hasMore}
+          loadMore={loadMoreItems || pagination.loadMore}
+          loadingIndicator={
+            paginationLoadingIndicator || pagination.loadingIndicator
+          }
+          scrollingContainerId={scrollingContainerId}
+          inverted={inverted}
+          loadingIndicatorPosition={
+            paginationLoadingIndicatorPosition ||
+            pagination.loadingIndicatorPosition
+          }
+        />
+      )}
       {renderOnScroll && !(loadMoreItems || pagination.loadMore) ? (
         <ScrollRenderer
           list={renderList}
@@ -97,7 +128,7 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
           }}
         />
       )}
-      {(loadMoreItems || pagination.loadMore) && !renderOnScroll && (
+      {!inverted && (loadMoreItems || pagination.loadMore) && !renderOnScroll && (
         <InfiniteLoader
           itemsCount={renderList.length}
           hasMore={hasMoreItems || pagination.hasMore}
@@ -105,6 +136,8 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
           loadingIndicator={
             paginationLoadingIndicator || pagination.loadingIndicator
           }
+          scrollingContainerId={scrollingContainerId}
+          inverted={inverted}
           loadingIndicatorPosition={
             paginationLoadingIndicatorPosition ||
             pagination.loadingIndicatorPosition
@@ -119,19 +152,34 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
     (scrollToTop as ScrollToTopInterface).button ||
     scrollToTopButton;
 
-  let WrapperElement = "";
+  let Wrapper = "";
 
-  if ((isString(wrapperHtmlTag) && wrapperHtmlTag) || showScrollToTopButton) {
-    WrapperElement = wrapperHtmlTag || "div";
+  if (
+    (isString(wrapperHtmlTag) && wrapperHtmlTag) ||
+    showScrollToTopButton ||
+    displayTable ||
+    display.table
+  ) {
+    Wrapper = wrapperHtmlTag || (displayTable || display.table ? "table" : "div");
   }
+
+  const finalRef = ref || __forwarededRef;
 
   return (
     <>
-      {WrapperElement ? (
+      {Wrapper ? (
         // @ts-ignore
-        <WrapperElement ref={__forwarededRef} {...tagProps}>
+        <PlainList
+          {...tagProps}
+          list={renderList}
+          renderItem={renderThisItem}
+          ref={finalRef}
+          wrapperHtmlTag={Wrapper}
+          renderTableHeader={renderTableHeader}
+          renderTableFooter={renderTableFooter}
+        >
           {content}
-        </WrapperElement>
+        </PlainList>
       ) : (
         content
       )}
@@ -150,19 +198,13 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
             scrollToTopPosition ??
             (scrollToTop as ScrollToTopInterface).position
           }
-          scrollingContainer={__forwarededRef}
+          scrollingContainer={finalRef as any}
         />
       )}
     </>
   );
 }
 
-// export default FlatList;
-const FlatListWithRef = forwardRef<HTMLElement, any>((props, ref) => {
-  return <FlatList {...(props as any)} __forwarededRef={ref || createRef()} />;
-});
-FlatListWithRef.displayName = "FlatList";
+FlatList.displayName = "FlatList";
 
-export default FlatListWithRef as <ListItem>(
-  props: FlatListProps<ListItem>
-) => React.JSX.Element;
+export default FlatList;

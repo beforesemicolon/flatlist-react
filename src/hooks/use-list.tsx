@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import convertListToArray from "../___utils/convertListToArray";
 import filterList from "../___utils/filterList";
 import groupList from "../___utils/groupList";
@@ -9,93 +8,32 @@ import searchList from "../___utils/searchList";
 import sortList from "../___utils/sortList";
 import { defaultProps, FlatListProps, SortInterface } from "../flatListProps";
 
-export const useList = <ListItem,>({
-  list,
-  limit,
-  reversed,
-  filterBy,
-  group,
-  groupBy,
-  groupOf,
-  showGroupSeparatorAtTheBottom,
-  groupReversed,
-  groupSeparatorAtTheBottom,
-  groupSortedCaseInsensitive,
-  groupSortedDescending,
-  groupSorted,
-  groupSortedBy,
-  sortBy,
-  sortDesc,
-  sort,
-  sortCaseInsensitive,
-  sortGroupBy,
-  sortGroupDesc,
-  sortGroupCaseInsensitive,
-  sortDescending,
-  search,
-  searchBy,
-  searchOnEveryWord,
-  searchTerm,
-  searchCaseInsensitive,
-  searchableMinCharactersCount,
-  searchMinCharactersCount,
-}: FlatListProps<ListItem>): ListItem[] => {
-  // convert list to array
-  const arrayList = useMemo(() => convertListToArray(list), [list]);
-
-  // reverse list
-  const reversedList = useMemo(
-    () =>
-      typeof reversed === "boolean" && reversed
-        ? reverseList(arrayList)
-        : arrayList,
-    [arrayList, reversed],
-  );
-
-  // limit list
-  const limitedList = useMemo(() => {
-    if (!isNil(limit)) {
-      const [from, to] = `${limit}`.split(",");
-      return limitList(reversedList, from, to);
-    }
-
-    return reversedList;
-  }, [reversedList, limit]);
-
-  // filter list
-  const filteredList = useMemo(
-    () => (filterBy ? filterList(limitedList, filterBy) : limitedList),
-    [limitedList, filterBy],
-  );
-
-  // search list
-  const searchedList = useMemo(() => {
-    if (searchTerm || (search && search.term)) {
-      const searchOptions = {
-        ...defaultProps.search,
-        ...search,
-      };
-
-      return searchList(filteredList, {
-        by: searchOptions.by || searchBy || "0",
-        caseInsensitive: searchOptions.caseInsensitive || searchCaseInsensitive,
-        everyWord:
-          searchOptions.onEveryWord ||
-          searchOptions.everyWord || // deprecated
-          searchOnEveryWord,
-        term: searchOptions.term || searchTerm,
-        minCharactersCount:
-          (searchOptions as any).searchableMinCharactersCount || // deprecated
-          searchOptions.minCharactersCount ||
-          searchMinCharactersCount ||
-          searchableMinCharactersCount || // deprecated
-          3,
-      });
-    }
-
-    return filteredList;
-  }, [
-    filteredList,
+export const useList = <ListItem,>(
+  props: FlatListProps<ListItem>,
+): ListItem[] => {
+  const {
+    list,
+    limit,
+    reversed,
+    filterBy,
+    group,
+    groupBy,
+    groupOf,
+    showGroupSeparatorAtTheBottom,
+    groupReversed,
+    groupSeparatorAtTheBottom,
+    groupSortedCaseInsensitive,
+    groupSortedDescending,
+    groupSorted,
+    groupSortedBy,
+    sortBy,
+    sortDesc,
+    sort,
+    sortCaseInsensitive,
+    sortGroupBy,
+    sortGroupDesc,
+    sortGroupCaseInsensitive,
+    sortDescending,
     search,
     searchBy,
     searchOnEveryWord,
@@ -103,62 +41,90 @@ export const useList = <ListItem,>({
     searchCaseInsensitive,
     searchableMinCharactersCount,
     searchMinCharactersCount,
-  ]);
+    renderGroupHeader,
+    renderGroupFooter,
+  } = props;
+  // convert list to array
+  let processedList = convertListToArray(list);
 
-  const sortOptions = useMemo(
-    () => ({
-      ...(defaultProps.sort as SortInterface<ListItem>),
-      ...(sort as SortInterface<ListItem>),
-    }),
-    [sort],
-  );
+  // reverse list
+  if (typeof reversed === "boolean" && reversed) {
+    processedList = reverseList(processedList);
+  }
 
-  // sort list
-  const sortedList = useMemo(() => {
-    if (sortOptions.by || sortBy || (isBoolean(sort) && sort)) {
-      return sortList(searchedList, {
-        caseInsensitive:
-          sortOptions.caseInsensitive || sortCaseInsensitive || false,
-        descending:
-          sortOptions.descending || sortDescending || sortDesc || false, // deprecated
-        by: sortOptions.by || sortBy,
-      });
-    }
+  // limit list
+  if (!isNil(limit)) {
+    const [from, to] = `${limit}`.split(",");
+    processedList = limitList(processedList, from, to);
+  }
 
-    return searchedList;
-  }, [
-    searchedList,
-    sortOptions,
-    sortBy,
-    sortDesc,
-    sort,
-    sortCaseInsensitive,
-    sortDescending,
-  ]);
+  // filter list
+  if (filterBy) {
+    processedList = filterList(processedList, filterBy);
+  }
 
-  // group list
-  const groupedList = useMemo(() => {
-    const groupOptions = {
-      ...defaultProps.group,
-      ...group,
+  // search list
+  if (searchTerm || (search && search.term)) {
+    const searchOptions = {
+      ...defaultProps.search,
+      ...search,
     };
 
-    if (
-      groupOptions.by ||
-      groupBy ||
-      groupOf ||
-      groupOptions.of ||
-      groupOptions.limit
-    ) {
-      const groupingOptions = {
-        by: groupOptions.by || groupBy,
-        limit: groupOptions.of || groupOf || groupOptions.limit, // deprecated
-        reversed: groupOptions.reversed || groupReversed,
-      };
+    processedList = searchList(processedList, {
+      by: searchOptions.by || searchBy || "0",
+      caseInsensitive: searchOptions.caseInsensitive || searchCaseInsensitive,
+      everyWord:
+        searchOptions.onEveryWord ||
+        searchOptions.everyWord || // deprecated
+        searchOnEveryWord,
+      term: searchOptions.term || searchTerm,
+      minCharactersCount:
+        (searchOptions as any).searchableMinCharactersCount || // deprecated
+        searchOptions.minCharactersCount ||
+        searchMinCharactersCount ||
+        searchableMinCharactersCount || // deprecated
+        3,
+    });
+  }
 
-      const gList = groupList(sortedList, groupingOptions);
+  const sortOptions = {
+    ...(defaultProps.sort as SortInterface<ListItem>),
+    ...(sort as SortInterface<ListItem>),
+  };
 
-      return gList.groupLists.reduce((newGList: any, aGroup, idx: number) => {
+  // sort list
+  if (sortOptions.by || sortBy || (isBoolean(sort) && sort)) {
+    processedList = sortList(processedList, {
+      caseInsensitive:
+        sortOptions.caseInsensitive || sortCaseInsensitive || false,
+      descending: sortOptions.descending || sortDescending || sortDesc || false, // deprecated
+      by: sortOptions.by || sortBy,
+    });
+  }
+
+  // group list
+  const groupOptions = {
+    ...defaultProps.group,
+    ...group,
+  };
+
+  if (
+    groupOptions.by ||
+    groupBy ||
+    groupOf ||
+    groupOptions.of ||
+    groupOptions.limit
+  ) {
+    const groupingOptions = {
+      by: groupOptions.by || groupBy,
+      limit: groupOptions.of || groupOf || groupOptions.limit, // deprecated
+      reversed: groupOptions.reversed || groupReversed,
+    };
+
+    const gList = groupList(processedList, groupingOptions);
+
+    processedList = gList.groupLists.reduce(
+      (newGList: any, aGroup, idx: number) => {
         let currentGroup = aGroup;
         if (
           groupSorted ||
@@ -195,37 +161,49 @@ export const useList = <ListItem,>({
           currentGroup,
         ];
 
+        const header = [
+          "___list-group-header",
+          gList.groupLabels[idx],
+          currentGroup,
+        ];
+
+        const footer = [
+          "___list-group-footer",
+          gList.groupLabels[idx],
+          currentGroup,
+        ];
+
+        let resultGroup: any[] = [...currentGroup];
+
+        if (
+          groupOptions.renderHeader ||
+          renderGroupHeader ||
+          (props as any).groupHeader // deprecated/alias
+        ) {
+          resultGroup = [header, ...resultGroup];
+        }
+
+        if (
+          groupOptions.renderFooter ||
+          renderGroupFooter ||
+          (props as any).groupFooter // deprecated/alias
+        ) {
+          resultGroup = [...resultGroup, footer];
+        }
+
         if (
           groupOptions.separatorAtTheBottom ||
           groupSeparatorAtTheBottom ||
           showGroupSeparatorAtTheBottom
         ) {
-          return [...newGList, ...currentGroup, separator];
+          return [...newGList, ...resultGroup, separator];
         }
 
-        return [...newGList, separator, ...currentGroup];
-      }, []);
-    }
+        return [...newGList, separator, ...resultGroup];
+      },
+      [],
+    );
+  }
 
-    return sortedList;
-  }, [
-    sortedList,
-    group,
-    groupBy,
-    groupOf,
-    showGroupSeparatorAtTheBottom,
-    groupReversed,
-    groupSeparatorAtTheBottom,
-    groupSortedCaseInsensitive,
-    groupSortedDescending,
-    groupSorted,
-    groupSortedBy,
-    sortGroupBy,
-    sortGroupDesc,
-    sortGroupCaseInsensitive,
-    sortOptions.groupBy,
-    sortOptions.groupCaseInsensitive,
-  ]);
-
-  return groupedList;
+  return processedList as ListItem[];
 };

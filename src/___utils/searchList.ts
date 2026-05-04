@@ -38,17 +38,22 @@ const defaultFilterByFn = (
 
   const value = caseInsensitive ? `${keyValue}`.toLowerCase() : `${keyValue}`;
 
-  if (isArray(term)) {
-    return (term as []).some((t: string) => {
-      t = caseInsensitive ? t.toLowerCase() : t.trim();
+  const match = (val: string, t: string) => {
+    try {
+      const regex = new RegExp(t, caseInsensitive ? "i" : "");
+      return regex.test(val);
+    } catch (e) {
+      const termToSearch = caseInsensitive ? t.toLowerCase() : t;
+      const valToSearch = caseInsensitive ? val.toLowerCase() : val;
+      return valToSearch.includes(termToSearch);
+    }
+  };
 
-      return value.search(t.trim()) >= 0;
-    });
+  if (isArray(term)) {
+    return (term as []).some((t: string) => match(`${keyValue}`, t.trim()));
   }
 
-  term = caseInsensitive ? (term as string).toLowerCase() : (term as string);
-
-  return value.search(term.trim() as string) >= 0;
+  return match(`${keyValue}`, (term as string).trim());
 };
 
 const getFilterByFn = <ListItem>(

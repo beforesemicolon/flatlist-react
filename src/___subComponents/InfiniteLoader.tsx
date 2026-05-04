@@ -1,4 +1,12 @@
-import React, { Component, createRef, CSSProperties, ReactNode } from "react";
+import React, {
+  CSSProperties,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { isFunction } from "../___utils/isType";
 import DefaultLoadIndicator from "./DefaultLoadIndicator";
 
@@ -7,187 +15,181 @@ export interface InfiniteLoaderInterface {
   loadingIndicatorPosition?: string;
   hasMore: boolean;
   loadMore: null | (() => void);
-}
-
-interface InfiniteLoaderState {
-  scrollingContainer: HTMLElement | null;
-  loadIndicatorContainer: HTMLDivElement | null;
-  loading: boolean;
-  prevItemsCount: number;
+  scrollingContainerId?: string;
+  inverted?: boolean;
 }
 
 interface InfiniteLoaderProps extends InfiniteLoaderInterface {
   itemsCount: number;
+  scrollingContainerId?: string;
+  inverted?: boolean;
 }
 
-class InfiniteLoader extends React.Component<
-  InfiniteLoaderProps,
-  InfiniteLoaderState
-> {
-  state: InfiniteLoaderState = {
-    prevItemsCount: this.props.itemsCount,
-    loadIndicatorContainer: null,
-    loading: false,
-    scrollingContainer: null,
-  };
+const InfiniteLoader = (props: InfiniteLoaderProps) => {
+  const {
+    loadMore,
+    hasMore,
+    loadingIndicator = DefaultLoadIndicator,
+    loadingIndicatorPosition = "left",
+    itemsCount,
+    scrollingContainerId,
+    inverted = false,
+  } = props;
 
-  loaderContainerRef = createRef<HTMLDivElement>();
+  const [loading, setLoading] = useState(false);
+  const [prevItemsCount, setPrevItemsCount] = useState(itemsCount);
 
-  // track the last scroll position so when new dom elements are inserted to avoid scroll jump
-  lastScrollTop = 0;
-
-  mounted = false;
-
-  // keep track of the dom items in the list
-  currentItemsCount = 0;
-
-  componentDidMount(): void {
-    this.mounted = true;
-    const { current: loadIndicatorContainer } = this.loaderContainerRef;
-
-    if (loadIndicatorContainer) {
-      this.setState(
-        {
-          loadIndicatorContainer,
-          scrollingContainer: loadIndicatorContainer.parentNode as HTMLElement,
-        },
-        () => {
-          this.currentItemsCount = this.getScrollingContainerChildrenCount();
-          this.setupScrollingContainerEventsListener();
-        },
-      );
-    } else {
-      console.warn(
-        "FlatList: it was not possible to get container's ref. " +
-          "Infinite scrolling pagination will not be possible",
-      );
-    }
+  if (itemsCount !== prevItemsCount) {
+    setPrevItemsCount(itemsCount);
+    setLoading(false);
   }
 
-  componentDidUpdate(
-    prevProps: InfiniteLoaderProps,
-    _prevState: InfiniteLoaderState,
-  ): void {
-    // reset scroll position to where last was
-    const { scrollingContainer } = this.state;
-    if (scrollingContainer) {
-      scrollingContainer.scrollTop = this.lastScrollTop;
-    }
+  const loaderContainerRef = useRef<HTMLDivElement>(null);
+  const scrollingContainerRef = useRef<HTMLElement | null>(null);
+  const lastScrollTop = useRef(0);
+  const lastScrollHeight = useRef(0);
+  const mounted = useRef(false);
 
-    // reset loading state when the list size changes
-    if (prevProps.itemsCount !== this.props.itemsCount) {
-      this.reset();
-    }
+  const checkIfLoadingIsNeeded = useCallback(() => {
+    const loader = loaderContainerRef.current;
+    const scrollingContainer = scrollingContainerRef.current;
 
-    this.checkIfLoadingIsNeeded();
-  }
+    if (loader && scrollingContainer) {
+      if (!mounted.current || !hasMore || loading) {
+        return;
+      }
 
-  componentWillUnmount(): void {
-    this.setupScrollingContainerEventsListener(true);
-    this.mounted = false;
-  }
-
-  // update the loading flags and items count whether "hasMore" is false or list changed
-  reset(): void {
-    this.setState({ loading: false });
-  }
-
-  getScrollingContainerChildrenCount = (): number => {
-    const { scrollingContainer } = this.state;
-
-    if (scrollingContainer) {
-      return Math.max(0, scrollingContainer.children.length);
-    }
-
-    return 0;
-  };
-
-  setupScrollingContainerEventsListener = (removeEvent = false) => {
-    const { scrollingContainer } = this.state;
-
-    if (scrollingContainer) {
-      ["scroll", "mousewheel", "touchmove"].forEach((event: string) => {
-        scrollingContainer.removeEventListener(
-          event,
-          this.checkIfLoadingIsNeeded,
-          true,
-        );
-
-        if (!removeEvent) {
-          scrollingContainer.addEventListener(
-            event,
-            this.checkIfLoadingIsNeeded,
-            true,
-          );
-        }
-      });
-    }
-  };
-
-  // show or hide loading indicators based on scroll position
-  // calls the "loadMore" function when is needed
-  checkIfLoadingIsNeeded = (): void => {
-    if (!this.mounted || !this.props.hasMore || this.state.loading) {
-      return;
-    }
-
-    const { scrollingContainer, loadIndicatorContainer } = this.state;
-    if (scrollingContainer && loadIndicatorContainer) {
       const { scrollTop, offsetTop, offsetHeight } = scrollingContainer;
-      this.lastScrollTop = scrollTop;
 
-      const loaderPosition = loadIndicatorContainer.offsetTop - scrollTop;
+      if (inverted) {
+        if (scrollTop <= 50) {
+          setLoading(true);
+          if (loadMore) {
+            (loadMore as () => void)();
+          }
+        }
+        return;
+      }
+
+      const loaderPosition = loader.offsetTop - scrollTop;
       const startingPoint = offsetTop + offsetHeight;
 
       if (loaderPosition <= startingPoint) {
-        this.setState(
-          { prevItemsCount: this.props.itemsCount, loading: true },
-          () => {
-            (this.props.loadMore as () => void)();
-          },
-        );
+        setLoading(true);
+        if (loadMore) {
+          (loadMore as () => void)();
+        }
       }
     }
-  };
+  }, [hasMore, loading, loadMore, inverted]);
 
-  render(): ReactNode {
-    const { loading } = this.state;
-    const {
-      hasMore,
-      loadingIndicator = DefaultLoadIndicator,
-      loadingIndicatorPosition = "left",
-    } = this.props;
+  useEffect(() => {
+    mounted.current = true;
+    const loader = loaderContainerRef.current;
+    if (loader) {
+      let container = loader.parentNode as HTMLElement;
 
-    const spinning = hasMore && loading;
+      if (scrollingContainerId) {
+        container = container.closest(
+          `#${scrollingContainerId}`,
+        ) as HTMLElement;
 
-    // do not remove the element from the dom so the ref is not broken but set it invisible enough
-    const styles: CSSProperties = {
-      display: "flex",
-      height: spinning ? "auto" : 0,
-      justifyContent:
-        loadingIndicatorPosition === "center"
-          ? loadingIndicatorPosition
-          : loadingIndicatorPosition === "right"
-            ? "flex-end"
-            : "flex-start",
-      padding: spinning ? "5px 0" : 0,
-      visibility: spinning ? "visible" : "hidden",
+        if (!container) {
+          throw new Error(
+            `Can't find scrolling container with id of "${scrollingContainerId}"`,
+          );
+        }
+      }
+
+      scrollingContainerRef.current = container;
+      lastScrollTop.current = container.scrollTop;
+      lastScrollHeight.current = container.scrollHeight;
+
+      const events = ["scroll", "mousewheel", "touchmove"];
+      events.forEach((event) => {
+        container.addEventListener(event, checkIfLoadingIsNeeded, true);
+      });
+
+      return () => {
+        mounted.current = false;
+        events.forEach((event) => {
+          container.removeEventListener(event, checkIfLoadingIsNeeded, true);
+        });
+      };
+    }
+    return () => {
+      mounted.current = false;
+    };
+  }, [checkIfLoadingIsNeeded, scrollingContainerId]);
+
+  useLayoutEffect(() => {
+    // reset scroll position to where last was
+    if (scrollingContainerRef.current) {
+      if (inverted) {
+        const newScrollHeight = scrollingContainerRef.current.scrollHeight;
+        const delta = newScrollHeight - lastScrollHeight.current;
+        if (delta !== 0) {
+          scrollingContainerRef.current.scrollTop =
+            lastScrollTop.current + delta;
+        }
+      } else {
+        scrollingContainerRef.current.scrollTop = lastScrollTop.current;
+      }
+    }
+    // Update refs AFTER potential adjustment
+    if (scrollingContainerRef.current) {
+      lastScrollTop.current = scrollingContainerRef.current.scrollTop;
+      lastScrollHeight.current = scrollingContainerRef.current.scrollHeight;
+    }
+  }, [itemsCount, inverted]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (scrollingContainerRef.current) {
+        lastScrollTop.current = scrollingContainerRef.current.scrollTop;
+        lastScrollHeight.current = scrollingContainerRef.current.scrollHeight;
+      }
     };
 
-    const loadingEl = isFunction(loadingIndicator)
-      ? (loadingIndicator as () => ReactNode)()
-      : (loadingIndicator as ReactNode);
+    const container = scrollingContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll, true);
+      return () => {
+        container.removeEventListener("scroll", handleScroll, true);
+      };
+    }
+  }, []);
 
-    return (
-      <div
-        ref={this.loaderContainerRef}
-        className="__infinite-loader"
-        style={styles}
-      >
-        {spinning && (loadingIndicator ? loadingEl : <DefaultLoadIndicator />)}
-      </div>
-    );
-  }
-}
+  useEffect(() => {
+    checkIfLoadingIsNeeded();
+  });
+
+  const spinning = hasMore && loading;
+
+  const styles: CSSProperties = {
+    display: "flex",
+    height: spinning ? "auto" : 0,
+    justifyContent:
+      loadingIndicatorPosition === "center"
+        ? loadingIndicatorPosition
+        : loadingIndicatorPosition === "right"
+          ? "flex-end"
+          : "flex-start",
+    padding: spinning ? "5px 0" : 0,
+    visibility: spinning ? "visible" : "hidden",
+  };
+
+  const loadingEl: any = isFunction(loadingIndicator)
+    ? (loadingIndicator as () => ReactNode)()
+    : loadingIndicator;
+
+  return (
+    <div ref={loaderContainerRef} className="__infinite-loader" style={styles}>
+      {spinning && (loadingIndicator ? loadingEl : <DefaultLoadIndicator />)}
+    </div>
+  );
+};
+
+InfiniteLoader.displayName = "InfiniteLoader";
 
 export default InfiniteLoader;

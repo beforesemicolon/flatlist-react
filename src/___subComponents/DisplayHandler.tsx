@@ -6,6 +6,7 @@ export interface DisplayInterface {
   grid?: boolean;
   gridGap?: string;
   gridMinColumnWidth?: string;
+  table?: boolean;
 }
 
 export interface DisplayHandlerProps {

@@ -1,4 +1,4 @@
-import React, { createRef, forwardRef, ReactNode, Ref, useMemo } from "react";
+import React from "react";
 import convertListToArray from "../___utils/convertListToArray";
 import { isString } from "../___utils/isType";
 import ScrollRenderer from "./ScrollRenderer";
@@ -8,9 +8,14 @@ import { List } from "../flatListProps";
 export interface PlainListProps<ListItem> {
   list: List<ListItem>;
   renderItem: renderFunc<ListItem>;
-  renderWhenEmpty?: ReactNode | (() => React.JSX.Element);
+  renderWhenEmpty?: React.ReactNode | (() => React.JSX.Element);
   wrapperHtmlTag?: string;
   renderOnScroll?: boolean;
+  renderTableHeader?: () => React.ReactNode;
+  renderTableFooter?: () => React.ReactNode;
+  ref?: React.Ref<HTMLElement>;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  __forwarededRef?: React.Ref<HTMLElement>;
   [key: string]: any;
 }
 
@@ -20,22 +25,23 @@ function PlainList<ListItem>(props: PlainListProps<ListItem>) {
     renderItem,
     renderWhenEmpty,
     renderOnScroll,
+    renderTableHeader,
+    renderTableFooter,
     wrapperHtmlTag,
     __forwarededRef,
+    ref,
     ...tagProps
   } = props;
   const dataList = convertListToArray(list);
 
-  const renderThisItem = useMemo(
-    () => handleRenderItem(renderItem, null),
-    [renderItem],
-  );
+  const renderThisItem = handleRenderItem(renderItem, null);
 
   if (dataList.length === 0) {
     return renderBlank(renderWhenEmpty);
   }
 
-  const WrapperElement = `${
+  const isTable = wrapperHtmlTag === "table";
+  const Wrapper = `${
     isString(wrapperHtmlTag) && wrapperHtmlTag ? wrapperHtmlTag : ""
   }`;
   const content = (
@@ -43,18 +49,28 @@ function PlainList<ListItem>(props: PlainListProps<ListItem>) {
       {renderOnScroll ? (
         <ScrollRenderer list={dataList} renderItem={renderItem} />
       ) : (
-        dataList.map(renderThisItem)
+        dataList.map((item, idx) => renderThisItem(item, `${idx}`))
       )}
     </>
   );
 
+  const finalRef = ref || __forwarededRef;
+
   return (
     <>
-      {WrapperElement ? (
+      {Wrapper ? (
         // @ts-ignore
-        <WrapperElement {...tagProps} ref={__forwarededRef}>
-          {content}
-        </WrapperElement>
+        <Wrapper {...tagProps} ref={finalRef}>
+          {isTable ? (
+            <>
+              {renderTableHeader && <thead>{renderTableHeader()}</thead>}
+              <tbody>{content}</tbody>
+              {renderTableFooter && <tfoot>{renderTableFooter()}</tfoot>}
+            </>
+          ) : (
+            content
+          )}
+        </Wrapper>
       ) : (
         content
       )}
@@ -62,11 +78,6 @@ function PlainList<ListItem>(props: PlainListProps<ListItem>) {
   );
 }
 
-const PlainListWithRef = forwardRef<HTMLElement, any>((props, ref) => {
-  return <PlainList {...(props as any)} __forwarededRef={ref || createRef()} />;
-});
-PlainListWithRef.displayName = "PlainList";
+PlainList.displayName = "PlainList";
 
-export default PlainListWithRef as <ListItem>(
-  props: PlainListProps<ListItem>,
-) => React.JSX.Element;
+export default PlainList;

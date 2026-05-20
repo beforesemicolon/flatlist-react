@@ -8,3 +8,7 @@ jest.config.js
 .github
 .eslintrc.js
 .yml
+renovate.json
+.renovaterc.json
+.renovaterc
+renovate.json5

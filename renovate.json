@@ -1,6 +1,33 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>beforesemicolon/.github"
+    "config:recommended"
+  ],
+  "rebaseWhen": "behind-base-branch",
+  "platformAutomerge": true,
+  "automergeStrategy": "squash",
+  "dependencyDashboard": false,
+  "prCreation": "not-pending",
+  "prConcurrentLimit": 5,
+  "baseBranches": [
+    "main",
+    "master"
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "patch",
+        "minor",
+        "pin",
+        "digest"
+      ],
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
+    }
   ]
 }

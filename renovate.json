@@ -10,7 +10,6 @@
   "prCreation": "not-pending",
   "prConcurrentLimit": 5,
   "baseBranches": [
-    "main",
     "master"
   ],
   "packageRules": [

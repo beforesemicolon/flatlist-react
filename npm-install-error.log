@@ -7,9 +7,9 @@ npm error node_modules/eslint
 npm error   dev eslint@"^10.3.0" from the root project
 npm error
 npm error Could not resolve dependency:
-npm error peer eslint@"^7.32.0 || ^8.2.0" from eslint-config-airbnb@19.0.4
-npm error node_modules/eslint-config-airbnb
-npm error   dev eslint-config-airbnb@"^19.0.4" from the root project
+npm error peer eslint@"^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9" from eslint-plugin-jsx-a11y@6.10.2
+npm error node_modules/eslint-plugin-jsx-a11y
+npm error   dev eslint-plugin-jsx-a11y@"^6.10.2" from the root project
 npm error
 npm error Fix the upstream dependency conflict, or retry
 npm error this command with --force or --legacy-peer-deps
@@ -17,5 +17,5 @@ npm error to accept an incorrect (and potentially broken) dependency resolution.
 npm error
 npm error
 npm error For a full report see:
-npm error /home/runner/.npm/_logs/2026-07-17T13_01_17_578Z-eresolve-report.txt
-npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-07-17T13_01_17_578Z-debug-0.log
+npm error /home/runner/.npm/_logs/2026-07-17T13_02_21_470Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-07-17T13_02_21_470Z-debug-0.log

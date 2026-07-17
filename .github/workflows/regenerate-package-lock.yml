@@ -26,7 +26,10 @@ jobs:
       - name: Generate modern lockfile
         run: |
           rm -rf node_modules package-lock.json
-          npm install --package-lock-only --ignore-scripts
+          if ! npm install --package-lock-only --ignore-scripts > /tmp/npm-install.log 2>&1; then
+            tail -n 120 /tmp/npm-install.log
+            exit 1
+          fi
 
       - name: Verify lockfile format and ws patch
         run: |

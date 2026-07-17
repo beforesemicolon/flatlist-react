@@ -17,5 +17,5 @@ npm error to accept an incorrect (and potentially broken) dependency resolution.
 npm error
 npm error
 npm error For a full report see:
-npm error /home/runner/.npm/_logs/2026-07-17T13_01_02_752Z-eresolve-report.txt
-npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-07-17T13_01_02_752Z-debug-0.log
+npm error /home/runner/.npm/_logs/2026-07-17T13_01_17_578Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-07-17T13_01_17_578Z-debug-0.log

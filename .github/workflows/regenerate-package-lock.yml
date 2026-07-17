@@ -3,6 +3,9 @@ name: Regenerate package lock
 on:
   push:
     branches: ["fix/regenerate-package-lock"]
+  pull_request:
+    branches: ["master"]
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 permissions:

@@ -25,10 +25,20 @@ jobs:
 
       - name: Generate modern lockfile
         run: |
-          rm -rf node_modules package-lock.json
-          if ! npm install --package-lock-only --ignore-scripts > /tmp/npm-install.log 2>&1; then
+          rm -rf node_modules package-lock.json npm-install-error.log
+          set +e
+          npm install --package-lock-only --ignore-scripts > /tmp/npm-install.log 2>&1
+          status=$?
+          set -e
+          if [ "$status" -ne 0 ]; then
+            cp /tmp/npm-install.log npm-install-error.log
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add npm-install-error.log
+            git commit -m "chore: capture lockfile generation error"
+            git push origin HEAD:fix/regenerate-package-lock
             tail -n 120 /tmp/npm-install.log
-            exit 1
+            exit "$status"
           fi
 
       - name: Verify lockfile format and ws patch

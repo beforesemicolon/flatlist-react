@@ -73,9 +73,9 @@ jobs:
           git checkout -b "$branch"
           jq -r '"Issue: " + .title + "\n\n" + (.body // "")' <<< "$issue" > /tmp/ai-task.txt
           echo 'Implement the issue described below. Keep changes minimal, preserve existing APIs, add or update tests, and do not modify workflows, secrets, or access policies.' >> /tmp/ai-task.txt
-          aider --yes --no-auto-commits --model gpt-4.1 --message-file /tmp/ai-task.txt
-          if [ -z "$(git status --porcelain)" ]; then echo 'No changes generated'; exit 0; fi
-          git add -A
+          CI=1 aider --yes --no-check-update --no-show-release-notes --no-auto-commits --no-pretty --no-stream --chat-history-file /tmp/aider-chat-history.md --input-history-file /tmp/aider-input-history --model gpt-4.1 --message-file /tmp/ai-task.txt
+          git add -A -- . ':!.aider*' ':!*.log'
+          if git diff --cached --quiet; then echo 'Agent produced no substantive changes'; exit 1; fi
           if git diff --cached --name-only | grep -E '(^|/)(\.github/workflows/|\.env|AGENTS\.md|renovate\.json)' ; then
             echo 'Sensitive configuration changes require a separate manual process'; exit 1
           fi

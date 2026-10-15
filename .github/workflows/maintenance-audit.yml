@@ -2,7 +2,7 @@ name: Maintenance audit
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 9 * * 1'
+    - cron: '17 9 * * *'
 permissions:
   contents: read
 jobs:
@@ -19,7 +19,7 @@ jobs:
       - name: Dependency audit
         shell: bash
         run: |
-          echo '## Weekly maintenance audit' >> "$GITHUB_STEP_SUMMARY"
+          echo '## Daily maintenance audit' >> "$GITHUB_STEP_SUMMARY"
           if [ -f package-lock.json ]; then
             npm audit --package-lock-only --audit-level=high > /tmp/audit.log 2>&1
             status=$?

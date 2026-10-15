@@ -1,0 +1,32 @@
+name: Maintenance audit
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 9 * * 1'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Dependency audit
+        shell: bash
+        run: |
+          echo '## Weekly maintenance audit' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f package-lock.json ]; then
+            npm audit --package-lock-only --audit-level=high > /tmp/audit.log 2>&1
+            status=$?
+            cat /tmp/audit.log >> "$GITHUB_STEP_SUMMARY"
+            if [ "$status" -ne 0 ]; then
+              echo 'Security findings or audit errors need review.' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          else
+            echo 'No npm package-lock.json; npm audit skipped.' >> "$GITHUB_STEP_SUMMARY"
+          fi

@@ -80,6 +80,7 @@ jobs:
             echo 'Sensitive configuration changes require a separate manual process'; exit 1
           fi
           if [ -f package.json ]; then
+            if [ -f package-lock.json ]; then npm ci --ignore-scripts; else npm install --ignore-scripts; fi
             npm test --if-present || { echo 'Tests failed; no PR pushed'; exit 1; }
           fi
           git commit -m "ai: implement issue #$ISSUE_NUMBER"

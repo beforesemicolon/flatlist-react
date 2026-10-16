@@ -73,10 +73,34 @@ jobs:
           git checkout -b "$branch"
           jq -r '"Issue: " + .title + "\n\n" + (.body // "")' <<< "$issue" > /tmp/ai-task.txt
           echo 'Implement the issue described below. Keep changes minimal, preserve existing APIs, add or update tests, and do not modify workflows, secrets, or access policies.' >> /tmp/ai-task.txt
-          CI=1 aider --yes --no-check-update --no-show-release-notes --no-auto-commits --no-pretty --no-stream --chat-history-file /tmp/aider-chat-history.md --input-history-file /tmp/aider-input-history --model gpt-4.1 --message-file /tmp/ai-task.txt
-          git add -A -- . ':!.aider*' ':!*.log'
-          if git diff --cached --quiet; then echo 'Agent produced no substantive changes'; exit 1; fi
-          if git diff --cached --name-only | grep -E '(^|/)(\.github/workflows/|\.env|AGENTS\.md|renovate\.json)' ; then
+          # Only grant the agent write access to existing files explicitly named in the issue.
+          # This prevents metadata-only PRs and unexpected repository changes.
+          python - <<'PY'
+          import json, pathlib, re, subprocess
+          issue = json.loads(subprocess.check_output(
+              ["gh", "issue", "view", __import__("os").environ["ISSUE_NUMBER"],
+               "--repo", __import__("os").environ["GITHUB_REPOSITORY"], "--json", "title,body"]))
+          description = issue["title"] + "\n" + (issue.get("body") or "")
+          tracked = subprocess.check_output(["git", "ls-files", "-z"]).decode().split("\0")
+          selected = [p for p in tracked if p and re.search(r"(?<![\w./-])" + re.escape(p) + r"(?![\w./-])", description)]
+          selected = [p for p in selected if not p.startswith(".github/") and not p.startswith(".aider") and p not in (".gitignore", "package.json", "package-lock.json", "renovate.json", "AGENTS.md") and not p.startswith(".env")]
+          pathlib.Path("/tmp/ai-targets.txt").write_text("\n".join(selected[:12]))
+          if not selected:
+              raise SystemExit("Issue must name an existing editable repository file")
+          PY
+          mapfile -t targets < /tmp/ai-targets.txt
+          CI=1 aider --yes --no-check-update --no-show-release-notes --no-gitignore --no-auto-commits --no-pretty --no-stream --chat-history-file /tmp/aider-chat-history.md --input-history-file /tmp/aider-input-history --model gpt-4.1 --message-file /tmp/ai-task.txt "${targets[@]}"
+          git add -- "${targets[@]}"
+          unexpected=$(git status --porcelain | awk '{print substr($0,4)}' | grep -v -F -x -f /tmp/ai-targets.txt || true)
+          if [ -n "$unexpected" ]; then
+            echo "Agent modified unexpected files: $unexpected" >&2
+            exit 1
+          fi
+          if git diff --cached --quiet; then
+            echo 'Agent produced no substantive tracked changes' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          if git diff --cached --name-only | grep -E '(^|/)(\.github/|\.env|AGENTS\.md|renovate\.json|package-lock\.json|package\.json)' ; then
             echo 'Sensitive configuration changes require a separate manual process'; exit 1
           fi
           if [ -f package.json ]; then

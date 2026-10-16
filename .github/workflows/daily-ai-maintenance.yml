@@ -1,0 +1,94 @@
+name: Daily AI maintenance
+on:
+  schedule:
+    - cron: '11 10 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+concurrency:
+  group: daily-ai-maintenance
+  cancel-in-progress: false
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Audit PRs and safely merge eligible dependency fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "## Daily maintenance — $GITHUB_REPOSITORY" >> "$GITHUB_STEP_SUMMARY"
+          gh pr list --state open --limit 100 --json number,title,author,isDraft,mergeable,statusCheckRollup,labels > /tmp/prs.json
+          jq -c '.[]' /tmp/prs.json | while IFS= read -r pr; do
+            number=$(jq -r '.number' <<< "$pr")
+            title=$(jq -r '.title' <<< "$pr")
+            author=$(jq -r '.author.login // ""' <<< "$pr")
+            failed=$(jq '[.statusCheckRollup[]? | select(.conclusion == "FAILURE" or .conclusion == "TIMED_OUT")] | length' <<< "$pr")
+            if [ "$failed" -gt 0 ]; then
+              echo "- PR #$number: failing checks" >> "$GITHUB_STEP_SUMMARY"
+              existing=$(gh issue list --state open --search "AI repair PR #$number in:title" --json number | jq 'length')
+              if [ "$existing" -eq 0 ]; then
+                gh issue create --title "AI repair PR #$number" --body "CI failure on PR #$number ($title). Review workflow logs, fix the failing check, and rerun tests. Do not merge without successful checks."
+              fi
+              continue
+            fi
+            # Never merge arbitrary contributions, major upgrades, or unchecked PRs.
+            if [[ "$author" != "renovate[bot]" && "$author" != "dependabot[bot]" ]]; then continue; fi
+            if jq -e '.isDraft or .mergeable != "MERGEABLE" or (.statusCheckRollup | length == 0) or any(.statusCheckRollup[]; .status != "COMPLETED" or .conclusion != "SUCCESS")' <<< "$pr" >/dev/null; then continue; fi
+            if grep -Eiq 'major|breaking|monorepo to v[0-9]+($|[^0-9])' <<< "$title"; then
+              echo "- PR #$number: manual review required for potentially breaking upgrade" >> "$GITHUB_STEP_SUMMARY"
+              continue
+            fi
+            # Respect branch protection and existing review requirements; do not force.
+            if gh pr merge "$number" --squash --auto 2>/tmp/merge-error; then
+              echo "- PR #$number: auto-merge requested (GitHub gates still apply)" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "- PR #$number: merge deferred — $(head -c 150 /tmp/merge-error)" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+      - name: AI repository improvement review
+        if: env.OPENAI_API_KEY != ''
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, subprocess, urllib.request
+          files = []
+          for name in ('package.json', 'README.md', 'tsconfig.json', 'renovate.json'):
+              p = pathlib.Path(name)
+              if p.is_file():
+                  files.append((name, p.read_text(errors='replace')[:4500]))
+          if not files:
+              print('No root package metadata to review')
+              raise SystemExit(0)
+          prompt = ('Review repository metadata and identify ONE concrete, non-duplicative '
+                    'quality, security-hardening, accessibility, or testing improvement. '
+                    'Do not claim a vulnerability without evidence. Output a concise issue '
+                    'with a title line and implementation/acceptance criteria. '
+                    'Never include secrets or request workflow permission changes.\n\n' +
+                    '\n\n'.join(n + ':\n' + v for n, v in files))
+          data = json.dumps({'model':'gpt-4.1-mini','input':prompt,'max_output_tokens':350}).encode()
+          request = urllib.request.Request('https://api.openai.com/v1/responses',data=data,
+              headers={'Authorization':'Bearer '+os.environ['OPENAI_API_KEY'],
+                       'Content-Type':'application/json'})
+          try:
+              with urllib.request.urlopen(request, timeout=40) as response:
+                  result = json.load(response)
+              suggestion = '\n'.join(c.get('text','') for item in result.get('output',[])
+                  for c in item.get('content',[]) if c.get('type')=='output_text').strip()
+              if not suggestion: raise ValueError('Empty model response')
+              existing = subprocess.check_output(['gh','issue','list','--state','open',
+                  '--search','Daily AI improvement in:title','--json','number'],text=True)
+              if json.loads(existing): raise SystemExit(0)
+              subprocess.run(['gh','issue','create','--title','Daily AI improvement review',
+                  '--body',suggestion[:3500]+'\n\nAI suggestion; validate before implementing.'],check=True)
+          except Exception as exc:
+              print('Improvement review skipped:',str(exc)[:180])
+          PY

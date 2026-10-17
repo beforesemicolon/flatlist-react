@@ -11,8 +11,9 @@ import { SortOptionsInterface } from "./___utils/sortList";
 
 export type List<T> = Array<T> | Set<T> | Map<any, T> | { [key: string]: T };
 
-export interface GroupInterface<ListItem>
-  extends GroupOptionsInterface<ListItem> {
+export interface GroupInterface<
+  ListItem,
+> extends GroupOptionsInterface<ListItem> {
   limit?: number;
   of?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

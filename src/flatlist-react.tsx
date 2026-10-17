@@ -62,12 +62,12 @@ function FlatList<ListItem>(props: FlatListProps<ListItem>) {
         ...p,
         [k]: (otherProps as Record<string, unknown>)[k],
       }),
-      {}
+      {},
     );
 
   const renderThisItem = handleRenderItem(
     renderItem,
-    handleRenderGroupSeparator(group.separator || groupSeparator)
+    handleRenderGroupSeparator(group.separator || groupSeparator),
   );
 
   if (renderList.length === 0) {
@@ -164,5 +164,5 @@ const FlatListWithRef = forwardRef<HTMLElement, any>((props, ref) => {
 FlatListWithRef.displayName = "FlatList";
 
 export default FlatListWithRef as <ListItem>(
-  props: FlatListProps<ListItem>
+  props: FlatListProps<ListItem>,
 ) => React.JSX.Element;

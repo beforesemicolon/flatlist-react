@@ -1,33 +1,60 @@
 name: Daily AI maintenance
 on:
   schedule:
-    - cron: '11 10 * * *'
+    - cron: "11 10 * * *"
   workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/maintenance/**"
+      - ".github/workflows/daily-ai-maintenance.yml"
 permissions:
   contents: write
   issues: read
   pull-requests: write
   actions: read
 concurrency:
-  group: daily-ai-maintenance
+  group: daily-ai-maintenance-${{ github.event_name == 'pull_request' && github.ref || 'default-branch' }}
   cancel-in-progress: false
 jobs:
+  guard-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install 'PyYAML==6.0.3'
+      - run: python -m unittest discover -s .github/maintenance -p 'test_*.py'
+      - run: bash -n .github/maintenance/maintenance.sh
   maintain:
+    if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
+    needs: guard-tests
     runs-on: ubuntu-latest
     timeout-minutes: 55
     env:
       GH_TOKEN: ${{ github.token }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+      MAINTENANCE_HELPER: ${{ runner.temp }}/maintenance-helper
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
+      - name: Prepare trusted maintenance helpers
+        run: |
+          python -m pip install 'PyYAML==6.0.3'
+          mkdir -p "$MAINTENANCE_HELPER"
+          cp .github/maintenance/* "$MAINTENANCE_HELPER/"
       - name: Merge fully green low-risk dependency PRs
         shell: bash
         run: |
@@ -43,63 +70,45 @@ jobs:
             if grep -Eiq '(major|breaking|\bv[0-9]+\b)' <<< "$title"; then continue; fi
             if gh pr merge "$n" --squash; then echo "Merged dependency PR #$n" >> "$GITHUB_STEP_SUMMARY"; fi
           done
+      - name: Repair default-branch lock and workflow formatting
+        id: health
+        run: bash "$MAINTENANCE_HELPER/maintenance.sh" main
+      - name: Preserve deterministic repair patch on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maintenance-health-repair
+          path: ${{ runner.temp }}/maintenance-health-repair.patch
+          if-no-files-found: ignore
       - name: Install AI coding agent
-        if: env.OPENAI_API_KEY != ''
-        run: python -m pip install 'aider-chat==0.86.1'
-      - name: Repair one failing dependency PR
-        if: env.OPENAI_API_KEY != ''
-        continue-on-error: true
+        if: steps.health.outputs.changed != 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -n "$OPENAI_API_KEY" ]; then env -u GH_TOKEN -u GITHUB_TOKEN -u OPENAI_API_KEY python -m pip install 'aider-chat==0.86.1'; fi
+      - name: Repair up to three failing dependency PRs
+        if: steps.health.outputs.changed != 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
-          pr=$(jq -c '[.[] | select((.author.login == "renovate[bot]" or .author.login == "dependabot[bot]") and (.isDraft == false) and any(.statusCheckRollup[]?; .conclusion == "FAILURE" or .conclusion == "TIMED_OUT"))][0] // empty' /tmp/prs.json)
-          [ -n "$pr" ] || exit 0
-          n=$(jq -r '.number' <<< "$pr")
-          branch=$(gh pr view "$n" --json headRefName --jq .headRefName)
-          owner=$(gh pr view "$n" --json headRepositoryOwner --jq .headRepositoryOwner.login)
-          [ "$owner" = "${GITHUB_REPOSITORY%%/*}" ] || exit 0
-          gh pr checkout "$n"
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          gh pr checks "$n" > /tmp/checks.txt 2>&1 || true
-          run_id=$(gh run list --branch "$branch" --limit 10 --json databaseId,conclusion --jq '[.[] | select(.conclusion == "failure")][0].databaseId // empty')
-          if [ -n "$run_id" ]; then gh run view "$run_id" --log-failed > /tmp/logs.txt 2>&1 || true; fi
-          { echo "Repair failing checks for dependency PR #$n. Keep the dependency update. Do not change workflows, secrets, or public APIs."; head -c 16000 /tmp/logs.txt 2>/dev/null || cat /tmp/checks.txt; } > /tmp/repair.txt
-          mapfile -t targets < <(git ls-files | grep -E '^(src/|test/|tests/|scripts/|package\.json$|tsconfig[^/]*\.json$)' | head -n 35)
-          [ "${#targets[@]}" -gt 0 ] || exit 0
-          CI=1 aider --yes --no-check-update --no-show-release-notes --no-gitignore --no-auto-commits --no-pretty --no-stream --chat-history-file /tmp/repair-history.md --input-history-file /tmp/repair-input --model gpt-4.1 --message-file /tmp/repair.txt "${targets[@]}"
-          git add -u
-          git diff --cached --quiet && exit 0
-          if git diff --cached --name-only | grep -E '(^\.github/|^\.env|^AGENTS\.md$|^renovate\.json$|^package-lock\.json$)'; then exit 1; fi
-          if [ -f package-lock.json ]; then npm ci --ignore-scripts; npm test --if-present -- --runInBand; fi
-          git commit -m "fix: AI repair for PR #$n"
-          git push origin HEAD:"$branch"
-          echo "Pushed repair to PR #$n; awaiting CI" >> "$GITHUB_STEP_SUMMARY"
+          [ -n "$OPENAI_API_KEY" ] || { echo 'AI repairs skipped: OPENAI_API_KEY is not configured' >> "$GITHUB_STEP_SUMMARY"; exit 0; }
+          gh pr list --state open --limit 100 --json number,author,isDraft,statusCheckRollup > "$RUNNER_TEMP/repair-prs.json"
+          mapfile -t prs < <(jq -r '[.[] | select((.author.login == "renovate[bot]" or .author.login == "dependabot[bot]") and (.isDraft == false) and any(.statusCheckRollup[]?; .conclusion == "FAILURE" or .conclusion == "TIMED_OUT"))] | sort_by(.number) | .[:3][] | .number' "$RUNNER_TEMP/repair-prs.json")
+          failed=0
+          for n in "${prs[@]}"; do
+            if ! bash "$MAINTENANCE_HELPER/maintenance.sh" dependency "$n"; then
+              echo "::error::Repair for PR #$n failed; nothing from that attempt was published"
+              failed=1
+              [ ! -f "$RUNNER_TEMP/maintenance-provider-failed" ] || break
+            fi
+          done
+          exit "$failed"
       - name: Create improvement PR requiring review
-        if: env.OPENAI_API_KEY != ''
-        shell: bash
+        if: steps.health.outputs.changed != 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          set -euo pipefail
-          git checkout "$GITHUB_REF_NAME"
-          git reset --hard "origin/$GITHUB_REF_NAME"
-          existing=$(gh pr list --state open --limit 100 --json labels --jq '[.[] | select(any(.labels[]?; .name == "ai:review-required"))] | length')
-          [ "$existing" -eq 0 ] || exit 0
-          mapfile -t targets < <(git ls-files | grep -E '^(src/|test/|tests/|README\.md$)' | head -n 12)
-          [ "${#targets[@]}" -gt 0 ] || exit 0
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          branch="ai/improvement-${GITHUB_RUN_ID}"
-          git checkout -b "$branch"
-          echo 'Implement ONE focused code-quality, test, documentation, or security-hardening improvement in the provided files. Do not invent vulnerabilities, alter public APIs, workflows, dependencies, secrets, or policies. If nothing useful can be improved, do not change files.' > /tmp/improvement.txt
-          CI=1 aider --yes --no-check-update --no-show-release-notes --no-gitignore --no-auto-commits --no-pretty --no-stream --chat-history-file /tmp/improvement-history.md --input-history-file /tmp/improvement-input --model gpt-4.1 --message-file /tmp/improvement.txt "${targets[@]}"
-          git add -- "${targets[@]}"
-          git diff --cached --quiet && exit 0
-          unexpected=$(git status --porcelain | awk '{print substr($0,4)}' | grep -v -F -x -f <(printf '%s\n' "${targets[@]}") || true)
-          [ -z "$unexpected" ] || { echo "Unexpected files: $unexpected"; exit 1; }
-          if [ -f package-lock.json ]; then npm ci --ignore-scripts; npm test --if-present -- --runInBand; fi
-          git commit -m 'ai: propose focused improvement'
-          git push origin "$branch"
-          gh label create 'ai:review-required' --color 'd4a72c' --description 'Maintainer review required' --force
-          gh pr create --draft --base "$GITHUB_REF_NAME" --head "$branch" --title 'AI improvement proposal (review required)' --body 'AI-generated change. **Requires maintainer review and approval.** Never auto-merge.'
-          gh pr edit "$branch" --add-label 'ai:review-required'
-          echo 'Created improvement draft PR for review' >> "$GITHUB_STEP_SUMMARY"
+          [ -n "$OPENAI_API_KEY" ] || { echo 'AI improvements skipped: OPENAI_API_KEY is not configured' >> "$GITHUB_STEP_SUMMARY"; exit 0; }
+          bash "$MAINTENANCE_HELPER/maintenance.sh" improvement

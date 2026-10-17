@@ -8,11 +8,7 @@ export type renderFunc<ListItem> = (
 ) => ReactNode | React.JSX.Element;
 
 export type renderItem<ListItem> =
-  | ReactNode
-  | FC<any>
-  | Component
-  | renderFunc<ListItem>
-  | React.JSX.Element;
+  ReactNode | FC<any> | Component | renderFunc<ListItem> | React.JSX.Element;
 
 export const renderBlank = (
   renderWhenEmpty: ReactNode | (() => React.JSX.Element) = null,
@@ -54,8 +50,7 @@ export const handleRenderGroupSeparator = (CustomSeparator: any) => {
 export const handleRenderItem = <ListItem,>(
   renderItem: renderFunc<ListItem>,
   renderSeparator:
-    | null
-    | ((s: ListItem, i: number | string) => ReactNode) = null,
+    null | ((s: ListItem, i: number | string) => ReactNode) = null,
 ) => {
   const ItemRenderer = (item: ListItem, key: number | string) => {
     if (!renderItem) {

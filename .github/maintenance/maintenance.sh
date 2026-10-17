@@ -3,6 +3,7 @@ set -euo pipefail
 helper="${MAINTENANCE_HELPER:?}"
 base="${DEFAULT_BRANCH:?}"
 export CI=1
+# Explicit targets provide context; disable RepoMap so aider creates no checkout cache.
 
 default_checkout() {
   git reset --hard HEAD
@@ -74,7 +75,7 @@ case "${1:?}" in
       mapfile -t targets < <(git ls-files | grep -E '^(src/|test/|tests/|scripts/|package\.json$|tsconfig[^/]*\.json$)' | head -n 35 || true)
       [ "${#targets[@]}" -gt 0 ] || exit 0
       python "$helper/maintenance.py" snapshot "$RUNNER_TEMP/repair-snapshot.json" "${targets[@]}"
-      if ! python "$helper/maintenance.py" agent aider --yes --no-check-update --no-show-release-notes --no-gitignore --no-auto-commits --no-pretty --no-stream --chat-history-file "$RUNNER_TEMP/repair-history.md" --input-history-file "$RUNNER_TEMP/repair-input" --model gpt-4.1 --message-file "$RUNNER_TEMP/repair.txt" "${targets[@]}"; then
+      if ! python "$helper/maintenance.py" agent aider --map-tokens 0 --yes --no-check-update --no-show-release-notes --no-gitignore --no-auto-commits --no-pretty --no-stream --chat-history-file "$RUNNER_TEMP/repair-history.md" --input-history-file "$RUNNER_TEMP/repair-input" --model gpt-4.1 --message-file "$RUNNER_TEMP/repair.txt" "${targets[@]}"; then
         touch "$RUNNER_TEMP/maintenance-provider-failed"
         exit 1
       fi
@@ -111,7 +112,7 @@ case "${1:?}" in
     git checkout -b "$branch"
     echo 'Implement ONE focused code-quality, test, documentation, or security-hardening improvement in the provided files. Do not invent vulnerabilities, alter public APIs, workflows, dependencies, secrets, or policies. If nothing useful can be improved, do not change files.' > "$RUNNER_TEMP/improvement.txt"
     python "$helper/maintenance.py" snapshot "$RUNNER_TEMP/improvement-snapshot.json" "${targets[@]}"
-    python "$helper/maintenance.py" agent aider --yes --no-check-update --no-show-release-notes --no-gitignore --no-auto-commits --no-pretty --no-stream --chat-history-file "$RUNNER_TEMP/improvement-history.md" --input-history-file "$RUNNER_TEMP/improvement-input" --model gpt-4.1 --message-file "$RUNNER_TEMP/improvement.txt" "${targets[@]}"
+    python "$helper/maintenance.py" agent aider --map-tokens 0 --yes --no-check-update --no-show-release-notes --no-gitignore --no-auto-commits --no-pretty --no-stream --chat-history-file "$RUNNER_TEMP/improvement-history.md" --input-history-file "$RUNNER_TEMP/improvement-input" --model gpt-4.1 --message-file "$RUNNER_TEMP/improvement.txt" "${targets[@]}"
     python "$helper/maintenance.py" verify "$RUNNER_TEMP/improvement-snapshot.json"
     git diff --quiet HEAD && exit 0
     python "$helper/maintenance.py" validation-snapshot "$RUNNER_TEMP/validation-snapshot.json"

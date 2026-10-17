@@ -64,9 +64,8 @@ jobs:
           gh pr list --state open --limit 100 --json number,title,author,isDraft,mergeable,statusCheckRollup,labels,reviewDecision > /tmp/prs.json
           jq -c '.[]' /tmp/prs.json | while IFS= read -r pr; do
             n=$(jq -r '.number' <<< "$pr")
-            author=$(jq -r '.author.login // ""' <<< "$pr")
             title=$(jq -r '.title' <<< "$pr")
-            [[ "$author" == 'renovate[bot]' || "$author" == 'dependabot[bot]' ]] || continue
+            jq -e -L "$MAINTENANCE_HELPER" 'include "dependency-bots"; .author | dependency_bot' <<< "$pr" >/dev/null || continue
             if jq -e '.isDraft or .mergeable != "MERGEABLE" or (.reviewDecision == "CHANGES_REQUESTED") or (.reviewDecision == "REVIEW_REQUIRED") or (.statusCheckRollup | length == 0) or any(.statusCheckRollup[]; .status != "COMPLETED" or .conclusion != "SUCCESS") or any(.labels[]?; .name == "ai:review-required")' <<< "$pr" >/dev/null; then continue; fi
             if grep -Eiq '(major|breaking|\bv[0-9]+\b)' <<< "$title"; then continue; fi
             if gh pr merge "$n" --squash; then echo "Merged dependency PR #$n" >> "$GITHUB_STEP_SUMMARY"; fi
@@ -96,7 +95,7 @@ jobs:
           set -euo pipefail
           [ -n "$OPENAI_API_KEY" ] || { echo 'AI repairs skipped: OPENAI_API_KEY is not configured' >> "$GITHUB_STEP_SUMMARY"; exit 0; }
           gh pr list --state open --limit 100 --json number,author,isDraft,statusCheckRollup > "$RUNNER_TEMP/repair-prs.json"
-          mapfile -t prs < <(jq -r '[.[] | select((.author.login == "renovate[bot]" or .author.login == "dependabot[bot]") and (.isDraft == false) and any(.statusCheckRollup[]?; .conclusion == "FAILURE" or .conclusion == "TIMED_OUT"))] | sort_by(.number) | .[:3][] | .number' "$RUNNER_TEMP/repair-prs.json")
+          mapfile -t prs < <(jq -r -L "$MAINTENANCE_HELPER" 'include "dependency-bots"; [.[] | select((.author | dependency_bot) and (.isDraft == false) and any(.statusCheckRollup[]?; .conclusion == "FAILURE" or .conclusion == "TIMED_OUT"))] | sort_by(.number) | .[:3][] | .number' "$RUNNER_TEMP/repair-prs.json")
           failed=0
           for n in "${prs[@]}"; do
             if ! bash "$MAINTENANCE_HELPER/maintenance.sh" dependency "$n"; then

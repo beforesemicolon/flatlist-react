@@ -4,91 +4,102 @@ on:
     - cron: '11 10 * * *'
   workflow_dispatch:
 permissions:
-  contents: read
-  issues: write
+  contents: write
+  issues: read
   pull-requests: write
+  actions: read
 concurrency:
   group: daily-ai-maintenance
   cancel-in-progress: false
 jobs:
-  triage:
+  maintain:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 55
     env:
       GH_TOKEN: ${{ github.token }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
-          persist-credentials: false
-      - name: Audit PRs and safely merge eligible dependency fixes
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Merge fully green low-risk dependency PRs
         shell: bash
         run: |
           set -euo pipefail
-          echo "## Daily maintenance — $GITHUB_REPOSITORY" >> "$GITHUB_STEP_SUMMARY"
-          gh pr list --state open --limit 100 --json number,title,author,isDraft,mergeable,statusCheckRollup,labels > /tmp/prs.json
+          echo '## Daily AI maintenance' >> "$GITHUB_STEP_SUMMARY"
+          gh pr list --state open --limit 100 --json number,title,author,isDraft,mergeable,statusCheckRollup,labels,reviewDecision > /tmp/prs.json
           jq -c '.[]' /tmp/prs.json | while IFS= read -r pr; do
-            number=$(jq -r '.number' <<< "$pr")
-            title=$(jq -r '.title' <<< "$pr")
+            n=$(jq -r '.number' <<< "$pr")
             author=$(jq -r '.author.login // ""' <<< "$pr")
-            failed=$(jq '[.statusCheckRollup[]? | select(.conclusion == "FAILURE" or .conclusion == "TIMED_OUT")] | length' <<< "$pr")
-            if [ "$failed" -gt 0 ]; then
-              echo "- PR #$number: failing checks" >> "$GITHUB_STEP_SUMMARY"
-              existing=$(gh issue list --state open --search "AI repair PR #$number in:title" --json number | jq 'length')
-              if [ "$existing" -eq 0 ]; then
-                gh issue create --title "AI repair PR #$number" --body "CI failure on PR #$number ($title). Review workflow logs, fix the failing check, and rerun tests. Do not merge without successful checks."
-              fi
-              continue
-            fi
-            # Never merge arbitrary contributions, major upgrades, or unchecked PRs.
-            if [[ "$author" != "renovate[bot]" && "$author" != "dependabot[bot]" ]]; then continue; fi
-            if jq -e '.isDraft or .mergeable != "MERGEABLE" or (.statusCheckRollup | length == 0) or any(.statusCheckRollup[]; .status != "COMPLETED" or .conclusion != "SUCCESS")' <<< "$pr" >/dev/null; then continue; fi
-            if grep -Eiq 'major|breaking|monorepo to v[0-9]+($|[^0-9])' <<< "$title"; then
-              echo "- PR #$number: manual review required for potentially breaking upgrade" >> "$GITHUB_STEP_SUMMARY"
-              continue
-            fi
-            # Respect branch protection and existing review requirements; do not force.
-            if gh pr merge "$number" --squash --auto 2>/tmp/merge-error; then
-              echo "- PR #$number: auto-merge requested (GitHub gates still apply)" >> "$GITHUB_STEP_SUMMARY"
-            else
-              echo "- PR #$number: merge deferred — $(head -c 150 /tmp/merge-error)" >> "$GITHUB_STEP_SUMMARY"
-            fi
+            title=$(jq -r '.title' <<< "$pr")
+            [[ "$author" == 'renovate[bot]' || "$author" == 'dependabot[bot]' ]] || continue
+            if jq -e '.isDraft or .mergeable != "MERGEABLE" or (.reviewDecision == "CHANGES_REQUESTED") or (.reviewDecision == "REVIEW_REQUIRED") or (.statusCheckRollup | length == 0) or any(.statusCheckRollup[]; .status != "COMPLETED" or .conclusion != "SUCCESS") or any(.labels[]?; .name == "ai:review-required")' <<< "$pr" >/dev/null; then continue; fi
+            if grep -Eiq '(major|breaking|\bv[0-9]+\b)' <<< "$title"; then continue; fi
+            if gh pr merge "$n" --squash; then echo "Merged dependency PR #$n" >> "$GITHUB_STEP_SUMMARY"; fi
           done
-      - name: AI repository improvement review
+      - name: Install AI coding agent
+        if: env.OPENAI_API_KEY != ''
+        run: python -m pip install 'aider-chat==0.86.1'
+      - name: Repair one failing dependency PR
+        if: env.OPENAI_API_KEY != ''
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr=$(jq -c '[.[] | select((.author.login == "renovate[bot]" or .author.login == "dependabot[bot]") and (.isDraft == false) and any(.statusCheckRollup[]?; .conclusion == "FAILURE" or .conclusion == "TIMED_OUT"))][0] // empty' /tmp/prs.json)
+          [ -n "$pr" ] || exit 0
+          n=$(jq -r '.number' <<< "$pr")
+          branch=$(gh pr view "$n" --json headRefName --jq .headRefName)
+          owner=$(gh pr view "$n" --json headRepositoryOwner --jq .headRepositoryOwner.login)
+          [ "$owner" = "${GITHUB_REPOSITORY%%/*}" ] || exit 0
+          gh pr checkout "$n"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          gh pr checks "$n" > /tmp/checks.txt 2>&1 || true
+          run_id=$(gh run list --branch "$branch" --limit 10 --json databaseId,conclusion --jq '[.[] | select(.conclusion == "failure")][0].databaseId // empty')
+          if [ -n "$run_id" ]; then gh run view "$run_id" --log-failed > /tmp/logs.txt 2>&1 || true; fi
+          { echo "Repair failing checks for dependency PR #$n. Keep the dependency update. Do not change workflows, secrets, or public APIs."; head -c 16000 /tmp/logs.txt 2>/dev/null || cat /tmp/checks.txt; } > /tmp/repair.txt
+          mapfile -t targets < <(git ls-files | grep -E '^(src/|test/|tests/|scripts/|package\.json$|tsconfig[^/]*\.json$)' | head -n 35)
+          [ "${#targets[@]}" -gt 0 ] || exit 0
+          CI=1 aider --yes --no-check-update --no-show-release-notes --no-gitignore --no-auto-commits --no-pretty --no-stream --chat-history-file /tmp/repair-history.md --input-history-file /tmp/repair-input --model gpt-4.1 --message-file /tmp/repair.txt "${targets[@]}"
+          git add -u
+          git diff --cached --quiet && exit 0
+          if git diff --cached --name-only | grep -E '(^\.github/|^\.env|^AGENTS\.md$|^renovate\.json$|^package-lock\.json$)'; then exit 1; fi
+          if [ -f package-lock.json ]; then npm ci --ignore-scripts; npm test --if-present -- --runInBand; fi
+          git commit -m "fix: AI repair for PR #$n"
+          git push origin HEAD:"$branch"
+          echo "Pushed repair to PR #$n; awaiting CI" >> "$GITHUB_STEP_SUMMARY"
+      - name: Create improvement PR requiring review
         if: env.OPENAI_API_KEY != ''
         shell: bash
         run: |
-          python - <<'PY'
-          import json, os, pathlib, subprocess, urllib.request
-          files = []
-          for name in ('package.json', 'README.md', 'tsconfig.json', 'renovate.json'):
-              p = pathlib.Path(name)
-              if p.is_file():
-                  files.append((name, p.read_text(errors='replace')[:4500]))
-          if not files:
-              print('No root package metadata to review')
-              raise SystemExit(0)
-          prompt = ('Review repository metadata and identify ONE concrete, non-duplicative '
-                    'quality, security-hardening, accessibility, or testing improvement. '
-                    'Do not claim a vulnerability without evidence. Output a concise issue '
-                    'with a title line and implementation/acceptance criteria. '
-                    'Never include secrets or request workflow permission changes.\n\n' +
-                    '\n\n'.join(n + ':\n' + v for n, v in files))
-          data = json.dumps({'model':'gpt-4.1-mini','input':prompt,'max_output_tokens':350}).encode()
-          request = urllib.request.Request('https://api.openai.com/v1/responses',data=data,
-              headers={'Authorization':'Bearer '+os.environ['OPENAI_API_KEY'],
-                       'Content-Type':'application/json'})
-          try:
-              with urllib.request.urlopen(request, timeout=40) as response:
-                  result = json.load(response)
-              suggestion = '\n'.join(c.get('text','') for item in result.get('output',[])
-                  for c in item.get('content',[]) if c.get('type')=='output_text').strip()
-              if not suggestion: raise ValueError('Empty model response')
-              existing = subprocess.check_output(['gh','issue','list','--state','open',
-                  '--search','Daily AI improvement in:title','--json','number'],text=True)
-              if json.loads(existing): raise SystemExit(0)
-              subprocess.run(['gh','issue','create','--title','Daily AI improvement review',
-                  '--body',suggestion[:3500]+'\n\nAI suggestion; validate before implementing.'],check=True)
-          except Exception as exc:
-              print('Improvement review skipped:',str(exc)[:180])
-          PY
+          set -euo pipefail
+          git checkout "$GITHUB_REF_NAME"
+          git reset --hard "origin/$GITHUB_REF_NAME"
+          existing=$(gh pr list --state open --limit 100 --json labels --jq '[.[] | select(any(.labels[]?; .name == "ai:review-required"))] | length')
+          [ "$existing" -eq 0 ] || exit 0
+          mapfile -t targets < <(git ls-files | grep -E '^(src/|test/|tests/|README\.md$)' | head -n 12)
+          [ "${#targets[@]}" -gt 0 ] || exit 0
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          branch="ai/improvement-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
+          echo 'Implement ONE focused code-quality, test, documentation, or security-hardening improvement in the provided files. Do not invent vulnerabilities, alter public APIs, workflows, dependencies, secrets, or policies. If nothing useful can be improved, do not change files.' > /tmp/improvement.txt
+          CI=1 aider --yes --no-check-update --no-show-release-notes --no-gitignore --no-auto-commits --no-pretty --no-stream --chat-history-file /tmp/improvement-history.md --input-history-file /tmp/improvement-input --model gpt-4.1 --message-file /tmp/improvement.txt "${targets[@]}"
+          git add -- "${targets[@]}"
+          git diff --cached --quiet && exit 0
+          unexpected=$(git status --porcelain | awk '{print substr($0,4)}' | grep -v -F -x -f <(printf '%s\n' "${targets[@]}") || true)
+          [ -z "$unexpected" ] || { echo "Unexpected files: $unexpected"; exit 1; }
+          if [ -f package-lock.json ]; then npm ci --ignore-scripts; npm test --if-present -- --runInBand; fi
+          git commit -m 'ai: propose focused improvement'
+          git push origin "$branch"
+          gh label create 'ai:review-required' --color 'd4a72c' --description 'Maintainer review required' --force
+          gh pr create --draft --base "$GITHUB_REF_NAME" --head "$branch" --title 'AI improvement proposal (review required)' --body 'AI-generated change. **Requires maintainer review and approval.** Never auto-merge.'
+          gh pr edit "$branch" --add-label 'ai:review-required'
+          echo 'Created improvement draft PR for review' >> "$GITHUB_STEP_SUMMARY"

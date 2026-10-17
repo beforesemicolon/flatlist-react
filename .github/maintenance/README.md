@@ -13,7 +13,10 @@ and dependency-resolution failures remain failures.
 
 The AI dependency-repair path considers up to three failing same-repository bot
 PRs. Its source-file allowlist excludes workflows, lockfiles, credentials and
-policy files. Protected bytes, tracked file sets, Git HEAD and index are verified.
+policy files. Both supported GitHub CLI bot identities (`app/renovate`,
+`app/dependabot`) and canonical `[bot]` identities are recognized exactly; bare
+usernames are rejected. RepoMap is disabled so aider creates no checkout cache;
+explicitly supplied source targets still provide context. Protected bytes, tracked file sets, Git HEAD and index are verified.
 Lint, tests and build must pass before any commit is published. Provider failures
 (including an exhausted balance with a zero aider exit status) fail the job.
 

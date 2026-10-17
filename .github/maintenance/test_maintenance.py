@@ -1,5 +1,6 @@
 import importlib.util
 import os
+import shlex
 from pathlib import Path
 import subprocess
 import sys
@@ -121,6 +122,35 @@ class RepositoryTests(unittest.TestCase):
         m.snapshot(self.snapshot, ['src/index.ts'])
         self.write('src/index.ts', 'export const value = 2\n')
         m.verify_snapshot(self.snapshot)
+
+    def test_aider_invocations_accept_source_edits_without_repo_map_cache(self):
+        # Model the pinned aider side effect, using flags from both actual calls.
+        shell = Path(__file__).with_name('maintenance.sh').read_text()
+        calls = [shlex.split(line) for line in shell.splitlines() if ' agent aider ' in line]
+        self.assertEqual(len(calls), 2)
+        script = (
+            'from pathlib import Path; import sys; '
+            'args=sys.argv[1:]; '
+            'disabled="--map-tokens" in args and args[args.index("--map-tokens")+1] == "0"; '
+            'None if disabled else Path(".aider.tags.cache.v4").mkdir(); '
+            'Path("src/index.ts").write_text("export const value = 2\\n")'
+        )
+        for call in calls:
+            with self.subTest(call=call):
+                self.git('restore', 'src/index.ts')
+                m.snapshot(self.snapshot, ['src/index.ts'])
+                flags = call[call.index('aider') + 1:call.index('--chat-history-file')]
+                m.checked_agent([sys.executable, '-c', script, *flags])
+                m.verify_snapshot(self.snapshot)
+                self.assertEqual(m.changes(), {'src/index.ts'})
+                self.assertFalse(Path('.aider.tags.cache.v4').exists())
+
+    def test_unexpected_aider_cache_is_still_rejected(self):
+        m.snapshot(self.snapshot, ['src/index.ts'])
+        self.write('src/index.ts', 'export const value = 2\n')
+        self.write('.aider.tags.cache.v4/cache.db', 'unexpected cache')
+        with self.assertRaisesRegex(RuntimeError, 'unexpected files'):
+            m.verify_snapshot(self.snapshot)
 
     def test_protected_workflow_change_is_rejected(self):
         m.snapshot(self.snapshot, ['src/index.ts'])

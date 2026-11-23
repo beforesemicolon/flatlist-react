@@ -34,8 +34,25 @@
   },
   "overrides": {
     "ws": "8.23.0",
-    "glob@>=9 <14.0.2": "14.0.6",
-    "minimatch@>=7 <11.0.1": "11.0.9"
+    "@jest/reporters": {
+      "glob": "14.0.6"
+    },
+    "jest-config": {
+      "glob": "14.0.6"
+    },
+    "jest-runtime": {
+      "glob": "14.0.6"
+    },
+    "test-exclude": {
+      "glob": "14.0.6",
+      "minimatch": "11.0.9"
+    },
+    "nodemon": {
+      "minimatch": "11.0.9"
+    },
+    "eslint-plugin-import-x": {
+      "minimatch": "11.0.9"
+    }
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
